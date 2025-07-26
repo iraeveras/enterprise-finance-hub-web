@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeaderProps {
     user: {
@@ -22,6 +23,7 @@ interface HeaderProps {
 }
 
 export const Header = ({ user, onMobileMenuToggle }: HeaderProps) => {
+    const { logout } = useAuth();
     return (
         <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4">
             <div className="flex items-center justify-between">
@@ -55,7 +57,7 @@ export const Header = ({ user, onMobileMenuToggle }: HeaderProps) => {
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="flex items-center space-x-2 px-3">
+                            <Button variant="ghost" className="flex items-center space-x-2 px-3 cursor-pointer">
                                 <Avatar className="w-8 h-8">
                                     <AvatarFallback className="bg-blue-600 text-white">
                                         {user.name.split(' ').map(n => n[0]).join('')}
@@ -68,16 +70,16 @@ export const Header = ({ user, onMobileMenuToggle }: HeaderProps) => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">
                                 <User className="w-4 h-4 mr-2" />
                                 Perfil
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">
                                 <Settings className="w-4 h-4 mr-2" />
                                 Configurações
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={logout}>
                                 <LogOut className="w-4 h-4 mr-2" />
                                 Sair
                             </DropdownMenuItem>
