@@ -1,7 +1,7 @@
+// FILE: src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Inter_Tight } from "next/font/google";
 import "./globals.css";
-import ClientLayout from "@/components/layout/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +28,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.className} ${interTight.className} antialiased`}
-      >
-        <ClientLayout>
-          {children}
-        </ClientLayout>                
+      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} ${interTight.className} antialiased`} >
+        {children}                        
       </body>
     </html>
   );
