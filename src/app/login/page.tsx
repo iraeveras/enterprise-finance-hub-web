@@ -3,10 +3,7 @@
 
 import { useForm } from "react-hook-form";
 import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLogin } from "@/app/login/hooks/useLogin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -48,7 +45,7 @@ export default function LoginPage() {
                     />
                 </div>
                 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full cursor-pointer">
                     Entrar
                 </Button>
             </form>
