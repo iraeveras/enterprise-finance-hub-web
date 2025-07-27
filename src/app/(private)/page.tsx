@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { DashboardContent } from "./dashboard/page";
 import CompanyManager from "./companies/page";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
+import RoleManager from "./roles/page";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -24,6 +25,8 @@ export default function Home() {
         return <DashboardContent/>
       case "companies":
         return <CompanyManager />;
+      case "roles":
+        return <RoleManager/>
       default:
         return <DashboardContent/>
     }
