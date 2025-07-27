@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Accordion type="multiple" className="w-full space-y-2">
                     {/* Gestão Empresarial */}
                     <AccordionItem value="empresa" className="border-0">
-                        <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                        <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Gestão Empresarial
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
@@ -147,7 +147,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Orçamento */}
                     <AccordionItem value="orcamento" className="border-0">
-                        <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                        <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Orçamento
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
@@ -182,7 +182,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Gestão de Pessoas */}
                     <AccordionItem value="pessoas" className="border-0">
-                        <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                        <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Gestão de Pessoas
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
@@ -217,7 +217,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Monitoramento */}
                     <AccordionItem value="monitoramento" className="border-0">
-                        <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                        <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Monitoramento
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
@@ -240,7 +240,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Relatórios */}
                     <AccordionItem value="relatorios" className="border-0">
-                        <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                        <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Relatórios
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
@@ -258,7 +258,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     {/* Administração */}
                     {userRole === "admin" && (
                         <AccordionItem value="admin" className="border-0">
-                            <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                            <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                                 Administração
                             </AccordionTrigger>
                             <AccordionContent className="pb-2">
