@@ -266,8 +266,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     <SidebarItem
                                         icon={UserCheck}
                                         label="Usuários"
-                                        isActive={activeSection === "user-management"}
-                                        onClick={() => onSectionChange("user-management")}
+                                        isActive={activeSection === "users"}
+                                        onClick={() => onSectionChange("users")}
                                     />
                                     <SidebarItem
                                         icon={Users}
