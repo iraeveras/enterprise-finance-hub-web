@@ -9,6 +9,13 @@ import { DashboardContent } from "./dashboard/page";
 import CompanyManager from "./companies/page";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
 import RoleManager from "./roles/page";
+import UserManager from "./users/page";
+import EmployeeManager from "./employees/page";
+import DepartmentManager from "./departments/page";
+import SectorManager from "./sectors/page";
+import TeamManager from "./teams/page";
+import CostCenterManager from "./costcenters/page";
+import PremiseManager from "./premises/page";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -25,6 +32,20 @@ export default function Home() {
         return <DashboardContent/>
       case "companies":
         return <CompanyManager />;
+      case "employees":
+        return <EmployeeManager />;
+      case "departments":
+        return <DepartmentManager />;
+      case "sectors":
+        return <SectorManager />;
+      case "teams":
+        return <TeamManager />;
+      case "costcenters":
+        return <CostCenterManager />;
+      case "premises":
+        return <PremiseManager />;
+      case "users":
+        return <UserManager/>
       case "roles":
         return <RoleManager/>
       default:
