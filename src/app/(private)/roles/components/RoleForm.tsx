@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Role, RoleLevel, ModuleID, Action, Scope, FormData } from "@/types";
+import { Role, RoleLevel, ModuleID, Action, Scope, FormDataRole } from "@/types";
 
 const modules: {id: ModuleID; name: string }[] = [
     { id: "companies", name: "Empresas" },
@@ -45,11 +45,11 @@ const actions: { id: Action; name: string }[] = [
 interface RoleFormProps {
     role?: Role | null;
     onClose: () => void;
-    onSave: (data: FormData) => void;
+    onSave: (data: FormDataRole) => void;
 }
 
 export function RoleForm({ role, onClose, onSave }: RoleFormProps) {
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<FormDataRole>({
         name: role?.name || "",
         level: (role?.level as RoleLevel) || "supervisor",
         description: role?.description || "",
