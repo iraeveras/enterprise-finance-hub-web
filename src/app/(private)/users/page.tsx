@@ -1,16 +1,16 @@
-// FILE: src/app/(private)/users/page.tsx
 "use client";
+// FILE: src/app/(private)/users/page.tsx
 
 import React, { useState, ChangeEvent } from "react";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
-import { CreateUserInput, UpdateUserInput, UserForm } from "./components/UserForm";
+import { UserForm } from "./components/UserForm";
 import { useUsers } from "./hooks/useUsers";
 import { useUserCreate } from "./hooks/useUserCreate";
 import { useUserUpdate } from "./hooks/useUserUpdate";
 import { useUserDelete } from "./hooks/useUserDelete";
 import { useRoles } from "../roles/hooks/useRoles";
 import { useCompanies } from "../companies/hooks/useCompanies";
-import type { User, Role, Company } from "@/types";
+import type { User, Role, Company, CreateUserInput, FormDataUser, UpdateUserInput } from "@/types";
 import {
     Card,
     CardHeader,
@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Download, Filter, UserCheck } from "lucide-react";
+
+
 
 export default function UserManager() {
     const usersQuery = useUsers();
@@ -53,11 +55,11 @@ export default function UserManager() {
             .some((f) => f.toLowerCase().includes(search.toLowerCase()))
     );
 
-    const onSave = (data: any) => {
-        if ("id" in data) {
-            updateUser.mutate(data);
+    const onSave = (data: CreateUserInput | UpdateUserInput) => {
+        if (selectedUser && selectedUser.id) {
+            updateUser.mutate({ id: selectedUser.id, ...data } as UpdateUserInput);
         } else {
-            createUser.mutate(data);
+            createUser.mutate(data as CreateUserInput);
         }
         setShowForm(false);
         setSelectedUser(null);
