@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Role } from "@/types";
-import { RoleLevel, ModuleID, Action, Scope, FormData } from "@/types";
+import { Role, RoleLevel, ModuleID, Action, Scope, FormData } from "@/types";
 
 const modules: {id: ModuleID; name: string }[] = [
     { id: "companies", name: "Empresas" },

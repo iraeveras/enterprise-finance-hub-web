@@ -129,7 +129,7 @@ export default function RoleManager() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {rolesQuery.isLoading ? (
+                        {rolesQuery.status === "pending" ? (
                             <p>Carregando...</p>
                         ) : (
                             <div className="overflow-x-auto">
