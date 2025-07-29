@@ -13,6 +13,7 @@ import { useCompanies } from "./hooks/useCompanies";
 import { useCompanyUpdate } from "./hooks/useCompanyUpdate";
 import { useCompanyCreate, CreateCompanyInput } from "./hooks/useCompanyCreate";
 import { useCompanyDelete } from "./hooks/useCompanyDelete";
+import { formatCNPJ } from "@/lib/formatCnpj";
 
 
 export default function CompanyManager() {
@@ -119,7 +120,7 @@ export default function CompanyManager() {
                                 <tbody>
                                     {filteredCompanies.map((company) => (
                                         <tr key={company.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-3 font-mono">{company.cnpj}</td>
+                                            <td className="p-3 font-mono">{formatCNPJ(company.cnpj)}</td>
                                             <td className="p-3 font-medium">{company.corporateName}</td>
                                             <td className="p-3">{company.tradeName}</td>
                                             <td className="p-3 text-center">
