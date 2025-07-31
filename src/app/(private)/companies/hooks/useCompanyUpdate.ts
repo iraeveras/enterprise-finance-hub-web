@@ -1,7 +1,7 @@
 "use client"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { Company, CompanyFormData } from "@/types";
+import type { Company, CompanyFormData } from "../types";
 
 export interface UpdateCompanyInput extends CompanyFormData {
     id: string;

@@ -2,7 +2,7 @@
 // src/app/(private)/users/hooks/useUserCreate.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
-import type {  CreateUserInput, User } from "@/types";
+import type { CreateUserInput, User } from "../types";
 
 export function useUserCreate() {
     const queryClient = useQueryClient();

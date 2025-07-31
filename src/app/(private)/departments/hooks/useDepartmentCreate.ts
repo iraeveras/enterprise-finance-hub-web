@@ -3,7 +3,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { Department, CreateDepartmentInput } from "@/types";
+import type { Department, CreateDepartmentInput } from "../types";
 
 export function useDepartmentCreate() {
     const queryclient = useQueryClient();

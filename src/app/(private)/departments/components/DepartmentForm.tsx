@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import type {
     Department, CreateDepartmentInput, UpdateDepartmentInput,
-} from "@/types";
+} from "../types";
 
 interface Props {
     department?: Department | null;

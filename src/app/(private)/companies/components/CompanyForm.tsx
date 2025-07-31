@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Company, CompanyFormData } from "@/types";
+import type { Company, CompanyFormData } from "../types";
 import { toast } from "sonner";
 import { CreateCompanyInput } from "../hooks/useCompanyCreate";
 import { UpdateCompanyInput } from "../hooks/useCompanyUpdate";

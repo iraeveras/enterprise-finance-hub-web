@@ -2,7 +2,7 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { Role } from "@/types";
+import type { Role } from "../types";
 
 export function useRoles() {
     return useQuery<Role[], Error>({

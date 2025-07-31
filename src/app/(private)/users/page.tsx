@@ -10,7 +10,9 @@ import { useUserUpdate } from "./hooks/useUserUpdate";
 import { useUserDelete } from "./hooks/useUserDelete";
 import { useRoles } from "../roles/hooks/useRoles";
 import { useCompanies } from "../companies/hooks/useCompanies";
-import type { User, Role, Company, CreateUserInput, FormDataUser, UpdateUserInput } from "@/types";
+import type { User, CreateUserInput, FormDataUser, UpdateUserInput } from "./types";
+import type { Role } from "../roles/types";
+import type { Company } from "../companies/types";
 import {
     Card,
     CardHeader,

@@ -2,7 +2,7 @@
 // src/app/(private)/users/hooks/useUserUpdate.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { UpdateUserInput, User } from "@/types";
+import type { UpdateUserInput, User } from "../types";
 
 export function useUserUpdate() {
     const queryClient = useQueryClient();

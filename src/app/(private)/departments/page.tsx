@@ -9,7 +9,7 @@ import { useDepartmentCreate } from "./hooks/useDepartmentCreate";
 import { useDepartmentUpdate } from "./hooks/useDepartmentUpdate";
 import { useDepartmentDelete } from "./hooks/useDepartmentDelete";
 import { useCompanies } from "../companies/hooks/useCompanies";
-import type { CreateDepartmentInput, Department, UpdateDepartmentInput } from "@/types";
+import type { CreateDepartmentInput, Department, UpdateDepartmentInput } from "./types";
 import {
     Card, CardHeader, CardTitle, CardContent,
 } from "@/components/ui/card";

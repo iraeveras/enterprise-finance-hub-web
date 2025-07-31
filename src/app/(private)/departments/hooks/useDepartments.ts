@@ -3,7 +3,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { Department } from "@/types";
+import type { Department } from "../types";
 
 export function useDepartments() {
     return useQuery<Department[], Error>({

@@ -2,7 +2,7 @@
 // FILE: src/app/(private)/users/hooks/useUsers.ts
 import { useQuery } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { User } from "@/types";
+import type { User } from "../types";
 
 export function useUsers() {
     return useQuery<User[], Error>({

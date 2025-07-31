@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Download, Filter, Building } from "lucide-react";
 import { CompanyForm } from "./components/CompanyForm";
-import type { Company } from "@/types";
+import type { Company } from "./types";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
 import { useCompanies } from "./hooks/useCompanies";
 import { useCompanyUpdate } from "./hooks/useCompanyUpdate";

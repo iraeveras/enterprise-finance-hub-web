@@ -2,7 +2,7 @@
 "use client"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { Role } from "@/types";
+import type { Role } from "../types";
 
 type UpdadeRoleInput = Omit<Role, "id">;
 

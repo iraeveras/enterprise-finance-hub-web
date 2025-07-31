@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Download, Filter, Shield, Trash2 } from "lucide-react";
 import { RoleForm } from "./components/RoleForm";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
-import type { Role, RoleLevel, FormDataRole } from "@/types";
+import type { Role, RoleLevel, FormDataRole } from "./types";
 import { useRoles } from "./hooks/useRoles";
 import { useRoleCreate } from "./hooks/useRoleCreate";
 import { useRoleUpdate } from "./hooks/useRoleUpdate";

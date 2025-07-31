@@ -3,7 +3,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
-import type { Department } from "@/types";
+import type { Department } from "../types";
 
 export function useDepartmentUpdate() {
     const queryclient = useQueryClient();

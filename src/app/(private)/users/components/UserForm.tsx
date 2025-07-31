@@ -18,7 +18,9 @@ import {
     SelectContent,
     SelectItem,
 } from "@/components/ui/select";
-import type { Role, Company, User, CreateUserInput, UpdateUserInput } from "@/types";
+import type {  User, CreateUserInput, UpdateUserInput } from "../types";
+import type { Role } from "../../roles/types";
+import type { Company } from "../../companies/types";
 import { MultiSelect } from "@/components/ui/multi-select";
 
 
