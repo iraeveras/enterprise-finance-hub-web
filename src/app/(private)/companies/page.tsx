@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Download, Filter, Building } from "lucide-react";
+import { Edit, Trash2, Plus, Search, Download, Filter, Building } from "lucide-react";
 import { CompanyForm } from "./components/CompanyForm";
 import type { Company } from "./types";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
@@ -43,6 +43,12 @@ export default function CompanyManager() {
     const openEdit = (company: Company) => {
         setSelectedCompany(company);
         setShowForm(true);
+    }
+
+    const onDelete = (id: string) => {
+        if (confirm("Deseja realmente excluir esta empresa?")) {
+            deleteMutation.mutate(id)
+        }
     }
 
     const onSave = (data: CreateCompanyInput) => {
@@ -124,7 +130,9 @@ export default function CompanyManager() {
                                             <td className="p-3 font-medium">{company.corporateName}</td>
                                             <td className="p-3">{company.tradeName}</td>
                                             <td className="p-3 text-center">
-                                                <Badge variant={company.status === 'active' ? 'default' : 'secondary'}>
+                                                <Badge  
+                                                    className={company.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                                >
                                                     {company.status === 'active' ? 'Ativo' : 'Inativo'}
                                                 </Badge>
                                             </td>
@@ -132,11 +140,14 @@ export default function CompanyManager() {
                                             <td className="p-3 text-center">
                                                 <Button
                                                     className="cursor-pointer"
-                                                    variant="outline" 
+                                                    variant="ghost" 
                                                     size="sm" 
                                                     onClick={() => openEdit(company)}
                                                 >
-                                                    Editar
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(company.id)}>
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </td>
                                         </tr>

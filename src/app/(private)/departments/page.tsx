@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Download, Filter } from "lucide-react";
+import {Trash2, Edit, Plus, Search, Download, Filter } from "lucide-react";
 
 export default function DepartmentManager() {
     const deptQ = useDepartments();
@@ -118,16 +118,18 @@ export default function DepartmentManager() {
                                                 {companies.find((c) => Number(c.id) === d.companyId)?.corporateName}
                                             </td>
                                             <td className="p-3 text-center">
-                                                <Badge variant={d.status === "active" ? "default" : "secondary"}>
+                                                <Badge 
+                                                    className={d.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                                >
                                                     {d.status === "active" ? "Ativo" : "Inativo"}
                                                 </Badge>
                                             </td>
                                             <td className="p-3 text-center space-x-2">
-                                                <Button className="cursor-pointer" size="sm" variant="outline" onClick={() => openEdit(d)}>
-                                                    Editar
+                                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => openEdit(d)}>
+                                                    <Edit className="h-4 w-4" />
                                                 </Button>
-                                                <Button className="cursor-pointer" size="sm" variant="outline" onClick={() => onDelete(d.id)}>
-                                                    Excluir
+                                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(d.id)}>
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </td>
                                         </tr>

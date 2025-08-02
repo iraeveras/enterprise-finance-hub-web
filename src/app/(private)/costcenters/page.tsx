@@ -7,7 +7,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Download, Filter } from "lucide-react"
+import { Plus, Search, Download, Filter, Edit, Trash2 } from "lucide-react"
 
 import { CostCenterForm } from "./components/CostCenterForm"
 import { useCostCenters } from "./hooks/useCostCenters"
@@ -145,7 +145,9 @@ export default function CostCenterManager() {
                                                 {sectors.find((s) => Number(s.id) === cc.sectorId)?.name}
                                             </td>
                                             <td className="p-3 text-center">
-                                                <Badge variant={cc.status==="active"?"default":"secondary"}>
+                                                <Badge 
+                                                    className={cc.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                                >
                                                     {cc.status==="active"?"Ativo":"Inativo"}
                                                 </Badge>
                                             </td>
@@ -153,18 +155,18 @@ export default function CostCenterManager() {
                                                 <Button
                                                     className="cursor-pointer"
                                                     size="sm" 
-                                                    variant="outline"
+                                                    variant="ghost"
                                                     onClick={() => openEdit(cc)}
                                                 >
-                                                    Editar
+                                                    <Edit className="h-4 w-4" />
                                                 </Button>
                                                 <Button
                                                     className="cursor-pointer"
                                                     size="sm" 
-                                                    variant="outline"
+                                                    variant="ghost"
                                                     onClick={() => onDelete(cc.id)}
                                                 >
-                                                    Excluir
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </td>
                                         </tr>

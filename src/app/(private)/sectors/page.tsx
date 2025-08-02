@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Download, Filter } from "lucide-react";
+import { Plus, Search, Download, Filter, Edit, Trash2 } from "lucide-react";
 import { useCompanies } from "../companies/hooks/useCompanies";
 import { useDepartments } from "../departments/hooks/useDepartments";
 
@@ -129,26 +129,28 @@ export default function SectorManager() {
                                     <td className="p-3">{companies.find((c) => Number(c.id) === sector.companyId)?.corporateName}</td>
                                     <td className="p-3">{departments.find((d) => Number(d.id) === sector.departmentId)?.name}</td>
                                     <td className="p-3 text-center">
-                                        <Badge variant={sector.status === 'active' ? 'default' : 'secondary'}>
+                                        <Badge 
+                                            className={sector.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                        >
                                             {sector.status === 'active' ? 'Ativo' : 'Inativo'}
                                         </Badge>
                                     </td>
                                     <td className="p-3 space-x-2 text-center">
                                         <Button
                                             className="cursor-pointer"
-                                            variant="outline" 
+                                            variant="ghost" 
                                             size="sm" 
                                             onClick={() => openEdit(sector)}
                                         >
-                                            Editar
+                                            <Edit className="h-4 w-4" />
                                         </Button>
                                         <Button 
                                             className="cursor-pointer" 
                                             size="sm" 
-                                            variant="outline" 
+                                            variant="ghost" 
                                             onClick={() => onDelete(sector.id)}
                                         >
-                                            Excluir
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </td>
                                 </tr>
