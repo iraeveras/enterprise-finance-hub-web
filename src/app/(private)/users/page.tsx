@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Download, Filter, UserCheck } from "lucide-react";
+import { Plus, Search, Download, Filter, UserCheck, Edit } from "lucide-react";
 
 
 
@@ -108,7 +108,7 @@ export default function UserManager() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center">
-                            <UserCheck className="w-5 h-5 mr-2"/> Total: {filtered.length}
+                            <UserCheck className="w-5 h-5 mr-2"/> Usuários Cadastrados ({filtered.length})
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -131,13 +131,15 @@ export default function UserManager() {
                                             <td className="p-3 font-medium">{u.name}</td>
                                             <td className="p-3">{u.email}</td>
                                             <td className="p-3">
-                                                <Badge>{u.role.name}</Badge>
+                                                <Badge variant="secondary" >{u.role.name}</Badge>
                                             </td>
                                             <td className="p-3">
                                                 {u.companies.map((c) => c.tradeName).join(", ")}
                                             </td>
                                             <td className="p-3 text-center">
-                                                <Badge variant={u.status==="active"?"default":"secondary"}>
+                                                <Badge 
+                                                    className={u.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                                >
                                                     {u.status==="active"?"Ativo":"Inativo"}
                                                 </Badge>
                                             </td>
@@ -150,13 +152,13 @@ export default function UserManager() {
                                                 <Button
                                                     className="cursor-pointer"
                                                     size="sm"
-                                                    variant="outline"
+                                                    variant="ghost"
                                                     onClick={() => {
                                                         setSelectedUser(u);
                                                         setShowForm(true);
                                                     }}
                                                 >
-                                                    Editar
+                                                    <Edit className="h-4 w-4" />
                                                 </Button>
                                             </td>
                                         </tr>

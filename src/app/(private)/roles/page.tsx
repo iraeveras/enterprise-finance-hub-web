@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Download, Filter, Shield, Trash2 } from "lucide-react";
+import { Plus, Search, Download, Filter, Shield, Trash2, Edit } from "lucide-react";
 import { RoleForm } from "./components/RoleForm";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
 import type { Role, RoleLevel, FormDataRole } from "./types";
@@ -161,11 +161,14 @@ export default function RoleManager() {
                                             <td className="p-3 text-center">
                                                 <Button
                                                     className="cursor-pointer"
-                                                    variant="outline"
+                                                    variant="ghost"
                                                     size="sm"
                                                     onClick={() => {openEdit(role)}}
                                                 >
-                                                    Editar
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(role.id)}>
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </td>
                                         </tr>
