@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-type FormData = { email: string; password: string };
+type FormDataLogin = { email: string; password: string };
 
 export default function LoginPage() {
-    const { register, handleSubmit } = useForm<FormData>();
+    const { register, handleSubmit } = useForm<FormDataLogin>();
     const router = useRouter();
 
-    const onSubmit = async (data: FormData) => {
+    const onSubmit = async (data: FormDataLogin) => {
         try {
             await api.post("/users/login", data);
             router.replace("/");
