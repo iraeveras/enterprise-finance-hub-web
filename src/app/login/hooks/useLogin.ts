@@ -1,8 +1,7 @@
 // FILE: src/app/login/hooks/useLogin.ts
-import { Role } from "@/types";
+import { Role } from "@/app/(private)/roles/types";
 import { useMutation } from "@tanstack/react-query";
-import api from "@/services/api"
-import axios from "axios";
+import api from "@/services/api";
 
 export interface LoginResponse {
     user: {
