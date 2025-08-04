@@ -1,6 +1,6 @@
 "use client";
-
-import { Bell, Settings, User, LogOut, Search, Menu } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Bell, Settings, User, LogOut, Search, Menu, ClockFading } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,8 +22,32 @@ interface HeaderProps {
     onMobileMenuToggle?: () => void;
 }
 
-export const Header = ({ user, onMobileMenuToggle }: HeaderProps) => {
-    const { logout } = useAuth();
+export const Header = ({ user: propUser, onMobileMenuToggle }: HeaderProps) => {
+    const { user: ctxUser, logout } = useAuth();
+    const [secondsLeft, setSecondsLeft] = useState(0);
+
+    const format = (sec: number) => {
+        const m = Math.floor(sec / 60).toString().padStart(2, "0");
+        const s = (sec % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    };
+
+    useEffect(() => {
+        if (!ctxUser?.expiration) return;
+        const update = () => {
+            const diff = Math.max(
+                0, Math.ceil((ctxUser.expiration - Date.now()) / 1000)
+            );
+            setSecondsLeft(diff);
+            if (diff === 0) {
+                logout();
+            }
+        };
+        update();
+        const iv = setInterval(update, 1000);
+        return () => clearInterval(iv);
+    }, [ctxUser, logout]);
+
     return (
         <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4">
             <div className="flex items-center justify-between">
@@ -54,18 +78,24 @@ export const Header = ({ user, onMobileMenuToggle }: HeaderProps) => {
                             3
                         </span>
                     </Button>
+                    {ctxUser?.expiration && (
+                        <p className="text-xs text-red-600">
+                            <ClockFading/> {format(secondsLeft)}
+                        </p>
+                    )}
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="flex items-center space-x-2 px-3 cursor-pointer">
                                 <Avatar className="w-8 h-8">
                                     <AvatarFallback className="bg-blue-600 text-white">
-                                        {user.name.split(' ').map(n => n[0]).join('')}
+                                        {propUser.name.split(' ').map(n => n[0]).join('')}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="text-left hidden md:block">
-                                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                    <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                                    <p className="text-sm font-medium text-gray-900">{propUser.name}</p>
+                                    <p className="text-xs text-gray-500 capitalize">{propUser.role}</p>
+                                    
                                 </div>
                             </Button>
                         </DropdownMenuTrigger>
