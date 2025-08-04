@@ -25,7 +25,6 @@ api.interceptors.response.use(
     (res) => res,
     async (err: AxiosError) => {
         const originalReq = err.config as AxiosRequestConfig & { _retry?: boolean };
-
         const hasRefreshToken = document.cookie.includes('refreshToken');
 
         if (err.response?.status === 401 && !originalReq._retry && hasRefreshToken) {
@@ -47,6 +46,7 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 processQueue(refreshError);
                 // Se refresh falhar, dispara logout global
+                window.dispatchEvent(new Event("logout"));
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
