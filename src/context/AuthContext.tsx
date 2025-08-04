@@ -10,6 +10,7 @@ import {
 } from "react";
 import api from "@/services/api";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface User {
     id: number;
@@ -17,6 +18,7 @@ interface User {
     email: string;
     role: any;
     companies?: any[];
+    expiration: number;
     status?: string;
 }
 
@@ -37,8 +39,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Busca /users/me no mount
     const fetchMe = async () => {
         try {
-            const { data } = await api.get<{ data: User }>("/users/me");
-            setUser(data.data);
+            const res = await api.get<{
+                data: {
+                    id: number;
+                    name: string;
+                    email: string;
+                    role: any;
+                    TokenExpiredError: number;  // veio do backend
+                    companies: any[];
+                    status: string;
+                };
+            }>("/users/me");
+
+            const me = res.data.data;
+            setUser({
+                id: me.id,
+                name: me.name,
+                email: me.email,
+                role: me.role,
+                companies: me.companies,
+                status: me.status,
+                expiration: me.TokenExpiredError,
+            });
         } catch (error) {
             setUser(null);
             router.replace("/login");
@@ -49,6 +71,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         fetchMe();
+        // se receber evento de logout (sesão expirada), desconecta
+        const onExpire = () => {
+            toast.error("Sessão expirada.");
+            logout();
+        };
+        window.addEventListener("logout", onExpire);
+        return () => {
+            window.removeEventListener("logout", onExpire);
+        }
     }, []);
 
     const login = async (email: string, password: string) => {
