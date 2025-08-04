@@ -108,7 +108,7 @@ export default function TeamManager() {
                 {/* Tabela */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Total: {filtered.length}</CardTitle>
+                        <CardTitle>Equipes Cadastradas ({filtered.length})</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
@@ -134,7 +134,7 @@ export default function TeamManager() {
                                             <td className="p-3 text-center">
                                                 <div className="flex items-center justify-center">
                                                     <UsersIcon className="w-4 h-4 mr-1"/> 
-                                                    {team.members?.length != null ? team.members.length : "-"}
+                                                    {team.members?.length ?? "-"}
                                                 </div>
                                             </td>
                                             <td className="p-3 text-center">
