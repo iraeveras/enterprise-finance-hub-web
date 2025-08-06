@@ -14,6 +14,7 @@ import { useCompanyUpdate } from "./hooks/useCompanyUpdate";
 import { useCompanyCreate, CreateCompanyInput } from "./hooks/useCompanyCreate";
 import { useCompanyDelete } from "./hooks/useCompanyDelete";
 import { formatCNPJ } from "@/lib/formatCnpj";
+import { CompanyTable, CompanyTableProps } from "./components/CompanyTable";
 
 
 export default function CompanyManager() {
@@ -25,15 +26,21 @@ export default function CompanyManager() {
     const [showForm, setShowForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+    const [page, setPage] = useState(1)
+    const pageSize = 10
 
     const companies = companiesQuery.data ?? [];
     const isLoading = companiesQuery.isLoading;
 
+    const all = companiesQuery.data ?? []
     const filteredCompanies = companies.filter(company =>
         company.tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         company.corporateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         company.cnpj.includes(searchTerm)
     );
+
+    const pageCount = Math.ceil(filteredCompanies.length / pageSize)
+    const paged = filteredCompanies.slice((page-1)*pageSize, page*pageSize)
 
     const openNew = () => {
         setSelectedCompany(null);
@@ -112,7 +119,16 @@ export default function CompanyManager() {
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <CompanyTable
+                                data={paged}
+                                isLoading={companiesQuery.isLoading}
+                                page={page}
+                                pageCount={pageCount}
+                                onPageChange={setPage}
+                                onEdit={openEdit}
+                                onDelete={onDelete}
+                            />
+                            {/* <table className="w-full">
                                 <thead>
                                     <tr className="border-b bg-gray-50">
                                         <th className="text-left p-3 font-medium">CNPJ</th>
@@ -153,7 +169,7 @@ export default function CompanyManager() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </table> */}
                         </div>
                     </CardContent>
                 </Card>
