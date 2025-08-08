@@ -1,0 +1,29 @@
+// FILE: src/app/(private)/budgetperiods/types/index.ts
+export type BudgetPeriodStatus = "open" | "closed" | "pending";
+
+export interface BudgetPeriod {
+    id: string;
+    year: number;
+    companyId: number;
+    startDate: string;      // ISO-8601 DateTime (ex.: 2025-01-01T00:00:00.000Z)
+    endDate: string;        // ISO-8601 DateTime
+    status: BudgetPeriodStatus;
+    description: string;
+    closedBy?: string | null;
+    closedAt?: string | null; // ISO-8601 DateTime
+    createdAt: string;        // ISO-8601 DateTime
+    updatedAt: string;        // ISO-8601 DateTime
+}
+
+export type CreateBudgetPeriodInput = {
+    year: number;
+    companyId: number;
+    startDate: string;       // ISO-8601
+    endDate: string;         // ISO-8601
+    description: string;
+    status?: BudgetPeriodStatus; // backend pode defaultar "open"
+};
+
+export type UpdateBudgetPeriodInput = Partial<Omit<BudgetPeriod, "id">> & {
+    id: string;
+};
