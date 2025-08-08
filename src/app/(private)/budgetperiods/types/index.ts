@@ -15,15 +15,9 @@ export interface BudgetPeriod {
     updatedAt: string;        // ISO-8601 DateTime
 }
 
-export type CreateBudgetPeriodInput = {
-    year: number;
-    companyId: number;
-    startDate: string;       // ISO-8601
-    endDate: string;         // ISO-8601
-    description: string;
-    status?: BudgetPeriodStatus; // backend pode defaultar "open"
+export type CreateBudgetPeriodInput = Omit<BudgetPeriod, "id"|"createdAt"|"updatedAt"|"closedBy"|"closedAt"> & {
+    closedBy?: string | null;
+    closedAt?: string | null;
 };
 
-export type UpdateBudgetPeriodInput = Partial<Omit<BudgetPeriod, "id">> & {
-    id: string;
-};
+export type UpdateBudgetPeriodInput = Partial<CreateBudgetPeriodInput> & { id: string };

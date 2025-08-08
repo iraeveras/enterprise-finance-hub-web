@@ -150,20 +150,6 @@ export interface MonthlyBudgetEntry {
     updatedAt?: string;
 }
 
-export interface BudgetPeriod {
-    id: string;
-    year: number;
-    companyId: string;
-    startDate: string;
-    endDate: string;
-    status: 'open' | 'closed' | 'pending';
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    closedBy?: string;
-    closedAt?: string;
-}
-
 export interface Schedule {
     id: string;
     name: string;
