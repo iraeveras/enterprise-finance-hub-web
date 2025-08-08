@@ -33,6 +33,7 @@ export type ModuleID =
     | "teams"
     | "costcenters"
     | "budget"
+    | "budgetperiods"
     | "reports"
     | "schedule"
     | "users";

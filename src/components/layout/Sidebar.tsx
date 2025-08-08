@@ -161,8 +161,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 <SidebarItem
                                     icon={Calendar}
                                     label="Períodos Orçamentários"
-                                    isActive={activeSection === "budget-periods"}
-                                    onClick={() => onSectionChange("budget-periods")}
+                                    isActive={activeSection === "budgetperiods"}
+                                    onClick={() => onSectionChange("budgetperiods")}
                                 />
                                 <SidebarItem
                                     icon={Calculator}

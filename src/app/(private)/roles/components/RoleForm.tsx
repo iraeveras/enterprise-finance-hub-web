@@ -30,6 +30,7 @@ const modules: {id: ModuleID; name: string }[] = [
     { id: "teams", name: "Equipes" },
     { id: "costcenters", name: "Centros de Custo" },
     { id: "budget", name: "Orçamento" },
+    { id: "budgetperiods", name: "Periodos Orçamentários" },
     { id: "reports", name: "Relatórios" },
     { id: "schedule", name: "Escalas" },
     { id: "users", name: "Usuários" },
