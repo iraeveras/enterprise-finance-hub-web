@@ -18,6 +18,7 @@ import CostCenterManager from "./costcenters/page";
 import PremiseManager from "./premises/page";
 import BudgetPeriodManager from "./budgetperiods/page";
 import { BudgetManager } from "./budgets/page";
+import { VacationManager } from "./vacations/page";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -50,6 +51,8 @@ export default function Home() {
         return <BudgetManager/>
       case "budgetperiods":
         return <BudgetPeriodManager/>
+      case "vacations":
+        return <VacationManager/>
       case "users":
         return <UserManager/>
       case "roles":

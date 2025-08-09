@@ -1,0 +1,221 @@
+// FILE: src/app/(private)/vacations/page.tsx
+"use client";
+
+import { useMemo, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Calendar, DollarSign, Gift, Users } from "lucide-react";
+
+import { useVacations } from "./hooks/useVacations";
+import { useVacationCreate } from "./hooks/useVacationCreate";
+import { useVacationUpdate } from "./hooks/useVacationUpdate";
+import { useVacationDelete } from "./hooks/useVacationDelete";
+import { useEmployees } from "../employees/hooks/useEmployees";
+import { useSectors } from "../sectors/hooks/useSectors";
+
+import { VacationForm } from "./components/VacationForm";
+import { VacationPlanningTable } from "./components/VacationPlanningTable";
+import { VacationPaymentTable } from "./components/VacationPaymentTable";
+import { VacationSectorView } from "./components/VacationSectorView";
+import type { CreateVacationInput, Vacation } from "./types";
+import AcquisitionPeriodManager from "./components/AcquisitionPeriodManager";
+
+export function VacationManager() {
+  const vacationsQ = useVacations();
+  const createM = useVacationCreate();
+  const updateM = useVacationUpdate();
+  const deleteM = useVacationDelete();
+
+  const employeesQ = useEmployees();
+  const sectorsQ = useSectors();
+
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Vacation | null>(null);
+
+  const vacations = vacationsQ.data ?? [];
+
+  const employeeName = (employeeId: number) => {
+    const found = (employeesQ.data ?? []).find((e: any) => Number(e.id) === Number(employeeId));
+    return found?.name ?? "Funcionário";
+  };
+
+  const sectors = useMemo(
+    () => ((sectorsQ.data ?? []) as any[]).map((s) => ({ id: s.id as number, name: s.name as string })),
+    [sectorsQ.data]
+  );
+
+  const totals = useMemo(() => {
+    return {
+      scheduled: vacations.filter((v) => v.status === "scheduled").length,
+      approved: vacations.filter((v) => v.status === "approved").length,
+      thirteenth: vacations.filter((v) => v.thirteenthAdvance).length,
+      totalValue: vacations.reduce(
+        (acc, v) => acc + (v.vacationValue || 0) + (v.onethirdValue || 0) + (v.abonoValue || 0) + (v.abonoOnethirdValue || 0),
+        0
+      ),
+    };
+  }, [vacations]);
+
+  const onSave = (data: CreateVacationInput) => {
+    if (editing) {
+      updateM.mutate({ id: editing.id, ...data });
+    } else {
+      createM.mutate(data);
+    }
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const onEdit = (v: Vacation) => {
+    setEditing(v);
+    setShowForm(true);
+  };
+
+  const onDelete = (id: string) => {
+    if (!confirm("Excluir esta programação de férias?")) return;
+    deleteM.mutate(id);
+  };
+
+  return (
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lançamento de Férias</h1>
+          <p className="text-gray-600 text-sm md:text-base">Controle e programação de férias dos funcionários</p>
+        </div>
+        <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto">
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">Nova Programação de Férias</span>
+          <span className="sm:hidden">Nova Programação</span>
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Férias Programadas</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold">{totals.scheduled}</div>
+            <p className="text-xs text-muted-foreground">Funcionários com férias agendadas</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Férias Aprovadas</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold">{totals.approved}</div>
+            <p className="text-xs text-muted-foreground">Férias aprovadas para pagamento</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">13º Adiantado</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold">{totals.thirteenth}</div>
+            <p className="text-xs text-muted-foreground">Com adiantamento de 13º</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Valores</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold">
+              R$ {totals.totalValue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </div>
+            <p className="text-xs text-muted-foreground">Valor total de pagamentos</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="planning" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="planning" className="text-xs md:text-sm">Programação</TabsTrigger>
+          <TabsTrigger value="acquisition" className="text-xs md:text-sm">Períodos</TabsTrigger>
+          <TabsTrigger value="thirteenth" className="text-xs md:text-sm">13º Salário</TabsTrigger>
+          <TabsTrigger value="abono" className="text-xs md:text-sm">Abono</TabsTrigger>
+          <TabsTrigger value="sectors" className="text-xs md:text-sm">Por Setor</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="planning">
+          <VacationPlanningTable
+            vacations={vacations}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            employeeName={employeeName}
+          />
+        </TabsContent>
+
+        <TabsContent value="acquisition">
+          {/* Manager dos Períodos Aquisitivos que você já moveu para vacations */}
+          <AcquisitionPeriodManager />
+        </TabsContent>
+
+        <TabsContent value="thirteenth">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg md:text-xl flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                13º Salário nas Férias
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VacationPaymentTable
+                vacations={vacations.filter((v) => v.thirteenthAdvance)}
+                type="thirteenth"
+                employeeName={employeeName}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="abono">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg md:text-xl flex items-center gap-2">
+                <Gift className="h-5 w-5" />
+                Abono de Férias (1/3) + Dias Vendidos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VacationPaymentTable
+                vacations={vacations.filter((v) => (v.abonoDays || 0) > 0)}
+                type="abono"
+                employeeName={employeeName}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sectors">
+          <VacationSectorView
+            vacations={vacations}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            employeeName={employeeName}
+            sectors={sectors}
+          />
+        </TabsContent>
+      </Tabs>
+
+      {showForm && (
+        <VacationForm
+          vacation={editing}
+          onClose={() => { setShowForm(false); setEditing(null); }}
+          onSave={onSave}
+        />
+      )}
+    </div>
+  );
+}

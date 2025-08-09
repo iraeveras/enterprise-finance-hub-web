@@ -190,8 +190,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 <SidebarItem
                                     icon={Calendar}
                                     label="Férias"
-                                    isActive={activeSection === "vacation"}
-                                    onClick={() => onSectionChange("vacation")}
+                                    isActive={activeSection === "vacations"}
+                                    onClick={() => onSectionChange("vacations")}
                                 />
                                 <SidebarItem
                                     icon={Clock}
