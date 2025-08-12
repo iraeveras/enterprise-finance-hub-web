@@ -1,6 +1,13 @@
 // FILE: src/app/(private)/vacations/types/index.ts
 export type AcquisitionPeriodStatus = "open" | "used" | "closed";
 
+export type AcquisitionPeriodsParams = {
+  employeeId?: number;
+  status?: "open" | "used" | "closed";
+  page?: number;
+  pageSize?: number;
+};
+
 export interface AcquisitionPeriod {
   id: string;
   employeeId: number;
@@ -49,7 +56,7 @@ export interface Vacation {
 
   // Sector information
   sectorId?: number;
-  sectorName?: string;
+  sectorName?: string | null;
 
   // Legacy properties for compatibility
   vacationStart?: string;
@@ -60,7 +67,6 @@ export interface Vacation {
   
   // Campos opcionais úteis em listagens
   employeeName?: string | null;
-  sectorName?: string | null;
 }
 
 export type CreateVacationInput = Omit<

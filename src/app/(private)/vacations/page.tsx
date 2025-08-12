@@ -20,6 +20,7 @@ import { VacationPaymentTable } from "./components/VacationPaymentTable";
 import { VacationSectorView } from "./components/VacationSectorView";
 import type { CreateVacationInput, Vacation } from "./types";
 import AcquisitionPeriodManager from "./components/AcquisitionPeriodManager";
+import { employeeName as getEmployeeName } from "@/lib/employees-utils";
 
 export function VacationManager() {
   const vacationsQ = useVacations();
@@ -35,10 +36,7 @@ export function VacationManager() {
 
   const vacations = vacationsQ.data ?? [];
 
-  const employeeName = (employeeId: number) => {
-    const found = (employeesQ.data ?? []).find((e: any) => Number(e.id) === Number(employeeId));
-    return found?.name ?? "Funcionário";
-  };
+  const employeeName = (id: number) => getEmployeeName(employeesQ.data ?? [], id);
 
   const sectors = useMemo(
     () => ((sectorsQ.data ?? []) as any[]).map((s) => ({ id: s.id as number, name: s.name as string })),
@@ -84,7 +82,7 @@ export function VacationManager() {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lançamento de Férias</h1>
           <p className="text-gray-600 text-sm md:text-base">Controle e programação de férias dos funcionários</p>
         </div>
-        <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto">
+        <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto cursor-pointer">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Nova Programação de Férias</span>
           <span className="sm:hidden">Nova Programação</span>
@@ -141,11 +139,11 @@ export function VacationManager() {
 
       <Tabs defaultValue="planning" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="planning" className="text-xs md:text-sm">Programação</TabsTrigger>
-          <TabsTrigger value="acquisition" className="text-xs md:text-sm">Períodos</TabsTrigger>
-          <TabsTrigger value="thirteenth" className="text-xs md:text-sm">13º Salário</TabsTrigger>
-          <TabsTrigger value="abono" className="text-xs md:text-sm">Abono</TabsTrigger>
-          <TabsTrigger value="sectors" className="text-xs md:text-sm">Por Setor</TabsTrigger>
+          <TabsTrigger value="planning" className="text-xs md:text-sm cursor-pointer">Programação</TabsTrigger>
+          <TabsTrigger value="acquisition" className="text-xs md:text-sm cursor-pointer">Períodos</TabsTrigger>
+          <TabsTrigger value="thirteenth" className="text-xs md:text-sm cursor-pointer">13º Salário</TabsTrigger>
+          <TabsTrigger value="abono" className="text-xs md:text-sm cursor-pointer">Abono</TabsTrigger>
+          <TabsTrigger value="sectors" className="text-xs md:text-sm cursor-pointer">Por Setor</TabsTrigger>
         </TabsList>
 
         <TabsContent value="planning">

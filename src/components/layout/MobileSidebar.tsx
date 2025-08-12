@@ -204,8 +204,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                         <SidebarItem
                                             icon={Calendar}
                                             label="Férias"
-                                            isActive={activeSection === "vacation"}
-                                            onClick={() => handleSectionChange("vacation")}
+                                            isActive={activeSection === "vacations"}
+                                            onClick={() => handleSectionChange("vacations")}
                                         />
                                         <SidebarItem
                                             icon={Clock}

@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/pagination";
 import { Search, Download, Filter, Edit, Trash2 } from "lucide-react";
 import type { Vacation, VacationStatus } from "../types";
+import { useEmployees } from "../../employees/hooks/useEmployees";
+import { employeeMat } from "@/lib/employees-utils";
 
 const months = ["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
 
@@ -46,7 +48,10 @@ export function VacationPlanningTable({
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | VacationStatus>("all");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 5;
+
+  const employeesQ = useEmployees();
+  const employees = employeesQ.data ?? [];
 
   const filtered = useMemo(() => {
     return vacations.filter((v) => {
@@ -110,31 +115,31 @@ export function VacationPlanningTable({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-16">Mat</TableHead>
-                  <TableHead className="min-w-[180px]">Funcionário</TableHead>
-                  <TableHead className="w-28">Período Aquisitivo</TableHead>
-                  <TableHead className="w-20">Dias</TableHead>
-                  <TableHead className="w-20">Abono</TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="font-semibold w-16">Mat</TableHead>
+                  <TableHead className="font-semibold min-w-48 truncate">Funcionário</TableHead>
+                  <TableHead className="font-semibold w-28">Período Aquisitivo</TableHead>
+                  <TableHead className="font-semibold w-20">Dias</TableHead>
+                  <TableHead className="font-semibold w-20">Abono</TableHead> 
+                  <TableHead className="font-semibold text-center">
                     <div className="grid grid-cols-12 gap-1 text-xs">{months.map((m) => <div key={m}>{m}</div>)}</div>
                   </TableHead>
-                  <TableHead className="w-24">Status</TableHead>
-                  <TableHead className="w-24">Ações</TableHead>
+                  <TableHead className="font-semibold w-24">Status</TableHead>
+                  <TableHead className="font-semibold w-24">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((v) => (
                   <TableRow key={v.id} className="hover:bg-gray-50">
                     <TableCell className="font-mono text-sm">
-                      {String(v.employeeId).padStart(3, "0")}
+                      {employeeMat(employees, v.employeeId)}
                     </TableCell>
                     <TableCell className="font-medium text-sm">
                       {employeeName(v.employeeId)}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {new Date(v.acquisitionPeriodStart).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                      {new Date(v.acquisitionPeriodStart).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
                       {" - "}
-                      {new Date(v.acquisitionPeriodEnd).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                      {new Date(v.acquisitionPeriodEnd).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
                     </TableCell>
                     <TableCell className="text-sm">{v.vacationDays}</TableCell>
                     <TableCell className="text-sm">{v.abonoDays || 0}</TableCell>
@@ -155,13 +160,13 @@ export function VacationPlanningTable({
                     <TableCell><StatusBadge status={v.status} /></TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="outline" size="sm" className="h-6 w-6 p-0" onClick={() => onEdit(v)}>
+                        <Button variant="outline" size="sm" className="h-6 w-6 p-0 cursor-pointer" onClick={() => onEdit(v)}>
                           <Edit className="w-3 h-3" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700 cursor-pointer"
                           onClick={() => onDelete(v.id)}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -189,11 +194,12 @@ export function VacationPlanningTable({
                     const n = i + 1;
                     const active = n === page;
                     return (
-                      <PaginationItem key={n}>
+                      <PaginationItem key={n} className={active ? "cursor-pointer list-none" : ""}>
                         <PaginationLink
+                          className="cursor-pointer"
                           onClick={() => setPage(n)}
-                          aria-current={active ? "page" : undefined}
-                          className={active ? "bg-primary text-primary-foreground" : ""}
+                          {...(active && { "aria-current": "page" })}
+                          
                         >
                           {n}
                         </PaginationLink>

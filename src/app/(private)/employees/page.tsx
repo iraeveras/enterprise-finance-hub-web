@@ -155,32 +155,32 @@ export default function EmployeeManager() {
                             <table className="w-full">
                                 <thead>
                                     <tr className="border-b bg-gray-50">
-                                        <th className="p-3 text-left">Mat.</th>
-                                        <th className="p-3 text-left">Nome</th>
-                                        <th className="p-3 text-left">Empresa</th>
-                                        <th className="p-3 text-left">Admissão</th>
-                                        <th className="p-3 text-left">Cargo</th>
-                                        <th className="p-3 text-right">Salário</th>
-                                        <th className="p-3 text-center">Perc.</th>
-                                        <th className="p-3 text-right">Total</th>
-                                        <th className="p-3 text-left">Depto.</th>
-                                        <th className="p-3 text-left">Setor</th>
-                                        <th className="p-3 text-center">Status</th>
-                                        <th className="p-3 text-center">Ações</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Mat.</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Nome</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Empresa</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Admissão</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Cargo</th>
+                                        <th className="p-3 text-sm font-semibold text-right">Salário</th>
+                                        <th className="p-3 text-sm font-semibold text-center">Perc.</th>
+                                        <th className="p-3 text-sm font-semibold text-right">Total</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Depto.</th>
+                                        <th className="p-3 text-sm font-semibold text-left">Setor</th>
+                                        <th className="p-3 text-sm font-semibold text-center">Status</th>
+                                        <th className="p-3 text-sm font-semibold text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filtered.map((e) => (
                                         <tr key={e.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-3 font-mono text-sm">{e.matricula}</td>
-                                            <td className="p-3 font-medium text-sm">{e.name}</td>
-                                            <td className="p-3 text-sm">{ companies.find((c) => Number(c.id) === e.companyId)?.corporateName }</td>
-                                            <td className="p-3 text-sm">{new Date(e.admission).toLocaleDateString('pt-BR', { timeZone: 'UTC'})}</td>
-                                            <td className="p-3 text-sm">{e.position}</td>
-                                            <td className="p-3 text-right text-sm">
+                                            <td className="p-2 text-xs font-mono">{e.matricula}</td>
+                                            <td className="p-2 text-xs font-medium">{e.name}</td>
+                                            <td className="p-2 text-xs truncate">{ companies.find((c) => Number(c.id) === e.companyId)?.corporateName }</td>
+                                            <td className="p-2 text-xs">{new Date(e.admission).toLocaleDateString('pt-BR', { timeZone: 'UTC'})}</td>
+                                            <td className="p-2 text-xs">{e.position}</td>
+                                            <td className="p-2 text-xs text-right">
                                                 R$ {e.salary.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                                             </td>
-                                            <td className="p-3 text-center">
+                                            <td className="p-2 text-center">
                                                 {e.dangerPay ? (
                                                     <Badge variant="secondary" className="text-xs">
                                                         30%
@@ -189,7 +189,7 @@ export default function EmployeeManager() {
                                                     <span className="text-gray-400">-</span>
                                                 )}
                                             </td>
-                                            <td className="p-3 text-right text-sm font-medium">
+                                            <td className="p-2 text-right text-sm font-medium">
                                                 R$
                                                 {(
                                                 e.dangerPay ? e.salary * 1.3 : e.salary
@@ -197,16 +197,16 @@ export default function EmployeeManager() {
                                                     minimumFractionDigits: 2,
                                                 })}
                                             </td>
-                                            <td className="p-3 text-sm">{ departments.find((d) => Number(d.id) === e.departmentId)?.name }</td>
-                                            <td className="p-3 text-sm">{ sectors.find((s) => Number(s.id) === e.sectorId)?.name }</td>
-                                            <td className="p-3 text-center">
+                                            <td className="p-2 text-sm">{ departments.find((d) => Number(d.id) === e.departmentId)?.name }</td>
+                                            <td className="p-2 text-sm">{ sectors.find((s) => Number(s.id) === e.sectorId)?.name }</td>
+                                            <td className="p-2 text-center">
                                                 <Badge 
                                                     className={e.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
                                                 >
                                                     {e.status === "active" ? "Ativo" : "Inativo"}
                                                 </Badge>
                                             </td>
-                                            <td className="p-3 text-center space-x-2">
+                                            <td className="p-2 text-center space-x-2">
                                                 <Button
                                                     className="cursor-pointer"
                                                     size="sm"
