@@ -13,6 +13,8 @@ import { useAcquisitionPeriodDelete } from "../hooks/useAcquisitionPeriodDelete"
 import { useEmployees } from "../../employees/hooks/useEmployees"; // já existe nos módulos anteriores
 import { AcquisitionPeriodForm } from "../components/AcquisitionPeriodForm";
 import { AcquisitionPeriodTable } from "../components/AcquisitionPeriodTable";
+import { employeeName as getEmployeeName } from "@/lib/employees-utils";
+import { formatBR } from "@/lib/formatDateBR";
 import type {
   AcquisitionPeriod,
   CreateAcquisitionPeriodInput,
@@ -32,7 +34,7 @@ export default function AcquisitionPeriodManager() {
 
   // paginação
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 3;
 
   const periods = periodsQ.data ?? [];
   const total = periods.length;
@@ -42,13 +44,10 @@ export default function AcquisitionPeriodManager() {
   const employees = (employeesQ.data ?? []).map((e: any) => ({
     id: String(e.id),
     name: e.name,
-    admission: e.admission ? new Date(e.admission).toLocaleDateString("pt-BR") : undefined,
+    admission: e.admission ? formatBR(e.admission) : undefined,
   }));
 
-  const employeeName = (employeeId: number) => {
-    const found = employees.find((e) => Number(e.id) === Number(employeeId));
-    return found?.name ?? "Funcionário";
-  };
+  const employeeName = (employeeId: number) => getEmployeeName(employeesQ.data ?? [], employeeId);
 
   const onSave = (data: CreateAcquisitionPeriodInput | UpdateAcquisitionPeriodInput) => {
     if (editing) {
@@ -60,6 +59,12 @@ export default function AcquisitionPeriodManager() {
     setShowForm(false);
     setEditing(null);
   };
+
+  const onDelete = (id: string) => {
+    if (confirm("Deseja realmente excluir esta empresa?")) {
+      delM.mutate(id)
+    }
+  }
 
   const onClose = (id: string) => {
     if (!confirm("Fechar este período aquisitivo?")) return;
@@ -83,7 +88,7 @@ export default function AcquisitionPeriodManager() {
             <h2 className="text-xl md:text-2xl font-bold text-gray-900">Períodos Aquisitivos de Férias</h2>
             <p className="text-gray-600 text-sm md:text-base">Gerencie os períodos aquisitivos dos funcionários</p>
           </div>
-          <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto">
+          <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto cursor-pointer">
             <Plus className="h-4 w-4" />
             Novo Período Aquisitivo
           </Button>
@@ -91,14 +96,31 @@ export default function AcquisitionPeriodManager() {
 
         {/* Cards simples com contagens */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card><CardHeader><CardTitle className="text-sm font-medium">Abertos</CardTitle></CardHeader>
-            <CardContent><div className="text-2xl font-bold">{periods.filter(p => p.status==="open").length}</div></CardContent>
+          <Card className="flex flex-row items-center justify-between h-12">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Abertos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm font-medium">{periods.filter(p => p.status==="open").length}</div>
+            </CardContent>
           </Card>
-          <Card><CardHeader><CardTitle className="text-sm font-medium">Utilizados</CardTitle></CardHeader>
-            <CardContent><div className="text-2xl font-bold">{periods.filter(p => p.status==="used").length}</div></CardContent>
+
+          <Card className="flex flex-row items-center justify-between h-12">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Utilizados</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm font-medium">{periods.filter(p => p.status==="used").length}</div>
+            </CardContent>
           </Card>
-          <Card><CardHeader><CardTitle className="text-sm font-medium">Total</CardTitle></CardHeader>
-            <CardContent><div className="text-2xl font-bold">{total}</div></CardContent>
+
+          <Card className="flex flex-row items-center justify-between h-12">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Total</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm font-medium">{total}</div>
+            </CardContent>
           </Card>
         </div>
 
@@ -114,6 +136,7 @@ export default function AcquisitionPeriodManager() {
                 onPageChange={setPage}
                 employeeName={employeeName}
                 onEdit={(p) => { setEditing(p); setShowForm(true); }}
+                onDelete={onDelete}
                 onClose={onClose}
                 onReopen={onReopen}
               />

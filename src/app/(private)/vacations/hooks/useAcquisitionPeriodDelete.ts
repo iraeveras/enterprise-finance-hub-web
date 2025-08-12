@@ -11,7 +11,7 @@ export function useAcquisitionPeriodDelete() {
       return id;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["acquisition-periods"] });
+      queryclient.invalidateQueries({ queryKey: ["acquisition-periods"] });
     },
   });
 }

@@ -11,9 +11,10 @@ import {
   PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination";
 import type { AcquisitionPeriod } from "../types";
+import { Edit, Lock, Trash2, Unlock } from "lucide-react";
 
 function fmt(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR");
+  return new Date(iso).toLocaleDateString("pt-BR", { timeZone: 'UTC'});
 }
 
 function StatusBadge({ status }: { status: AcquisitionPeriod["status"] }) {
@@ -28,6 +29,7 @@ export interface AcquisitionPeriodTableProps {
   employeeName: (employeeId: number) => string;
   // ações
   onEdit: (p: AcquisitionPeriod) => void;
+  onDelete: (id: string) => void;
   onClose: (id: string) => void;
   onReopen: (p: AcquisitionPeriod) => void;
 
@@ -39,7 +41,7 @@ export interface AcquisitionPeriodTableProps {
 }
 
 export function AcquisitionPeriodTable({
-  periods, employeeName, onEdit, onClose, onReopen,
+  periods, employeeName, onEdit, onDelete, onClose, onReopen,
   page, pageSize, total, onPageChange,
 }: AcquisitionPeriodTableProps) {
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
@@ -51,12 +53,12 @@ export function AcquisitionPeriodTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Funcionário</TableHead>
-            <TableHead>Ano</TableHead>
-            <TableHead>Início</TableHead>
-            <TableHead>Fim</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-center">Ações</TableHead>
+            <TableHead className="font-bold">Funcionário</TableHead>
+            <TableHead className="font-bold">Ano</TableHead>
+            <TableHead className="font-bold">Início</TableHead>
+            <TableHead className="font-bold">Fim</TableHead>
+            <TableHead className="font-bold">Status</TableHead>
+            <TableHead className="text-center font-bold">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -71,17 +73,18 @@ export function AcquisitionPeriodTable({
               <TableCell><StatusBadge status={p.status} /></TableCell>
               <TableCell className="text-center">
                 <div className="inline-flex gap-2">
-                  <Button size="sm" variant="ghost" onClick={() => onEdit(p)}>Editar</Button>
+                  <Button size="sm" variant="ghost" onClick={() => onEdit(p)} className="cursor-pointer"><Edit/></Button>
+                  <Button size="sm" variant="ghost" onClick={() => onDelete(p.id)} className="cursor-pointer"><Trash2/></Button>
 
                   {p.status === "open" ? (
-                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
-                            onClick={() => onClose(p.id)}>
-                      Fechar
+                    <Button size="sm" variant="outline" className=" text-green-600 border-green-200 hover:bg-green-50 cursor-pointer"
+                      onClick={() => onClose(p.id)}>
+                        <Unlock/>
                     </Button>
                   ) : (
-                    <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50"
-                            onClick={() => onReopen(p)}>
-                      Reabrir
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 cursor-pointer"
+                    onClick={() => onReopen(p)}>
+                        <Lock/>
                     </Button>
                   )}
                 </div>
@@ -108,11 +111,11 @@ export function AcquisitionPeriodTable({
               const n = i + 1;
               const active = n === page;
               return (
-                <PaginationItem key={n}>
+                <PaginationItem key={n} className={active ? "cursor-pointer list-none" : ""}>
                   <PaginationLink
+                    className="cursor-pointer"
                     onClick={() => onPageChange(n)}
-                    aria-current={active ? "page" : undefined}
-                    className={active ? "bg-primary text-primary-foreground" : ""}
+                    {...(active && { "aria-current": "page" })}
                   >
                     {n}
                   </PaginationLink>

@@ -10,7 +10,7 @@ export function useAcquisitionPeriodUpdate() {
     mutationFn: async (payload: UpdateAcquisitionPeriodInput) => {
       const { id, ...data } = payload;
       const res = await api.put<{ data: AcquisitionPeriod }>(`/acquisition-periods/${id}`, data);
-      return res.data.data;
+      return res.data.data as AcquisitionPeriod;
     },
     onSuccess: () => {
       queryclient.invalidateQueries({ queryKey: ["acquisition-periods"] });
