@@ -377,7 +377,7 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
               {/* Setor (opcional p/ filtrar a grade) */}
-              <div>
+              <div >
                 <Label>Setor (opcional para filtrar)</Label>
                 <Select value={sectorId} onValueChange={setSectorId}>
                   <SelectTrigger className="w-full">
@@ -390,6 +390,22 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
                     {(sectors ?? []).map((s: any) => (
                       <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Status */}
+              <div >
+                <Label>Status</Label>
+                <Select value={status} onValueChange={(v) => setStatus(v as VacationStatus)}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent
+                    position="popper"
+                    className="w-[--radix-select-trigger-width] max-w-[95vw] max-h-60 overflow-auto"
+                  >
+                    <SelectItem value="scheduled">Programado</SelectItem>
+                    <SelectItem value="approved">Aprovado</SelectItem>
+                    <SelectItem value="taken">Realizado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -515,21 +531,7 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
             />
           )}
 
-          {/* Status */}
-          <div>
-            <Label>Status</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as VacationStatus)}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-              <SelectContent
-                position="popper"
-                className="w-[--radix-select-trigger-width] max-w-[95vw] max-h-60 overflow-auto"
-              >
-                <SelectItem value="scheduled">Programado</SelectItem>
-                <SelectItem value="approved">Aprovado</SelectItem>
-                <SelectItem value="taken">Realizado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto cursor-pointer">Cancelar</Button>
