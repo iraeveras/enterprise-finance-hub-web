@@ -2,14 +2,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-import type { Employee, CreateEmployeeInput, UpdateEmployeeInput} from "../types";
+import type { Employee, CreateEmployeeInput, UpdateEmployeeInput } from "../types";
 import type { Company } from "@/app/(private)/companies/types";
 import type { Department } from "@/app/(private)/departments/types";
 import type { Sector } from "@/app/(private)/sectors/types";
@@ -41,10 +41,12 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         id: employee?.id,
         matricula: employee?.matricula || "",
         name: employee?.name || "",
-        admission: employee?.admission ? employee.admission.slice(0,10) : "",
+        admission: employee?.admission ? employee.admission.slice(0, 10) : "",
         position: employee?.position || "",
         salary: employee?.salary || 0,
         dangerPay: employee?.dangerPay || false,
+        monthlyHours: employee?.monthlyHours ?? null,
+        workSchedule: employee?.workSchedule ?? "",
         companyId: employee && employee.companyId ? Number(employee?.companyId) : null,
         departmentId: employee && employee?.departmentId ? Number(employee.departmentId) : null,
         sectorId: employee && employee?.sectorId ? Number(employee.sectorId) : null,
@@ -76,6 +78,14 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             costCenterId: String(formData.costCenterId) === "null" || formData.costCenterId === null ? null : Number(formData.costCenterId),
             teams: formData.teams,
             salary: Number(formData.salary),
+            monthlyHours:
+                formData.monthlyHours === null || formData.monthlyHours === ("" as any)
+                    ? null
+                    : Number(formData.monthlyHours),
+            workSchedule:
+                !formData.workSchedule || String(formData.workSchedule).trim() === ""
+                    ? null
+                    : String(formData.workSchedule).trim(),
         } as any;
         onSave(payload);
     };
@@ -83,8 +93,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     const handleTeamToggle = (teamId: number) => {
         setFormData(prev => ({
             ...prev,
-            teams: prev.teams.includes(teamId) 
-                ? prev.teams.filter(id => id !== teamId) 
+            teams: prev.teams.includes(teamId)
+                ? prev.teams.filter(id => id !== teamId)
                 : [...prev.teams, teamId],
         }));
     };
@@ -98,7 +108,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Matrícula & Status */}
+                    {/* Matrícula & Status */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <Label htmlFor="matricula">Matrícula</Label>
@@ -214,115 +224,145 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                         </div>
                     </div>
 
-                {/* Relações (empresa, departamento, setor, CC, equipe) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                    <Label htmlFor="companyId">Empresa *</Label>
-                        <Select
-                            value={String(formData.companyId)}
-                            onValueChange={(value) =>
-                                setFormData({ ...formData, companyId: Number(value) })
-                            }
-                            required
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione a empresa" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="null">— Selecionar empresa —</SelectItem>
-                                {companies.map((c) => (
-                                    <SelectItem key={c.id} value={String(c.id)}>
-                                        {c.corporateName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label htmlFor="departmentId">Departamento</Label>
-                        <Select
-                            value={String(formData.departmentId)}
-                            onValueChange={(value) =>
-                                setFormData({ ...formData, departmentId: Number(value) })
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o departamento" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="null">— Selecionar departamento —</SelectItem>
-                                {departments.map((d) => (
-                                    <SelectItem key={d.id} value={String(d.id)}>
-                                        {d.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label htmlFor="sectorId">Setor</Label>
-                        <Select
-                            value={String(formData.sectorId)}
-                            onValueChange={(value) =>
-                                setFormData({ ...formData, sectorId: Number(value) })
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o setor" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="null">— Selecionar setor —</SelectItem>
-                                {sectors.map((s) => (
-                                    <SelectItem key={s.id} value={String(s.id)}>
-                                        {s.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label htmlFor="costCenterId">Centro de Custo</Label>
-                        <Select
-                            value={String(formData.costCenterId)}
-                            onValueChange={(value) =>
-                                setFormData({ ...formData, costCenterId: Number(value) })
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o CC" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="null">— Selecionar c.custo —</SelectItem>
-                                {costCenters.map((cc) => (
-                                    <SelectItem key={cc.id} value={String(cc.id)}>
-                                        {cc.code} – {cc.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
+                    {/* >>> NOVA SEÇÃO: Jornada & Horas Mensais */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="teams">Equipe(s)</Label>
-                            <div className="flex flex-col space-y-2">
-                                {teams.map((team) => (
-                                    <label key={team.id} className="inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="h-4 w-4 border-gray-300 rounded"
-                                            value={team.id}
-                                            checked={formData.teams.includes(Number(team.id))}
-                                            onChange={() => handleTeamToggle(Number(team.id))}
-                                        />
-                                        <span className="ml-2">{team.name}</span>
-                                    </label>
-                                ))}
+                            <Label htmlFor="workSchedule">Jornada de trabalho</Label>
+                            <Input
+                                id="workSchedule"
+                                placeholder='Ex.: "44h/semana" ou "220h/mês"'
+                                value={formData.workSchedule ?? ""}
+                                onChange={(e) => setFormData({ ...formData, workSchedule: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="monthlyHours">Horas Mensais</Label>
+                            <Input
+                                id="monthlyHours"
+                                type="number"
+                                step="1"
+                                min="0"
+                                placeholder="Ex.: 220"
+                                value={formData.monthlyHours ?? ""}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        monthlyHours: e.target.value === "" ? null : Number(e.target.value),
+                                    })
+                                }
+                            />
+                        </div>
+                    </div>
+
+                    {/* Relações (empresa, departamento, setor, CC, equipe) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="companyId">Empresa *</Label>
+                            <Select
+                                value={String(formData.companyId)}
+                                onValueChange={(value) =>
+                                    setFormData({ ...formData, companyId: Number(value) })
+                                }
+                                required
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione a empresa" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="null">— Selecionar empresa —</SelectItem>
+                                    {companies.map((c) => (
+                                        <SelectItem key={c.id} value={String(c.id)}>
+                                            {c.corporateName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label htmlFor="departmentId">Departamento</Label>
+                            <Select
+                                value={String(formData.departmentId)}
+                                onValueChange={(value) =>
+                                    setFormData({ ...formData, departmentId: Number(value) })
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o departamento" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="null">— Selecionar departamento —</SelectItem>
+                                    {departments.map((d) => (
+                                        <SelectItem key={d.id} value={String(d.id)}>
+                                            {d.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label htmlFor="sectorId">Setor</Label>
+                            <Select
+                                value={String(formData.sectorId)}
+                                onValueChange={(value) =>
+                                    setFormData({ ...formData, sectorId: Number(value) })
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o setor" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="null">— Selecionar setor —</SelectItem>
+                                    {sectors.map((s) => (
+                                        <SelectItem key={s.id} value={String(s.id)}>
+                                            {s.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label htmlFor="costCenterId">Centro de Custo</Label>
+                            <Select
+                                value={String(formData.costCenterId)}
+                                onValueChange={(value) =>
+                                    setFormData({ ...formData, costCenterId: Number(value) })
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o CC" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="null">— Selecionar c.custo —</SelectItem>
+                                    {costCenters.map((cc) => (
+                                        <SelectItem key={cc.id} value={String(cc.id)}>
+                                            {cc.code} – {cc.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <div>
+                                <Label htmlFor="teams">Equipe(s)</Label>
+                                <div className="flex flex-col space-y-2">
+                                    {teams.map((team) => (
+                                        <label key={team.id} className="inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 border-gray-300 rounded"
+                                                value={team.id}
+                                                checked={formData.teams.includes(Number(team.id))}
+                                                onChange={() => handleTeamToggle(Number(team.id))}
+                                            />
+                                            <span className="ml-2">{team.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Botões */}
+                    {/* Botões */}
                     <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
                         <Button
                             variant="outline"

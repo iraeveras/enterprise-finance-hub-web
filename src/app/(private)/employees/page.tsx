@@ -27,6 +27,8 @@ import type {
     UpdateEmployeeInput,
 } from "./types";
 
+import EmployeeTable from "./components/EmployeeTable";
+
 export default function EmployeeManager() {
     const empQ = useEmployees();
     const create = useEmployeeCreate();
@@ -72,7 +74,7 @@ export default function EmployeeManager() {
     const teams = teamQ.data!;
 
     const filtered = employees.filter((e) =>
-            [e.name, e.matricula, e.position]
+        [e.name, e.matricula, e.position]
             .some((f) => f.toLowerCase().includes(search.toLowerCase()))
     );
 
@@ -151,84 +153,15 @@ export default function EmployeeManager() {
                         <CardTitle>Funcionários Cadastrados ({filtered.length})</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b bg-gray-50">
-                                        <th className="p-3 text-sm font-semibold text-left">Mat.</th>
-                                        <th className="p-3 text-sm font-semibold text-left">Nome</th>
-                                        <th className="p-3 text-sm font-semibold text-left">Empresa</th>
-                                        <th className="p-3 text-sm font-semibold text-left">Admissão</th>
-                                        <th className="p-3 text-sm font-semibold text-left">Cargo</th>
-                                        <th className="p-3 text-sm font-semibold text-right">Salário</th>
-                                        <th className="p-3 text-sm font-semibold text-center">Perc.</th>
-                                        <th className="p-3 text-sm font-semibold text-right">Total</th>
-                                        <th className="p-3 text-sm font-semibold text-left">Depto.</th>
-                                        <th className="p-3 text-sm font-semibold text-left">Setor</th>
-                                        <th className="p-3 text-sm font-semibold text-center">Status</th>
-                                        <th className="p-3 text-sm font-semibold text-center">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filtered.map((e) => (
-                                        <tr key={e.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-2 text-xs font-mono">{e.matricula}</td>
-                                            <td className="p-2 text-xs font-medium">{e.name}</td>
-                                            <td className="p-2 text-xs truncate">{ companies.find((c) => Number(c.id) === e.companyId)?.corporateName }</td>
-                                            <td className="p-2 text-xs">{new Date(e.admission).toLocaleDateString('pt-BR', { timeZone: 'UTC'})}</td>
-                                            <td className="p-2 text-xs">{e.position}</td>
-                                            <td className="p-2 text-xs text-right">
-                                                R$ {e.salary.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                                            </td>
-                                            <td className="p-2 text-center">
-                                                {e.dangerPay ? (
-                                                    <Badge variant="secondary" className="text-xs">
-                                                        30%
-                                                    </Badge>
-                                                ) : (
-                                                    <span className="text-gray-400">-</span>
-                                                )}
-                                            </td>
-                                            <td className="p-2 text-right text-sm font-medium">
-                                                R$
-                                                {(
-                                                e.dangerPay ? e.salary * 1.3 : e.salary
-                                                ).toLocaleString("pt-BR", {
-                                                    minimumFractionDigits: 2,
-                                                })}
-                                            </td>
-                                            <td className="p-2 text-sm">{ departments.find((d) => Number(d.id) === e.departmentId)?.name }</td>
-                                            <td className="p-2 text-sm">{ sectors.find((s) => Number(s.id) === e.sectorId)?.name }</td>
-                                            <td className="p-2 text-center">
-                                                <Badge 
-                                                    className={e.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
-                                                >
-                                                    {e.status === "active" ? "Ativo" : "Inativo"}
-                                                </Badge>
-                                            </td>
-                                            <td className="p-2 text-center space-x-2">
-                                                <Button
-                                                    className="cursor-pointer"
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() => openEdit(e)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    className="cursor-pointer"
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() => onDelete(e.id)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <EmployeeTable
+                            employees={filtered}
+                            companies={companies}
+                            departments={departments}
+                            sectors={sectors}
+                            onEdit={openEdit}
+                            onDelete={onDelete}
+                            pageSize={10}
+                        />
                     </CardContent>
                 </Card>
 

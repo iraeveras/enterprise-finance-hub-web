@@ -22,13 +22,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Role, RoleLevel, ModuleID, Action, Scope, FormDataRole } from "../types";
 
-const modules: {id: ModuleID; name: string }[] = [
+const modules: { id: ModuleID; name: string }[] = [
     { id: "companies", name: "Empresas" },
     { id: "employees", name: "Funcionários" },
     { id: "departments", name: "Departamentos" },
     { id: "sectors", name: "Setores" },
     { id: "teams", name: "Equipes" },
     { id: "costcenters", name: "Centros de Custo" },
+    { id: "vacations", name: "Férias" },
     { id: "budget", name: "Orçamento" },
     { id: "budgetperiods", name: "Periodos Orçamentários" },
     { id: "overtimes", name: "Horas Extras" },
@@ -129,7 +130,7 @@ export function RoleForm({ role, onClose, onSave }: RoleFormProps) {
                             <Label htmlFor="level">Nível Hierárquico</Label>
                             <Select
                                 value={formData.level}
-                                onValueChange={(value) => 
+                                onValueChange={(value) =>
                                     setFormData((f) => ({
                                         ...f,
                                         level: value as RoleLevel
