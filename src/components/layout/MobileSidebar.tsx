@@ -170,8 +170,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                         <SidebarItem
                                             icon={DollarSign}
                                             label="Orçamentos"
-                                            isActive={activeSection === "budget"}
-                                            onClick={() => handleSectionChange("budget")}
+                                            isActive={activeSection === "budgets"}
+                                            onClick={() => handleSectionChange("budgets")}
                                         />
                                         <SidebarItem
                                             icon={Calendar}
@@ -182,8 +182,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                         <SidebarItem
                                             icon={Calculator}
                                             label="Simulação"
-                                            isActive={activeSection === "simulation"}
-                                            onClick={() => handleSectionChange("simulation")}
+                                            isActive={activeSection === "simulations"}
+                                            onClick={() => handleSectionChange("simulations")}
                                         />
                                         <SidebarItem
                                             icon={TrendingUp}
@@ -210,8 +210,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                         <SidebarItem
                                             icon={Clock}
                                             label="Horas Extras"
-                                            isActive={activeSection === "overtime"}
-                                            onClick={() => handleSectionChange("overtime")}
+                                            isActive={activeSection === "overtimes"}
+                                            onClick={() => handleSectionChange("overtimes")}
                                         />
                                         <SidebarItem
                                             icon={Gift}
@@ -222,8 +222,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                         <SidebarItem
                                             icon={Calendar}
                                             label="Escalas"
-                                            isActive={activeSection === "schedule"}
-                                            onClick={() => handleSectionChange("schedule")}
+                                            isActive={activeSection === "schedules"}
+                                            onClick={() => handleSectionChange("schedules")}
                                         />
                                     </div>
                                 </AccordionContent>

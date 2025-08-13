@@ -196,8 +196,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 <SidebarItem
                                     icon={Clock}
                                     label="Horas Extras"
-                                    isActive={activeSection === "overtime"}
-                                    onClick={() => onSectionChange("overtime")}
+                                    isActive={activeSection === "overtimes"}
+                                    onClick={() => onSectionChange("overtimes")}
                                 />
                                 <SidebarItem
                                     icon={Gift}

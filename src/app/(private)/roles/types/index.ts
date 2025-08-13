@@ -34,6 +34,7 @@ export type ModuleID =
     | "costcenters"
     | "budget"
     | "budgetperiods"
+    | "overtimes"
     | "reports"
     | "schedule"
     | "users";

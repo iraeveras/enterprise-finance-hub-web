@@ -31,6 +31,7 @@ const modules: {id: ModuleID; name: string }[] = [
     { id: "costcenters", name: "Centros de Custo" },
     { id: "budget", name: "Orçamento" },
     { id: "budgetperiods", name: "Periodos Orçamentários" },
+    { id: "overtimes", name: "Horas Extras" },
     { id: "reports", name: "Relatórios" },
     { id: "schedule", name: "Escalas" },
     { id: "users", name: "Usuários" },
