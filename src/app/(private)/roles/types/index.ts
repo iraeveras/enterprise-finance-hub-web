@@ -33,6 +33,7 @@ export type ModuleID =
     | "teams"
     | "costcenters"
     | "vacations"
+    | "acquisition-periods"
     | "budget"
     | "budgetperiods"
     | "overtimes"
