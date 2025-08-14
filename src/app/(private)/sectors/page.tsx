@@ -16,6 +16,9 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Download, Filter, Edit, Trash2 } from "lucide-react";
 import { useCompanies } from "../companies/hooks/useCompanies";
 import { useDepartments } from "../departments/hooks/useDepartments";
+import { SectorTable } from "./components/SectorTable";
+import { companyName as getCompaniesName } from "@/lib/companies-utils";
+import { departmentName as getDepartmentsName } from "@/lib/departments-utils";
 
 export default function SectorManager() {
     const sectorsQuery = useSectors();
@@ -28,7 +31,10 @@ export default function SectorManager() {
     const [showForm, setShowForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedSector, setSelectedSector] = useState<Sector | null>(null);
-    
+
+    const companyName = (id: number) => getCompaniesName(companiesQuery.data ?? [], id);
+    const departmentName = (id: number) => getDepartmentsName(departmentsQuery.data ?? [], id);
+
     if (sectorsQuery.isLoading || companiesQuery.isLoading || departmentsQuery.isLoading) return <p>Carregando</p>
     if (sectorsQuery.error || companiesQuery.error || companiesQuery.error) return <p>Erro ao carregar dados</p>
 
@@ -36,7 +42,7 @@ export default function SectorManager() {
     const companies = companiesQuery.data!;
     const departments = departmentsQuery.data!;
 
-    const filteredSectors = sectors.filter((s) => 
+    const filteredSectors = sectors.filter((s) =>
         s.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -52,7 +58,7 @@ export default function SectorManager() {
 
     const onSave = (data: CreateSectorInput | UpdateSectorInput) => {
         if (selectedSector && selectedSector.id) {
-            updateSector.mutate({id: selectedSector, ...data} as UpdateSectorInput)
+            updateSector.mutate({ id: selectedSector, ...data } as UpdateSectorInput)
         } else {
             createSector.mutate(data as CreateSectorInput);
         }
@@ -67,52 +73,60 @@ export default function SectorManager() {
     return (
         <ProtectedPage>
             <div className="space-y-6">
-        <div className="flex items-center justify-between">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900">Gestão de Setores</h1>
-                <p className="text-gray-600 mt-1">Cadastro e controle de setores por departamento</p>
-            </div>
-            <Button className="cursor-pointer" onClick={openNew} disabled={createSector.status === "pending"}>
-                <Plus className="w-4 h-4 mr-2" />
-                Novo Setor
-            </Button>
-        </div>
-
-        {/* Filtros e Busca */}
-        <Card>
-            <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                        <Input
-                            placeholder="Buscar por nome do setor..."
-                            value={searchTerm}
-                            onChange={(e:ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                            className="pl-10"
-                        />
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Gestão de Setores</h1>
+                        <p className="text-gray-600 mt-1">Cadastro e controle de setores por departamento</p>
                     </div>
-                    <div className="flex gap-2">
-                        <Button className="cursor-pointer" variant="outline">
-                            <Filter className="w-4 h-4 mr-2" />
-                            Filtros
-                        </Button>
-                        <Button className="cursor-pointer" variant="outline">
-                            <Download className="w-4 h-4 mr-2" />
-                            Exportar
-                        </Button>
-                    </div>
+                    <Button className="cursor-pointer" onClick={openNew} disabled={createSector.status === "pending"}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Novo Setor
+                    </Button>
                 </div>
-            </CardContent>
-        </Card>
 
-        {/* Lista de Setores */}
-        <Card>
-            <CardHeader>
-                <CardTitle>Setores Cadastrados ({filteredSectors.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="overflow-x-auto">
-                    <table className="w-full">
+                {/* Filtros e Busca */}
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex flex-col md:flex-row gap-4">
+                            <div className="flex-1 relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Input
+                                    placeholder="Buscar por nome do setor..."
+                                    value={searchTerm}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                                    className="pl-10"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                <Button className="cursor-pointer" variant="outline">
+                                    <Filter className="w-4 h-4 mr-2" />
+                                    Filtros
+                                </Button>
+                                <Button className="cursor-pointer" variant="outline">
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Exportar
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Lista de Setores */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Setores Cadastrados ({filteredSectors.length})</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="overflow-x-auto">
+                            <SectorTable
+                                sectors={sectors}
+                                companyName={companyName}
+                                departmentName={departmentName}
+                                isLoading={sectorsQuery.isLoading}
+                                onEdit={openEdit}
+                                onDelete={onDelete}
+                            />
+                            {/* <table className="w-full">
                         <thead>
                             <tr className="border-b bg-gray-50">
                                 <th className="text-left p-3 font-medium">Nome</th>
@@ -156,22 +170,22 @@ export default function SectorManager() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
-                </div>
-            </CardContent>
-        </Card>
+                    </table> */}
+                        </div>
+                    </CardContent>
+                </Card>
 
-        {/* Modal de Cadastro/Edição */}
-        {showForm && (
-            <SectorForm
-                sector={selectedSector}
-                companies={companies.map((c) => ({ id: c.id, corporateName: c.corporateName}))}
-                departments={departments.map((d) => ({ id: d.id, name: d.name}))}
-                onClose={() => setShowForm(false)}
-                onSave={onSave}
-            />
-        )}
-    </div>
+                {/* Modal de Cadastro/Edição */}
+                {showForm && (
+                    <SectorForm
+                        sector={selectedSector}
+                        companies={companies.map((c) => ({ id: c.id, corporateName: c.corporateName }))}
+                        departments={departments.map((d) => ({ id: d.id, name: d.name }))}
+                        onClose={() => setShowForm(false)}
+                        onSave={onSave}
+                    />
+                )}
+            </div>
         </ProtectedPage>
     )
 }

@@ -26,8 +26,8 @@ import { Sector } from "../types";
 
 export interface SectorTableProps {
     sectors: Sector[];
-    companyName: (companyId: number) => void;
-    departmentName: (departmentId: number) => void;
+    companyName: (companyId: number) => string;
+    departmentName: (departmentId: number) => string;
     isLoading: boolean;
     onEdit: (sector: Sector) => void;
     onDelete: (id: string) => void;
