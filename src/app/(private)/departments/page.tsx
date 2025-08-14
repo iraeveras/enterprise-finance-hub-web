@@ -9,6 +9,8 @@ import { useDepartmentCreate } from "./hooks/useDepartmentCreate";
 import { useDepartmentUpdate } from "./hooks/useDepartmentUpdate";
 import { useDepartmentDelete } from "./hooks/useDepartmentDelete";
 import { useCompanies } from "../companies/hooks/useCompanies";
+import { DepartmentTable } from "./components/DepartmentTable";
+import { companyName as getCompaniesName } from "@/lib/companies-utils";
 import type { CreateDepartmentInput, Department, UpdateDepartmentInput } from "./types";
 import {
     Card, CardHeader, CardTitle, CardContent,
@@ -16,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {Trash2, Edit, Plus, Search, Download, Filter } from "lucide-react";
+import { Trash2, Edit, Plus, Search, Download, Filter } from "lucide-react";
 
 export default function DepartmentManager() {
     const deptQ = useDepartments();
@@ -29,6 +31,8 @@ export default function DepartmentManager() {
     const [selected, setSelected] = useState<Department | null>(null);
     const [search, setSearch] = useState("");
 
+    const companyName = (id: number) => getCompaniesName(compQ.data ?? [], id);
+
     if (deptQ.isLoading || compQ.isLoading) return <p>Carregando...</p>;
     if (deptQ.error || compQ.error) return <p>Erro ao carregar dados</p>;
 
@@ -38,18 +42,18 @@ export default function DepartmentManager() {
         d.name.toLowerCase().includes(search.toLowerCase())
     );
 
-    const openNew = () => { 
-        setSelected(null); 
-        setShowForm(true); 
+    const openNew = () => {
+        setSelected(null);
+        setShowForm(true);
     };
-    const openEdit = (d: Department) => { 
-        setSelected(d); 
-        setShowForm(true); 
+    const openEdit = (d: Department) => {
+        setSelected(d);
+        setShowForm(true);
     };
-    
+
     const onSave = (data: CreateDepartmentInput | UpdateDepartmentInput) => {
         if (selected && selected.id) {
-            updateDept.mutate({id: selected.id, ...data} as UpdateDepartmentInput)
+            updateDept.mutate({ id: selected.id, ...data } as UpdateDepartmentInput)
         } else {
             createDept.mutate(data as CreateDepartmentInput);
         }
@@ -80,16 +84,16 @@ export default function DepartmentManager() {
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"/>
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 <Input
                                     placeholder="Buscar departamentos..."
                                     className="pl-10"
                                     value={search}
-                                    onChange={(e:ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                                 />
                             </div>
-                            <Button className="cursor-pointer" variant="outline" disabled><Filter/> Filtros</Button>
-                            <Button className="cursor-pointer" variant="outline" disabled><Download/> Exportar</Button>
+                            <Button className="cursor-pointer" variant="outline" disabled><Filter /> Filtros</Button>
+                            <Button className="cursor-pointer" variant="outline" disabled><Download /> Exportar</Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -101,7 +105,14 @@ export default function DepartmentManager() {
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <DepartmentTable
+                                departments={departments}
+                                companyName={companyName}
+                                isLoading={deptQ.isLoading}
+                                onEdit={openEdit}
+                                onDelete={onDelete}
+                            />
+                            {/* <table className="w-full">
                                 <thead>
                                     <tr className="bg-gray-50 border-b">
                                         <th className="p-3 text-left">Nome</th>
@@ -118,8 +129,8 @@ export default function DepartmentManager() {
                                                 {companies.find((c) => Number(c.id) === d.companyId)?.corporateName}
                                             </td>
                                             <td className="p-3 text-center">
-                                                <Badge 
-                                                    className={d.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                                <Badge
+                                                    className={d.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
                                                 >
                                                     {d.status === "active" ? "Ativo" : "Inativo"}
                                                 </Badge>
@@ -135,7 +146,7 @@ export default function DepartmentManager() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </table> */}
                         </div>
                     </CardContent>
                 </Card>
