@@ -214,51 +214,53 @@ export function OvertimeTableNew({ entries, onEdit, onDelete, employeeName }: Pr
             {/* Modal de detalhes */}
             {selectedEmployee && (
                 <Dialog open onOpenChange={() => setSelectedEmployee(null)}>
-                    <DialogContent className="w-[calc(100vw-2rem)] max-w-5xl max-h-[90vh] overflow-y-auto p-0">
+                    <DialogContent
+                        className="w-[95vw] max-w-[95vw] max-h-[90vh] overflow-y-auto">
                         <div className="px-4 sm:px-6 py-4">
                             <DialogHeader>
                                 <DialogTitle>Detalhamento Mensal — {employeeName(selectedEmployee)}</DialogTitle>
                             </DialogHeader>
-
-                            <div className="-mx-4 sm:mx-0 overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Mês</TableHead>
-                                            <TableHead className="text-right">HE 50%</TableHead>
-                                            <TableHead className="text-right">HE 100%</TableHead>
-                                            <TableHead className="text-right">Feriados</TableHead>
-                                            <TableHead className="text-right">Noturno</TableHead>
-                                            <TableHead className="text-right">DSR</TableHead>
-                                            <TableHead className="text-right">DSR Noturno</TableHead>
-                                            <TableHead className="text-right">Total Exercício</TableHead>
-                                            <TableHead className="text-right">Ano Anterior</TableHead>
-                                            <TableHead className="text-right">Diferença</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {monthlyDetails.map(m => (
-                                            <TableRow key={m.month}>
-                                                <TableCell className="font-medium">{m.monthName}</TableCell>
-                                                <TableCell className="text-right">R$ {m.he50Value.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right">R$ {m.he100Value.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right">R$ {m.holidayValue.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right">R$ {m.nightValue.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right">R$ {m.dsrValue.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right">R$ {m.dsrNightValue.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right font-medium">R$ {m.totalValue.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className="text-right">R$ {m.previousYearTotal.toFixed(2).replace(".", ",")}</TableCell>
-                                                <TableCell className={`text-right ${m.variance >= 0 ? "text-red-600" : "text-green-600"}`}>
-                                                    {(m.variance >= 0 ? "+" : "")}R$ {m.variance.toFixed(2).replace(".", ",")}
-                                                </TableCell>
+                            <div className="space-y-4">
+                                <div className="-mx-4 sm:mx-0 overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Mês</TableHead>
+                                                <TableHead className="text-right">HE 50%</TableHead>
+                                                <TableHead className="text-right">HE 100%</TableHead>
+                                                <TableHead className="text-right">Feriados</TableHead>
+                                                <TableHead className="text-right">Noturno</TableHead>
+                                                <TableHead className="text-right">DSR</TableHead>
+                                                <TableHead className="text-right">DSR Noturno</TableHead>
+                                                <TableHead className="text-right">Total Exercício</TableHead>
+                                                <TableHead className="text-right">Ano Anterior</TableHead>
+                                                <TableHead className="text-right">Diferença</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {monthlyDetails.map(m => (
+                                                <TableRow key={m.month}>
+                                                    <TableCell className="font-medium">{m.monthName}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.he50Value.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.he100Value.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.holidayValue.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.nightValue.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.dsrValue.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.dsrNightValue.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right font-medium">R$ {m.totalValue.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className="text-right">R$ {m.previousYearTotal.toFixed(2).replace(".", ",")}</TableCell>
+                                                    <TableCell className={`text-right ${m.variance >= 0 ? "text-red-600" : "text-green-600"}`}>
+                                                        {(m.variance >= 0 ? "+" : "")}R$ {m.variance.toFixed(2).replace(".", ",")}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
 
-                            <div className="flex justify-end pt-4">
-                                <Button onClick={() => setSelectedEmployee(null)}>Fechar</Button>
+                                <div className="flex justify-end pt-4">
+                                    <Button onClick={() => setSelectedEmployee(null)}>Fechar</Button>
+                                </div>
                             </div>
                         </div>
                     </DialogContent>

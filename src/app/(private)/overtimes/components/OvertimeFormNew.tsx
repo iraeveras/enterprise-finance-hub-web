@@ -48,43 +48,54 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
         position: "",
     });
 
-    // quando os datasets carregarem, tente pré-selecionar cost center e período
+    // Seleciona automaticamente o período pelo ano (ou status=active, ou o primeiro)
     useEffect(() => {
-        // selecionar período orçamentário pelo ano atual (ou status active, se existir)
         if (!formData.budgetPeriodId && budgetPeriods.length) {
-            const byYear = budgetPeriods.find(bp => Number(bp.year) === formData.year);
-            const byActive = budgetPeriods.find(bp => (bp.status ?? "").toLowerCase() === "active");
-            setFormData(prev => ({
+            const byYear = budgetPeriods.find((bp) => Number(bp.year) === formData.year);
+            const byActive = budgetPeriods.find((bp) => (bp.status ?? "").toLowerCase() === "active");
+            setFormData((prev) => ({
                 ...prev,
                 budgetPeriodId: byYear?.id ?? byActive?.id ?? budgetPeriods[0].id,
             }));
         }
     }, [budgetPeriods]); // eslint-disable-line
 
+    // Ao escolher funcionário (modo individual), herdamos empresa/CC/função e desabilitamos os campos
     useEffect(() => {
-        // se o colaborador tem company/costCenter, herdá-los
-        const emp = employees.find(e => Number(e.id) === Number(formData.employeeId));
-        if (emp) {
-            setFormData(prev => ({
-                ...prev,
-                companyId: Number((emp as any).companyId ?? prev.companyId),
-                costCenterId: Number((emp as any).costCenterId ?? prev.costCenterId),
-                position: (emp as any).position ?? prev.position,
-            }));
+        if (!isCollective && formData.employeeId) {
+            const emp = employees.find((e) => Number(e.id) === Number(formData.employeeId));
+            if (emp) {
+                setFormData((prev) => ({
+                    ...prev,
+                    companyId: Number((emp as any).companyId ?? prev.companyId),
+                    costCenterId: Number((emp as any).costCenterId ?? prev.costCenterId),
+                    position: (emp as any).position ?? prev.position,
+                }));
+            }
         }
-    }, [formData.employeeId, employees]);
+    }, [formData.employeeId, isCollective, employees]);
 
-    // grade mensal (igual a sua)
+    // Grade mensal
     const [monthlyData, setMonthlyData] = useState<MonthlyRow[]>(
         Array.from({ length: 12 }, (_, index) => ({
             month: index + 1,
-            he50Qty: 0, he100Qty: 0, holidayDaysQty: 0, nightHoursQty: 0,
-            he50Value: 0, he100Value: 0, holidayValue: 0, nightValue: 0,
-            dsrValue: 0, dsrNightValue: 0, totalValue: 0, previousYearTotal: 0, variance: 0,
-        }))
+            he50Qty: 0,
+            he100Qty: 0,
+            holidayDaysQty: 0,
+            nightHoursQty: 0,
+            he50Value: 0,
+            he100Value: 0,
+            holidayValue: 0,
+            nightValue: 0,
+            dsrValue: 0,
+            dsrNightValue: 0,
+            totalValue: 0,
+            previousYearTotal: 0,
+            variance: 0,
+        })),
     );
 
-    const selectedEmployee = employees.find(e => Number(e.id) === Number(formData.employeeId));
+    const selectedEmployee = employees.find((e) => Number(e.id) === Number(formData.employeeId));
 
     const hourlyRate = (salary: number, dangerPay: boolean, monthlyHours?: number) => {
         const hours = monthlyHours && monthlyHours > 0 ? monthlyHours : 220;
@@ -102,18 +113,29 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
             const he100Value = m.he100Qty * rate * 2;
             const holidayValue = m.holidayDaysQty * rate * 2 * 8;
             const nightValue = m.nightHoursQty * rate * 0.2;
-            const dsrValue = ((m.he50Qty + m.he100Qty + (m.holidayDaysQty * 8)) / 25) * 5 * rate;
+            const dsrValue = ((m.he50Qty + m.he100Qty + m.holidayDaysQty * 8) / 25) * 5 * rate;
             const dsrNightValue = (m.nightHoursQty / 25) * 5 * rate * 0.2;
             const totalValue = he50Value + he100Value + holidayValue + nightValue + dsrValue + dsrNightValue;
             const previousYearTotal = 0;
             const variance = totalValue - previousYearTotal;
 
-            return { ...m, he50Value, he100Value, holidayValue, nightValue, dsrValue, dsrNightValue, totalValue, previousYearTotal, variance };
+            return {
+                ...m,
+                he50Value,
+                he100Value,
+                holidayValue,
+                nightValue,
+                dsrValue,
+                dsrNightValue,
+                totalValue,
+                previousYearTotal,
+                variance,
+            };
         });
     }, [monthlyData, selectedEmployee]);
 
     const updateMonthlyData = (index: number, field: keyof MonthlyRow, value: number) => {
-        setMonthlyData(prev => prev.map((m, i) => (i === index ? { ...m, [field]: Math.max(0, value) } : m)));
+        setMonthlyData((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: Math.max(0, value) } : m)));
     };
 
     const getMonthName = (m: number) =>
@@ -132,11 +154,11 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
 
         const err = ensureRequired();
         if (err) {
-            alert(err); // troque por toast se quiser
+            alert(err);
             return;
         }
 
-        const monthsToSave = recalc.filter(m => m.totalValue > 0);
+        const monthsToSave = recalc.filter((m) => m.totalValue > 0);
 
         const makePayload = (employeeId: number, m: MonthlyRow): Overtime => ({
             year: formData.year,
@@ -144,7 +166,7 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
             companyId: Number(formData.companyId),
             costCenterId: Number(formData.costCenterId),
             employeeId: Number(employeeId),
-            budgetPeriodId: Number(formData.budgetPeriodId),  // <-- id real, não o ano
+            budgetPeriodId: Number(formData.budgetPeriodId),
             function: formData.position ?? "",
             he50Qty: m.he50Qty,
             he100Qty: m.he100Qty,
@@ -165,13 +187,29 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
         });
 
         if (isCollective) {
-            selectedEmployees.forEach(empId => {
-                monthsToSave.forEach(m => onSave(makePayload(empId, m)));
-            });
+            selectedEmployees.forEach((empId) => monthsToSave.forEach((m) => onSave(makePayload(empId, m))));
         } else if (formData.employeeId) {
-            monthsToSave.forEach(m => onSave(makePayload(Number(formData.employeeId), m)));
+            monthsToSave.forEach((m) => onSave(makePayload(Number(formData.employeeId), m)));
         }
     };
+
+    // Filtros
+    const filteredCostCenters = costCenters.filter(
+        (cc) => !formData.companyId || Number(cc.companyId ?? formData.companyId) === Number(formData.companyId),
+    );
+
+    const filteredEmployeesByCompany = employees.filter(
+        (e) => !formData.companyId || Number((e as any).companyId ?? formData.companyId) === Number(formData.companyId),
+    );
+
+    const filteredEmployeesByCompanyAndCC = filteredEmployeesByCompany.filter(
+        (e) => !formData.costCenterId || Number((e as any).costCenterId ?? formData.costCenterId) === Number(formData.costCenterId),
+    );
+
+    // Desabilitar campos conforme regra:
+    const disableCompanyAndCC =
+        !isCollective && !!formData.employeeId; // individual: após escolher funcionário, trava empresa/CC
+    const disableBudgetPeriod = true; // sempre desabilitado (preenchido automático)
 
     return (
         <Dialog open onOpenChange={onClose}>
@@ -182,12 +220,13 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                     </DialogHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Tipo de lançamento */}
                         <div className="flex items-center space-x-2">
                             <Switch checked={isCollective} onCheckedChange={setIsCollective} />
                             <Label>Lançamento Coletivo (por Equipe/Setor)</Label>
                         </div>
 
-                        {/* Filtros principais */}
+                        {/* Linha de seleção */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div>
                                 <Label htmlFor="year">Ano</Label>
@@ -205,12 +244,17 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 <Label>Empresa</Label>
                                 <Select
                                     value={String(formData.companyId || "")}
-                                    onValueChange={(v) => setFormData(prev => ({ ...prev, companyId: Number(v) }))}
+                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, companyId: Number(v), costCenterId: 0 }))}
+                                    disabled={disableCompanyAndCC}
                                 >
-                                    <SelectTrigger className="w-full"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Selecione" />
+                                    </SelectTrigger>
                                     <SelectContent>
-                                        {companies.map(c => (
-                                            <SelectItem key={String(c.id)} value={String(c.id)}>{c.corporateName}</SelectItem>
+                                        {companies.map((c) => (
+                                            <SelectItem key={String(c.id)} value={String(c.id)}>
+                                                {c.corporateName}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -220,13 +264,18 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 <Label>Centro de Custo</Label>
                                 <Select
                                     value={String(formData.costCenterId || "")}
-                                    onValueChange={(v) => setFormData(prev => ({ ...prev, costCenterId: Number(v) }))}
+                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, costCenterId: Number(v) }))}
+                                    disabled={disableCompanyAndCC || !formData.companyId}
                                 >
-                                    <SelectTrigger className="w-full"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Selecione" />
+                                    </SelectTrigger>
                                     <SelectContent>
-                                        {costCenters
-                                            .filter(cc => !formData.companyId || Number(cc.companyId ?? formData.companyId) === Number(formData.companyId))
-                                            .map(cc => (<SelectItem key={String(cc.id)} value={String(cc.id)}>{cc.name}</SelectItem>))}
+                                        {filteredCostCenters.map((cc) => (
+                                            <SelectItem key={String(cc.id)} value={String(cc.id)}>
+                                                {cc.name}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -235,30 +284,42 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 <Label>Período Orçamentário</Label>
                                 <Select
                                     value={String(formData.budgetPeriodId || "")}
-                                    onValueChange={(v) => setFormData(prev => ({ ...prev, budgetPeriodId: Number(v) }))}
+                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, budgetPeriodId: Number(v) }))}
+                                    disabled={disableBudgetPeriod}
                                 >
-                                    <SelectTrigger className="w-full"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Selecione" />
+                                    </SelectTrigger>
                                     <SelectContent>
-                                        {budgetPeriods.map(bp => (
-                                            <SelectItem key={bp.id} value={String(bp.id)}>{bp.year}{bp.status ? ` — ${bp.status}` : ""}</SelectItem>
+                                        {budgetPeriods.map((bp) => (
+                                            <SelectItem key={bp.id} value={String(bp.id)}>
+                                                {bp.year}
+                                                {bp.status ? ` — ${bp.status}` : ""}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
+                            {/* Individual: campo Funcionário e Função */}
                             {!isCollective && (
                                 <>
                                     <div className="sm:col-span-2 lg:col-span-2">
                                         <Label>Funcionário</Label>
                                         <Select
                                             value={String(formData.employeeId || "")}
-                                            onValueChange={(v) => setFormData(prev => ({ ...prev, employeeId: Number(v) }))}
+                                            onValueChange={(v) => setFormData((prev) => ({ ...prev, employeeId: Number(v) }))}
                                         >
-                                            <SelectTrigger className="w-full"><SelectValue placeholder="Selecione o funcionário" /></SelectTrigger>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Selecione o funcionário" />
+                                            </SelectTrigger>
                                             <SelectContent>
-                                                {employees
-                                                    .filter(e => !formData.companyId || Number((e as any).companyId ?? formData.companyId) === Number(formData.companyId))
-                                                    .map(e => (<SelectItem key={String(e.id)} value={String(e.id)}>{e.name}</SelectItem>))}
+                                                {/* filtra por empresa e CC SE já selecionados antes do colaborador */}
+                                                {(formData.costCenterId ? filteredEmployeesByCompanyAndCC : filteredEmployeesByCompany).map((e) => (
+                                                    <SelectItem key={String(e.id)} value={String(e.id)}>
+                                                        {e.name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -277,7 +338,8 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 <CardHeader>
                                     <CardTitle>Grade Mensal — {formData.year}</CardTitle>
                                     <p className="text-sm text-muted-foreground">
-                                        Funcionário: {selectedEmployee.name} | Jornada: {(selectedEmployee as any).monthlyHours ?? 220}h | {(selectedEmployee as any).workSchedule ?? "ADM"}
+                                        Funcionário: {selectedEmployee.name} | Jornada: {(selectedEmployee as any).monthlyHours ?? 220}h |{" "}
+                                        {(selectedEmployee as any).workSchedule ?? "ADM"}
                                     </p>
                                 </CardHeader>
                                 <CardContent>
@@ -289,48 +351,65 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                         {/* COLETIVO */}
                         {isCollective && (
                             <Card>
-                                <CardHeader><CardTitle>Selecionar Funcionários</CardTitle></CardHeader>
+                                <CardHeader>
+                                    <CardTitle>Selecionar Funcionários</CardTitle>
+                                </CardHeader>
                                 <CardContent className="space-y-3">
-                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                                        {employees
-                                            .filter(e => !formData.companyId || Number((e as any).companyId ?? formData.companyId) === Number(formData.companyId))
-                                            .map(e => {
-                                                const checked = selectedEmployees.includes(Number(e.id));
-                                                return (
-                                                    <label key={String(e.id)} className="flex items-center gap-2 text-sm">
-                                                        <input
-                                                            type="checkbox"
-                                                            className="h-4 w-4"
-                                                            checked={checked}
-                                                            onChange={(ev) => {
-                                                                const on = ev.target.checked;
-                                                                setSelectedEmployees(old => on ? [...old, Number(e.id)] : old.filter(id => id !== Number(e.id)));
-                                                            }}
+                                    {/* Só mostra a lista depois de empresa e CC */}
+                                    {!formData.companyId || !formData.costCenterId ? (
+                                        <div className="text-sm text-muted-foreground">
+                                            Selecione <strong>Empresa</strong> e <strong>Centro de Custo</strong> para listar os funcionários.
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                                {filteredEmployeesByCompanyAndCC.map((e) => {
+                                                    const checked = selectedEmployees.includes(Number(e.id));
+                                                    return (
+                                                        <label key={String(e.id)} className="flex items-center gap-2 text-sm">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="h-4 w-4"
+                                                                checked={checked}
+                                                                onChange={(ev) => {
+                                                                    const on = ev.target.checked;
+                                                                    setSelectedEmployees((old) =>
+                                                                        on ? [...old, Number(e.id)] : old.filter((id) => id !== Number(e.id)),
+                                                                    );
+                                                                }}
+                                                            />
+                                                            <span className="truncate">{e.name}</span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {selectedEmployees.length > 0 && (
+                                                <Card className="border-dashed">
+                                                    <CardHeader>
+                                                        <CardTitle className="text-base">Grade Mensal — {formData.year}</CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <OvertimeFormNewTable
+                                                            rows={recalc}
+                                                            onChange={updateMonthlyData}
+                                                            getMonthName={getMonthName}
+                                                            showReadonlyTotals
                                                         />
-                                                        <span className="truncate">{e.name}</span>
-                                                    </label>
-                                                );
-                                            })}
-                                    </div>
-
-                                    {selectedEmployees.length === 0 && (
-                                        <div className="text-sm text-muted-foreground">Selecione pelo menos 1 funcionário para lançar.</div>
-                                    )}
-
-                                    {selectedEmployees.length > 0 && (
-                                        <Card className="border-dashed">
-                                            <CardHeader><CardTitle className="text-base">Grade Mensal — {formData.year}</CardTitle></CardHeader>
-                                            <CardContent>
-                                                <OvertimeFormNewTable rows={recalc} onChange={updateMonthlyData} getMonthName={getMonthName} showReadonlyTotals />
-                                            </CardContent>
-                                        </Card>
+                                                    </CardContent>
+                                                </Card>
+                                            )}
+                                        </>
                                     )}
                                 </CardContent>
                             </Card>
                         )}
 
+                        {/* Ações */}
                         <div className="flex flex-col sm:flex-row justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">Cancelar</Button>
+                            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
+                                Cancelar
+                            </Button>
                             <Button
                                 type="submit"
                                 className="w-full sm:w-auto"
