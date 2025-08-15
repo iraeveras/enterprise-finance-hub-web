@@ -76,7 +76,7 @@ export default function SectorManager() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Gestão de Setores</h1>
-                        <p className="text-gray-600 mt-1">Cadastro e controle de setores por departamento</p>
+                        <p className="text-gray-600">Cadastro e controle de setores por departamento</p>
                     </div>
                     <Button className="cursor-pointer" onClick={openNew} disabled={createSector.status === "pending"}>
                         <Plus className="w-4 h-4 mr-2" />

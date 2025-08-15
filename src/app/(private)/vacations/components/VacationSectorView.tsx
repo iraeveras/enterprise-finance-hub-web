@@ -42,16 +42,16 @@ export function VacationSectorView({
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="rounded-none gap-2">
         <CardHeader>
-          <CardTitle className="text-lg md:text-xl flex items-center gap-2">
+          <CardTitle className="text-lg md:text-base flex items-center gap-2">
             <Users className="h-5 w-5" />
             Programação de Férias por Setor
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-6">
-            <Label htmlFor="sectorSelect">Selecione o Setor</Label>
+          <div className="mb-2">
+            <Label htmlFor="sectorSelect" className="mb-2">Selecione o Setor</Label>
             <Select value={selectedSectorId} onValueChange={setSelectedSectorId}>
               <SelectTrigger>
                 <SelectValue placeholder="Escolha um setor para visualizar as programações" />
@@ -74,14 +74,14 @@ export function VacationSectorView({
 
           {!!selectedSectorId && (
             <>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <h3 className="text-lg font-semibold">
                   PROGRAMAÇÃO DE FÉRIAS — {selectedName.toUpperCase()}
                 </h3>
                 <p className="text-sm text-gray-600">
                   {sectorVacations.length} funcionário(s) com férias programadas
                 </p>
-              </div>
+              </div> */}
 
               <VacationPlanningTable
                 vacations={sectorVacations}

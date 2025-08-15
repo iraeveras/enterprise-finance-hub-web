@@ -40,7 +40,7 @@ export default function CompanyManager() {
     );
 
     const pageCount = Math.ceil(filteredCompanies.length / pageSize)
-    const paged = filteredCompanies.slice((page-1)*pageSize, page*pageSize)
+    const paged = filteredCompanies.slice((page - 1) * pageSize, page * pageSize)
 
     const openNew = () => {
         setSelectedCompany(null);
@@ -73,7 +73,7 @@ export default function CompanyManager() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Gestão de Empresas</h1>
-                        <p className="text-gray-600 mt-1">Cadastro e controle de empresas do sistema</p>
+                        <p className="text-gray-600">Cadastro e controle de empresas do sistema</p>
                     </div>
                     <Button className="cursor-pointer" onClick={openNew} disabled={createMutation.status === "pending"}>
                         <Plus className="w-4 h-4 mr-2" />
@@ -112,9 +112,9 @@ export default function CompanyManager() {
                 <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>
-                            Empresas Cadastradas 
-                            ({filteredCompanies.length}) 
-                            {isLoading && <span className="ml-2 text-xs text-gray-400">Carregando...</span>} 
+                            Empresas Cadastradas
+                            ({filteredCompanies.length})
+                            {isLoading && <span className="ml-2 text-xs text-gray-400">Carregando...</span>}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

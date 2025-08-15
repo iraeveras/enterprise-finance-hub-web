@@ -76,7 +76,7 @@ export function VacationManager() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lançamento de Férias</h1>
@@ -90,8 +90,8 @@ export function VacationManager() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
             <CardTitle className="text-sm font-medium">Férias Programadas</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -101,8 +101,8 @@ export function VacationManager() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
             <CardTitle className="text-sm font-medium">Férias Aprovadas</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -112,8 +112,8 @@ export function VacationManager() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
             <CardTitle className="text-sm font-medium">13º Adiantado</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -123,8 +123,8 @@ export function VacationManager() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
             <CardTitle className="text-sm font-medium">Total Valores</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -137,16 +137,16 @@ export function VacationManager() {
         </Card>
       </div>
 
-      <Tabs defaultValue="planning" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="planning" className="text-xs md:text-sm cursor-pointer">Programação</TabsTrigger>
-          <TabsTrigger value="acquisition" className="text-xs md:text-sm cursor-pointer">Períodos</TabsTrigger>
-          <TabsTrigger value="thirteenth" className="text-xs md:text-sm cursor-pointer">13º Salário</TabsTrigger>
-          <TabsTrigger value="abono" className="text-xs md:text-sm cursor-pointer">Abono</TabsTrigger>
-          <TabsTrigger value="sectors" className="text-xs md:text-sm cursor-pointer">Por Setor</TabsTrigger>
+      <Tabs defaultValue="planning" className="space-y-0">
+        <TabsList className="grid w-full grid-cols-5 rounded-none">
+          <TabsTrigger value="planning" className="text-xs md:text-sm cursor-pointer rounded-none">Programação</TabsTrigger>
+          <TabsTrigger value="acquisition" className="text-xs md:text-sm cursor-pointer rounded-none">Períodos</TabsTrigger>
+          <TabsTrigger value="thirteenth" className="text-xs md:text-sm cursor-pointer rounded-none">13º Salário</TabsTrigger>
+          <TabsTrigger value="abono" className="text-xs md:text-sm cursor-pointer rounded-none">Abono</TabsTrigger>
+          <TabsTrigger value="sectors" className="text-xs md:text-sm cursor-pointer rounded-none">Por Setor</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="planning">
+        <TabsContent value="planning" className="rounded-none">
           <VacationPlanningTable
             vacations={vacations}
             onEdit={onEdit}
@@ -161,7 +161,7 @@ export function VacationManager() {
         </TabsContent>
 
         <TabsContent value="thirteenth">
-          <Card>
+          <Card className="rounded-none">
             <CardHeader>
               <CardTitle className="text-lg md:text-xl flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
@@ -179,7 +179,7 @@ export function VacationManager() {
         </TabsContent>
 
         <TabsContent value="abono">
-          <Card>
+          <Card className="rounded-none">
             <CardHeader>
               <CardTitle className="text-lg md:text-xl flex items-center gap-2">
                 <Gift className="h-5 w-5" />

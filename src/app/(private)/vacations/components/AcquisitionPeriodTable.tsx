@@ -14,7 +14,7 @@ import type { AcquisitionPeriod } from "../types";
 import { Edit, Lock, Trash2, Unlock } from "lucide-react";
 
 function fmt(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", { timeZone: 'UTC'});
+  return new Date(iso).toLocaleDateString("pt-BR", { timeZone: 'UTC' });
 }
 
 function StatusBadge({ status }: { status: AcquisitionPeriod["status"] }) {
@@ -64,27 +64,27 @@ export function AcquisitionPeriodTable({
         <TableBody>
           {periods.map((p) => (
             <TableRow key={p.id}>
-              <TableCell className="font-medium">
+              <TableCell className="py-1 font-medium">
                 {p.employee?.name ?? employeeName(p.employeeId)}
               </TableCell>
-              <TableCell>{p.year}</TableCell>
-              <TableCell>{fmt(p.startDate)}</TableCell>
-              <TableCell>{fmt(p.endDate)}</TableCell>
-              <TableCell><StatusBadge status={p.status} /></TableCell>
-              <TableCell className="text-center">
+              <TableCell className="py-1">{p.year}</TableCell>
+              <TableCell className="py-1">{fmt(p.startDate)}</TableCell>
+              <TableCell className="py-1">{fmt(p.endDate)}</TableCell>
+              <TableCell className="py-1"><StatusBadge status={p.status} /></TableCell>
+              <TableCell className="py-1 text-center">
                 <div className="inline-flex gap-2">
-                  <Button size="sm" variant="ghost" onClick={() => onEdit(p)} className="cursor-pointer"><Edit/></Button>
-                  <Button size="sm" variant="ghost" onClick={() => onDelete(p.id)} className="cursor-pointer"><Trash2/></Button>
+                  <Button size="sm" variant="ghost" onClick={() => onEdit(p)} className="cursor-pointer"><Edit /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => onDelete(p.id)} className="cursor-pointer"><Trash2 /></Button>
 
                   {p.status === "open" ? (
                     <Button size="sm" variant="outline" className=" text-green-600 border-green-200 hover:bg-green-50 cursor-pointer"
                       onClick={() => onClose(p.id)}>
-                        <Unlock/>
+                      <Unlock />
                     </Button>
                   ) : (
                     <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 cursor-pointer"
-                    onClick={() => onReopen(p)}>
-                        <Lock/>
+                      onClick={() => onReopen(p)}>
+                      <Lock />
                     </Button>
                   )}
                 </div>

@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-    Users, 
-    DollarSign, 
-    TrendingUp, 
+import {
+    Users,
+    DollarSign,
+    TrendingUp,
     TrendingDown,
     Calendar,
     FileText,
@@ -40,7 +40,7 @@ export const DashboardContent = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Dashboard Executivo</h1>
-                        <p className="text-gray-600 mt-1">Visão geral do orçamento empresarial - {selectedPeriod}</p>
+                        <p className="text-gray-600">Visão geral do orçamento empresarial - {selectedPeriod}</p>
                     </div>
                     <div className="flex space-x-3">
                         <Button variant="outline">
@@ -54,7 +54,7 @@ export const DashboardContent = () => {
                     </div>
                 </div>
 
-            {/* Cards de Indicadores */}
+                {/* Cards de Indicadores */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -109,7 +109,7 @@ export const DashboardContent = () => {
                     </Card>
                 </div>
 
-            {/* Gráficos e Dados */}
+                {/* Gráficos e Dados */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <BudgetChart />
                     <EmployeeChart />
@@ -135,7 +135,7 @@ export const DashboardContent = () => {
                                     <p className="text-sm text-yellow-700">Manutenção Elétrica apresentou variação de +15% em dezembro. Justificativa pendente.</p>
                                 </div>
                             </div>
-                            
+
                             <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
                                 <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
                                 <div>

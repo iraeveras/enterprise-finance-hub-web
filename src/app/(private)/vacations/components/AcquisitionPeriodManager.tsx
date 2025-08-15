@@ -26,7 +26,7 @@ export default function AcquisitionPeriodManager() {
   const periodsQ = useAcquisitionPeriods();
   const createM = useAcquisitionPeriodCreate();
   const updateM = useAcquisitionPeriodUpdate();
-  const delM    = useAcquisitionPeriodDelete();
+  const delM = useAcquisitionPeriodDelete();
   const employeesQ = useEmployees();
 
   const [showForm, setShowForm] = useState(false);
@@ -82,11 +82,11 @@ export default function AcquisitionPeriodManager() {
 
   return (
     <ProtectedPage>
-      <div className="space-y-6">
+      <div className="space-y-2">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">Períodos Aquisitivos de Férias</h2>
-            <p className="text-gray-600 text-sm md:text-base">Gerencie os períodos aquisitivos dos funcionários</p>
+            <h2 className="text-base md:text-xl font-semibold text-gray-900">Períodos Aquisitivos de Férias</h2>
+            <p className="text-gray-600 text-xs md:text-xs tracking-wide">Gerencie os períodos aquisitivos dos funcionários</p>
           </div>
           <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto cursor-pointer">
             <Plus className="h-4 w-4" />
@@ -95,13 +95,13 @@ export default function AcquisitionPeriodManager() {
         </div>
 
         {/* Cards simples com contagens */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="flex flex-row items-center justify-between h-12">
             <CardHeader>
               <CardTitle className="text-sm font-semibold">Abertos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm font-medium">{periods.filter(p => p.status==="open").length}</div>
+              <div className="text-sm font-medium">{periods.filter(p => p.status === "open").length}</div>
             </CardContent>
           </Card>
 
@@ -110,7 +110,7 @@ export default function AcquisitionPeriodManager() {
               <CardTitle className="text-sm font-semibold">Utilizados</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm font-medium">{periods.filter(p => p.status==="used").length}</div>
+              <div className="text-sm font-medium">{periods.filter(p => p.status === "used").length}</div>
             </CardContent>
           </Card>
 
@@ -122,9 +122,9 @@ export default function AcquisitionPeriodManager() {
               <div className="text-sm font-medium">{total}</div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
 
-        <Card>
+        <Card className="rounded-none">
           <CardHeader><CardTitle>Lista de Períodos Aquisitivos</CardTitle></CardHeader>
           <CardContent>
             <div className="overflow-x-auto">

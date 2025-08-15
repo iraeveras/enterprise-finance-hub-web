@@ -76,7 +76,7 @@ export default function BudgetPeriodManager() {
         if (selected) {
             updateM.mutate({ ...(data as any), id: selected.id });
         } else {
-        // garante status "open" na criação
+            // garante status "open" na criação
             createM.mutate({ ...(data as any), status: "open" });
         }
         setOpenForm(false);
@@ -89,7 +89,7 @@ export default function BudgetPeriodManager() {
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Períodos Orçamentários</h1>
-                        <p className="text-gray-600 mt-1">Gestão de períodos para controle orçamentário</p>
+                        <p className="text-gray-600">Gestão de períodos para controle orçamentário</p>
                     </div>
                     <Button onClick={handleNew} className="flex items-center gap-2 cursor-pointer">
                         <PlusCircle className="w-4 h-4" />
@@ -98,7 +98,7 @@ export default function BudgetPeriodManager() {
                 </div>
 
                 {openCurrent && (
-                    <Card className="border-green-200 bg-green-50">
+                    <Card className="border-green-200 bg-green-50 rounded-none">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-green-800">
                                 <Calendar className="w-5 h-5" />
@@ -133,7 +133,7 @@ export default function BudgetPeriodManager() {
                     </Card>
                 )}
 
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>
                             Histórico de Períodos ({periods.length})

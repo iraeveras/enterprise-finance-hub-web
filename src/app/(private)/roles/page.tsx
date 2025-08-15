@@ -83,7 +83,7 @@ export default function RoleManager() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Roles/Permissões</h1>
-                        <p className="text-gray-600 mt-1">
+                        <p className="text-gray-600">
                             Gestão de perfis de acesso e permissões do sistema
                         </p>
                     </div>
@@ -133,51 +133,51 @@ export default function RoleManager() {
                             <p>Carregando...</p>
                         ) : (
                             <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b bg-gray-50">
-                                        <th className="text-left p-3 font-medium">Nome</th>
-                                        <th className="text-left p-3 font-medium">Nível</th>
-                                        <th className="text-left p-3 font-medium">Descrição</th>
-                                        <th className="text-center p-3 font-medium">Permissões</th>
-                                        <th className="text-center p-3 font-medium">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filtered.map((role) => (
-                                        <tr key={role.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-3 font-medium">{role.name}</td>
-                                            <td className="p-3">
-                                                <Badge className={levelClasses[role.level]}>
-                                                    {levelLabels[role.level]}
-                                                </Badge>
-                                            </td>
-                                            <td className="p-3 text-sm">{role.description}</td>
-                                            <td className="p-3 text-center">
-                                                <Badge variant="outline">
-                                                    {role.permissions.length} módulos
-                                                </Badge>
-                                            </td>
-                                            <td className="p-3 text-center">
-                                                <Button
-                                                    className="cursor-pointer"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {openEdit(role)}}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(role.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </td>
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b bg-gray-50">
+                                            <th className="text-left p-3 font-medium">Nome</th>
+                                            <th className="text-left p-3 font-medium">Nível</th>
+                                            <th className="text-left p-3 font-medium">Descrição</th>
+                                            <th className="text-center p-3 font-medium">Permissões</th>
+                                            <th className="text-center p-3 font-medium">Ações</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {filtered.map((role) => (
+                                            <tr key={role.id} className="border-b hover:bg-gray-50">
+                                                <td className="p-3 font-medium">{role.name}</td>
+                                                <td className="p-3">
+                                                    <Badge className={levelClasses[role.level]}>
+                                                        {levelLabels[role.level]}
+                                                    </Badge>
+                                                </td>
+                                                <td className="p-3 text-sm">{role.description}</td>
+                                                <td className="p-3 text-center">
+                                                    <Badge variant="outline">
+                                                        {role.permissions.length} módulos
+                                                    </Badge>
+                                                </td>
+                                                <td className="p-3 text-center">
+                                                    <Button
+                                                        className="cursor-pointer"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => { openEdit(role) }}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(role.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
-                        
+
                     </CardContent>
                 </Card>
 
