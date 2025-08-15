@@ -1,3 +1,4 @@
+// FILE: src/app/(private)/overtimes/types/index.ts
 export type OvertimeStatus = "open" | "closed" | "pending";
 
 export interface Overtime {
@@ -8,20 +9,19 @@ export interface Overtime {
     costCenterId: number;
     employeeId: number;
     budgetPeriodId: number;
-
     function: string;
-
+    // quantidades
     he50Qty?: number;
     he100Qty?: number;
     holidayDaysQty?: number;
     nightHoursQty?: number;
-
+    // horas (legado/compatibilidade)
     normalHours?: number;
     overtime50?: number;
     overtime100?: number;
     holidayHours?: number;
     nightShiftHours?: number;
-
+    // valores
     overtime50Value?: number;
     overtime100Value?: number;
     he50Value?: number;
@@ -37,10 +37,11 @@ export interface Overtime {
     previousYearTotal?: number;
     variance?: number;
     variancePercentage?: number;
-
     justification?: string | null;
-
     status?: OvertimeStatus;
-    createdAt?: string | Date;
-    updatedAt?: string | Date;
+    createdAt?: string;  // ISO-8601
+    updatedAt?: string;  // ISO-8601
 }
+
+export type CreateOvertimeInput = Omit<Overtime, "id" | "createdAt" | "updatedAt">;
+export type UpdateOvertimeInput = Overtime;

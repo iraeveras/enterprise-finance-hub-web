@@ -1,8 +1,8 @@
 export interface CostCenter {
-    id: string;
+    id: number;
     name: string;
     code: string;
-    companyId: number;
+    companyId?: number;
     departmentId: number;
     sectorId: number;
     status: 'active' | 'inactive';

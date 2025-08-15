@@ -19,7 +19,8 @@ import PremiseManager from "./premises/page";
 import BudgetPeriodManager from "./budgetperiods/page";
 import { BudgetManager } from "./budgets/page";
 import { VacationManager } from "./vacations/page";
-import { OvertimeManager } from "./overtimes/page";
+import OvertimeManager from "./overtimes/page";
+
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -33,7 +34,7 @@ export default function Home() {
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
-        return <DashboardContent/>
+        return <DashboardContent />
       case "companies":
         return <CompanyManager />;
       case "employees":
@@ -49,19 +50,19 @@ export default function Home() {
       case "premises":
         return <PremiseManager />;
       case "badget":
-        return <BudgetManager/>
+        return <BudgetManager />
       case "budgetperiods":
-        return <BudgetPeriodManager/>
+        return <BudgetPeriodManager />
       case "vacations":
-        return <VacationManager/>
+        return <VacationManager />
       case "overtimes":
-        return <OvertimeManager/>
+        return <OvertimeManager />
       case "users":
-        return <UserManager/>
+        return <UserManager />
       case "roles":
-        return <RoleManager/>
+        return <RoleManager />
       default:
-        return <DashboardContent/>
+        return <DashboardContent />
     }
   }
 
