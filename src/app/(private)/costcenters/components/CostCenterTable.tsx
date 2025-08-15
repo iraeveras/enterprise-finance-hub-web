@@ -1,4 +1,4 @@
-// FILE: src/app/(private)/companies/components/SectorTable.tsx
+// FILE: src/app/(private)/companies/components/CostCenterTable.tsx
 "use client"
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,66 +22,76 @@ import {
 } from "@/components/ui/pagination";
 import { useCompanies } from "../../companies/hooks/useCompanies";
 import { useDepartments } from "../../departments/hooks/useDepartments";
-import { Sector } from "../types";
+import { useSectors } from "../../sectors/hooks/useSectors";
+import type { CostCenter } from "../types";
 
-export interface SectorTableProps {
-    sectors: Sector[];
+export interface CostCenterTableProps {
+    costcenters: CostCenter[];
     companyName: (companyId: number) => string;
     departmentName: (departmentId: number) => string;
+    sectorName: (sectorId: number) => string;
     isLoading: boolean;
-    onEdit: (sector: Sector) => void;
+    onEdit: (costcenter: CostCenter) => void;
     onDelete: (id: string) => void;
 }
 
-export function SectorTable({
-    sectors,
+export function CostCenterTable({
+    costcenters,
     companyName,
     departmentName,
+    sectorName,
     isLoading,
     onEdit,
     onDelete,
-}: SectorTableProps) {
+}: CostCenterTableProps) {
 
-    const [search, setSearch] = useState("");
+        const [search, setSearch] = useState("");
+    
+        const [page, setPage] = useState(1);
+        const pageSize = 10;
+    
+        const companiesQ = useCompanies();
+        const companies = companiesQ.data ?? [];
+    
+        const departmentsQ = useDepartments();
+        const departments = departmentsQ.data ?? [];
 
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
+        const sectorsQ = useSectors();
+        const sectors = sectorsQ.data ?? [];
 
-    const companiesQ = useCompanies();
-    const companies = companiesQ.data ?? [];
+        const filtered = useMemo(() => {
+                return costcenters.filter((cc) => {
+                    const matchesCompanyName = companyName(cc.companyId).toLowerCase().includes(search.toLowerCase());
+                    const matchesDepartmentName = departmentName(cc.departmentId).toLowerCase().includes(search.toLowerCase());
+                    const matchesSectorName = sectorName(cc.sectorId).toLowerCase().includes(search.toLowerCase());
+                    
+                    return matchesCompanyName && matchesDepartmentName && matchesSectorName;
+                });
+            }, [sectors, search, companyName, departmentName, sectorName]);
+        
+            const total = filtered.length;
+            const pageCount = Math.max(1, Math.ceil(total / pageSize));
+            const start = (page - 1) * pageSize;
+            const items = filtered.slice(start, start + pageSize);
+        
+            const fmtCompany = (companyId: number | null) =>
+                companyId == null ? "-" : (companies.find((company) => Number(company.id) === companyId)?.corporateName ?? "-");
+        
+            const fmtDepartment = (departmentId: number | null) =>
+                departmentId == null ? "-" : (departments.find((department) => Number(department.id) === departmentId)?.name ?? "-");
 
-    const departmentsQ = useDepartments();
-    const departments = departmentsQ.data ?? [];
-
-    const filtered = useMemo(() => {
-        return sectors.filter((s) => {
-            const matchesCompanyName = companyName(s.companyId).toLowerCase().includes(search.toLowerCase());
-            const matchesDepartmentName = departmentName(s.departmentId).toLowerCase().includes(search.toLowerCase());
-
-            return matchesCompanyName && matchesDepartmentName;
-        });
-    }, [sectors, search, companyName, departmentName]);
-
-    const total = filtered.length;
-    const pageCount = Math.max(1, Math.ceil(total / pageSize));
-    const start = (page - 1) * pageSize;
-    const items = filtered.slice(start, start + pageSize);
-
-    const fmtCompany = (companyId: number | null) =>
-        companyId == null ? "-" : (companies.find((company) => Number(company.id) === companyId)?.corporateName ?? "-");
-
-    const fmtDepartment = (departmentId: number | null) =>
-        departmentId == null ? "-" : (departments.find((department) => Number(department.id) === departmentId)?.name ?? "-");
-
-
+            const fmtSector = (sectorId: number | null) =>
+                sectorId == null ? "-" : (sectors.find((sector) => Number(sector.id) === sectorId)?.name ?? "-");
     return (
         <>
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Código</TableHead>
                         <TableHead>Nome</TableHead>
                         <TableHead>Empresa</TableHead>
                         <TableHead>Departamento</TableHead>
+                        <TableHead>Setor</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Ações</TableHead>
                     </TableRow>
@@ -93,21 +103,23 @@ export function SectorTable({
                                 Carregando...
                             </TableCell>
                         </TableRow>
-                    ) : items.map(sector => (
-                        <TableRow key={sector.id}>
-                            <TableCell className="py-1">{sector.name}</TableCell>
-                            <TableCell className="py-1">{fmtCompany(sector.companyId)}</TableCell>
-                            <TableCell className="py-1">{fmtDepartment(sector.departmentId)}</TableCell>
+                    ) : items.map(costcenter => (
+                        <TableRow key={costcenter.id}>
+                            <TableCell className="py-1">{costcenter.code}</TableCell>
+                            <TableCell className="py-1">{costcenter.name}</TableCell>
+                            <TableCell className="py-1">{fmtCompany(costcenter.companyId)}</TableCell>
+                            <TableCell className="py-1">{fmtDepartment(costcenter.departmentId)}</TableCell>
+                            <TableCell className="py-1">{fmtSector(costcenter.sectorId)}</TableCell>
                             <TableCell className="py-1">
-                                <Badge className={sector.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                                    {sector.status === "active" ? "Ativo" : "Inativo"}
+                                <Badge className={costcenter.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                                    {costcenter.status === "active" ? "Ativo" : "Inativo"}
                                 </Badge>
                             </TableCell>
                             <TableCell className="py-1">
-                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onEdit(sector)}>
+                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onEdit(costcenter)}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(sector.id)}>
+                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(costcenter.id)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </TableCell>

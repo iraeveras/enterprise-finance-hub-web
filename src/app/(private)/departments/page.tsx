@@ -80,7 +80,7 @@ export default function DepartmentManager() {
                 </div>
 
                 {/* Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="relative flex-1">
@@ -99,7 +99,7 @@ export default function DepartmentManager() {
                 </Card>
 
                 {/* Tabela */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>Departamentos ({filtered.length})</CardTitle>
                     </CardHeader>

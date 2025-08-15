@@ -19,6 +19,11 @@ import { useCompanies } from "../companies/hooks/useCompanies"
 import { useDepartments } from "../departments/hooks/useDepartments"
 import { useSectors } from "../sectors/hooks/useSectors"
 import type { CostCenter, CreateCostCenterInput, UpdateCostCenterInput } from "./types";
+import { CostCenterTable } from "./components/CostCenterTable"
+import { companyName as getCompaniesName } from "@/lib/companies-utils";
+import { departmentName as getDepartmentsName } from "@/lib/departments-utils";
+import { sectorName as getSectorsName } from "@/lib/sectors-utils";
+
 
 export default function CostCenterManager() {
     const costCenterQ    = useCostCenters()
@@ -33,6 +38,11 @@ export default function CostCenterManager() {
     const [showForm, setShowForm] = useState(false)
     const [selected, setSelected] = useState<CostCenter | null>(null)
     const [search, setSearch]     = useState("")
+
+    const companyName = (id: number) => getCompaniesName(compQ.data ?? [], id);
+    const departmentName = (id: number) => getDepartmentsName(deptQ.data ?? [], id);
+    const sectorName = (id: number) => getSectorsName(sectQ.data ?? [], id);
+    
 
     if (costCenterQ.isLoading || compQ.isLoading || deptQ.isLoading || sectQ.isLoading) {
         return <p>Carregando...</p>
@@ -91,7 +101,7 @@ export default function CostCenterManager() {
                 </div>
 
                 {/* Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
                             <div className="relative flex-1">
@@ -110,7 +120,7 @@ export default function CostCenterManager() {
                 </Card>
 
                 {/* Tabela */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle className="flex items-center">
                             Centro de custo Cadastrados: ({filtered.length})
@@ -118,7 +128,16 @@ export default function CostCenterManager() {
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <CostCenterTable
+                                costcenters={costcenters}
+                                companyName={companyName}
+                                departmentName={departmentName}
+                                sectorName={sectorName}
+                                isLoading={sectQ.isLoading}
+                                onEdit={openEdit}
+                                onDelete={onDelete}
+                            />
+                            {/* <table className="w-full">
                                 <thead>
                                     <tr className="bg-gray-50 border-b">
                                         <th className="p-3 text-left">Código</th>
@@ -172,7 +191,7 @@ export default function CostCenterManager() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </table> */}
                         </div>
                     </CardContent>
                 </Card>

@@ -20,6 +20,10 @@ import { useSectors } from "../sectors/hooks/useSectors"
 import { useUsers } from "../users/hooks/useUsers"
 
 import type { Team, CreateTeamInput, UpdateTeamInput } from "./types"
+import { TeamTable } from "./components/TeamTable"
+import { companyName as getCompaniesName } from "@/lib/companies-utils";
+import { sectorName as getSectorsName } from "@/lib/sectors-utils";
+import { userName as getUsersName } from "@/lib/users-utils";
 
 export default function TeamManager() {
     const teamsQ   = useTeams()
@@ -34,6 +38,10 @@ export default function TeamManager() {
     const [showForm, setShowForm] = useState(false)
     const [selected, setSelected] = useState<Team | null>(null)
     const [search, setSearch]     = useState("")
+
+    const companyName = (id: number) => getCompaniesName(compQ.data ?? [], id);
+    const sectorName = (id: number) => getSectorsName(sectQ.data ?? [], id);
+    const userName = (leaderId?: number | null): string => getUsersName(usersQ.data ?? [], leaderId ?? undefined, "—");
 
     if (teamsQ.isLoading || compQ.isLoading || sectQ.isLoading || usersQ.isLoading) {
         return <p>Carregando...</p>
@@ -87,7 +95,7 @@ export default function TeamManager() {
                 </div>
 
                 {/* Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
                             <div className="relative flex-1">
@@ -106,13 +114,22 @@ export default function TeamManager() {
                 </Card>
 
                 {/* Tabela */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>Equipes Cadastradas ({filtered.length})</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <TeamTable
+                                teams={teams}
+                                companyName={companyName}
+                                sectorName={sectorName}
+                                userName={userName}
+                                isLoading={teamsQ.isLoading}
+                                onEdit={openEdit}
+                                onDelete={onDelete}
+                            />
+                            {/* <table className="w-full">
                                 <thead>
                                     <tr className="bg-gray-50 border-b">
                                         <th className="p-3 text-left">Nome</th>
@@ -155,7 +172,7 @@ export default function TeamManager() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </table> */}
                         </div>
                     </CardContent>
                 </Card>

@@ -1,9 +1,9 @@
-// FILE: src/app/(private)/companies/components/SectorTable.tsx
+// FILE: src/app/(private)/companies/components/TeamTable.tsx
 "use client"
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, UsersIcon } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -21,26 +21,29 @@ import {
     PaginationContent,
 } from "@/components/ui/pagination";
 import { useCompanies } from "../../companies/hooks/useCompanies";
-import { useDepartments } from "../../departments/hooks/useDepartments";
-import { Sector } from "../types";
+import { useSectors } from "../../sectors/hooks/useSectors";
+import { useUsers } from "../../users/hooks/useUsers";
+import type { Team } from "../types";
 
-export interface SectorTableProps {
-    sectors: Sector[];
+export interface TeamTableProps {
+    teams: Team[];
     companyName: (companyId: number) => string;
-    departmentName: (departmentId: number) => string;
+    sectorName: (sectorId: number) => string;
+    userName: (leaderId?: number | null) => string;
     isLoading: boolean;
-    onEdit: (sector: Sector) => void;
+    onEdit: (team: Team) => void;
     onDelete: (id: string) => void;
 }
 
-export function SectorTable({
-    sectors,
+export function TeamTable({
+    teams,
     companyName,
-    departmentName,
+    sectorName,
+    userName,
     isLoading,
     onEdit,
     onDelete,
-}: SectorTableProps) {
+}: TeamTableProps) {
 
     const [search, setSearch] = useState("");
 
@@ -50,29 +53,36 @@ export function SectorTable({
     const companiesQ = useCompanies();
     const companies = companiesQ.data ?? [];
 
-    const departmentsQ = useDepartments();
-    const departments = departmentsQ.data ?? [];
+    const sectorsQ = useSectors();
+    const sectors = sectorsQ.data ?? [];
+
+    const usersQ = useUsers();
+    const users = usersQ.data ?? [];
 
     const filtered = useMemo(() => {
-        return sectors.filter((s) => {
-            const matchesCompanyName = companyName(s.companyId).toLowerCase().includes(search.toLowerCase());
-            const matchesDepartmentName = departmentName(s.departmentId).toLowerCase().includes(search.toLowerCase());
-
-            return matchesCompanyName && matchesDepartmentName;
+        const q = search.toLowerCase();
+        return teams.filter((team) => {
+            const matchesCompanyName = (companyName(team.companyId) ?? "").toLowerCase().includes(q);
+            const matchesSectorName = (sectorName(team.sectorId) ?? "").toLowerCase().includes(q);
+            const matchesUserName = (userName(team.leaderId) ?? "").toLowerCase().includes(q);
+            
+            return matchesCompanyName && matchesUserName && matchesSectorName;
         });
-    }, [sectors, search, companyName, departmentName]);
+    }, [teams, search, companyName, userName, sectorName]);
 
     const total = filtered.length;
-    const pageCount = Math.max(1, Math.ceil(total / pageSize));
-    const start = (page - 1) * pageSize;
-    const items = filtered.slice(start, start + pageSize);
+            const pageCount = Math.max(1, Math.ceil(total / pageSize));
+            const start = (page - 1) * pageSize;
+            const items = filtered.slice(start, start + pageSize);
+        
+            const fmtCompany = (companyId: number | null) =>
+                companyId == null ? "-" : (companies.find((company) => Number(company.id) === companyId)?.corporateName ?? "-");
 
-    const fmtCompany = (companyId: number | null) =>
-        companyId == null ? "-" : (companies.find((company) => Number(company.id) === companyId)?.corporateName ?? "-");
-
-    const fmtDepartment = (departmentId: number | null) =>
-        departmentId == null ? "-" : (departments.find((department) => Number(department.id) === departmentId)?.name ?? "-");
-
+            const fmtSector = (sectorId: number | null) =>
+                sectorId == null ? "-" : (sectors.find((sector) => Number(sector.id) === sectorId)?.name ?? "-");
+            
+            const fmtUser = (leaderId?: number | null) =>
+                leaderId == null ? "-" : (users.find((user) => Number(user.id) === leaderId)?.name ?? "-");
 
     return (
         <>
@@ -81,7 +91,9 @@ export function SectorTable({
                     <TableRow>
                         <TableHead>Nome</TableHead>
                         <TableHead>Empresa</TableHead>
-                        <TableHead>Departamento</TableHead>
+                        <TableHead>Setor</TableHead>
+                        <TableHead>Lider</TableHead>
+                        <TableHead>Membros</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Ações</TableHead>
                     </TableRow>
@@ -93,21 +105,30 @@ export function SectorTable({
                                 Carregando...
                             </TableCell>
                         </TableRow>
-                    ) : items.map(sector => (
-                        <TableRow key={sector.id}>
-                            <TableCell className="py-1">{sector.name}</TableCell>
-                            <TableCell className="py-1">{fmtCompany(sector.companyId)}</TableCell>
-                            <TableCell className="py-1">{fmtDepartment(sector.departmentId)}</TableCell>
+                    ) : items.map(team => (
+                        <TableRow key={team.id}>
+                            <TableCell className="py-1">{team.name}</TableCell>
+                            <TableCell className="py-1">{fmtCompany(team.companyId)}</TableCell>
+                            <TableCell className="py-1">{fmtSector(team.sectorId)}</TableCell>
+                            <TableCell className="py-1">{fmtUser(team.leaderId)}</TableCell>
                             <TableCell className="py-1">
-                                <Badge className={sector.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                                    {sector.status === "active" ? "Ativo" : "Inativo"}
+                                <div className="flex items-center justify-center">
+                                    <UsersIcon className="w-4 h-4 mr-1"/> 
+                                    {team.members?.length ?? "-"}
+                                </div>
+                            </TableCell>
+                            <TableCell className="py-1">
+                                <Badge 
+                                    className={team.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
+                                >
+                                    {team.status==="active"?"Ativo":"Inativo"}
                                 </Badge>
                             </TableCell>
                             <TableCell className="py-1">
-                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onEdit(sector)}>
+                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onEdit(team)}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(sector.id)}>
+                                <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onDelete(team.id)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </TableCell>

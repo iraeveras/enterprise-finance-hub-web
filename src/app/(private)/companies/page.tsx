@@ -82,7 +82,7 @@ export default function CompanyManager() {
                 </div>
 
                 {/* Filtros e Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1 relative">
@@ -109,7 +109,7 @@ export default function CompanyManager() {
                 </Card>
 
                 {/* Lista de Empresas */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>
                             Empresas Cadastradas 

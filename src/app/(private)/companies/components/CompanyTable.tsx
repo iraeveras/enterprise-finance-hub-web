@@ -64,10 +64,10 @@ export function CompanyTable({
                         )
                         : data.map(company => (
                             <TableRow key={company.id}>
-                                <TableCell>{formatCNPJ(company.cnpj)}</TableCell>
-                                <TableCell>{company.corporateName}</TableCell>
-                                <TableCell>{company.tradeName}</TableCell>
-                                <TableCell>
+                                <TableCell className="py-1">{formatCNPJ(company.cnpj)}</TableCell>
+                                <TableCell className="py-1">{company.corporateName}</TableCell>
+                                <TableCell className="py-1">{company.tradeName}</TableCell>
+                                <TableCell className="py-1">
                                     <span
                                         className={
                                         company.status === "active"
@@ -78,10 +78,10 @@ export function CompanyTable({
                                         {company.status === "active" ? "Ativo" : "Inativo"}
                                     </span>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="py-1">
                                     {new Date(company.createdAt).toLocaleDateString("pt-BR")}
                                 </TableCell>
-                                <TableCell className="space-x-2">
+                                <TableCell className="py-1">
                                     <Button
                                         variant="ghost"
                                         size="sm"

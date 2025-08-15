@@ -85,7 +85,7 @@ export default function SectorManager() {
                 </div>
 
                 {/* Filtros e Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1 relative">
@@ -112,7 +112,7 @@ export default function SectorManager() {
                 </Card>
 
                 {/* Lista de Setores */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>Setores Cadastrados ({filteredSectors.length})</CardTitle>
                     </CardHeader>

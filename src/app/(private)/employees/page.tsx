@@ -123,7 +123,7 @@ export default function EmployeeManager() {
                 </div>
 
                 {/* Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
                             <div className="relative flex-1">
@@ -148,7 +148,7 @@ export default function EmployeeManager() {
                 </Card>
 
                 {/* Tabela */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle>Funcionários Cadastrados ({filtered.length})</CardTitle>
                     </CardHeader>

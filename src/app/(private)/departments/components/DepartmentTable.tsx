@@ -84,15 +84,15 @@ export function DepartmentTable({
                         </TableRow>
                     ) : items.map(department => (
                         <TableRow key={department.id}>
-                            <TableCell>{department.name}</TableCell>
-                            <TableCell>{fmtCompany(department.companyId)}</TableCell>
-                            <TableCell>
+                            <TableCell className="py-1">{department.name}</TableCell>
+                            <TableCell className="py-1">{fmtCompany(department.companyId)}</TableCell>
+                            <TableCell className="py-1">
                                 <Badge className={department.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
                                     {department.status === "active" ? "Ativo" : "Inativo"}
                                 </Badge>
 
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="py-1">
                                 <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onEdit(department)}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
@@ -146,7 +146,7 @@ export function DepartmentTable({
                 )}
 
                 {total === 0 && (
-                    <div className="text-center py-8 text-gray-500">Nenhuma programação de férias encontrada.</div>
+                    <div className="text-center py-8 text-gray-500">Nenhum registro encontrado.</div>
                 )}
             </div>
         </>

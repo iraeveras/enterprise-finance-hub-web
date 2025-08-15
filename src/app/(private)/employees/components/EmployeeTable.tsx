@@ -99,30 +99,30 @@ export default function EmployeeTable({
 
                             return (
                                 <TableRow key={e.id} className="hover:bg-gray-50">
-                                    <TableCell className="p-2 text-xs font-mono">{e.matricula}</TableCell>
-                                    <TableCell className="p-2 text-xs font-medium">{e.name}</TableCell>
-                                    <TableCell className="p-2 text-xs truncate">{fmtCompany(e.companyId)}</TableCell>
-                                    <TableCell className="p-2 text-xs">
+                                    <TableCell className="py-1 text-xs font-mono">{e.matricula}</TableCell>
+                                    <TableCell className="py-1 text-xs font-medium">{e.name}</TableCell>
+                                    <TableCell className="py-1 text-xs truncate">{fmtCompany(e.companyId)}</TableCell>
+                                    <TableCell className="py-1 text-xs">
                                         {new Date(e.admission).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
                                     </TableCell>
-                                    <TableCell className="p-2 text-xs">{e.position}</TableCell>
-                                    <TableCell className="p-2 text-xs text-right">{fmtMoney(e.salary)}</TableCell>
-                                    <TableCell className="p-2 text-center">
+                                    <TableCell className="py-1 text-xs">{e.position}</TableCell>
+                                    <TableCell className="py-1 text-xs text-right">{fmtMoney(e.salary)}</TableCell>
+                                    <TableCell className="py-1 text-center">
                                         {e.dangerPay ? (
                                             <Badge variant="secondary" className="text-xs">30%</Badge>
                                         ) : (
                                             <span className="text-gray-400">-</span>
                                         )}
                                     </TableCell>
-                                    <TableCell className="p-2 text-right text-sm font-medium">{fmtMoney(totalSalary)}</TableCell>
-                                    <TableCell className="p-2 text-sm">{fmtDept(e.departmentId)}</TableCell>
-                                    <TableCell className="p-2 text-sm">{fmtSector(e.sectorId)}</TableCell>
-                                    <TableCell className="p-2 text-center">
+                                    <TableCell className="py-1 text-right text-sm font-medium">{fmtMoney(totalSalary)}</TableCell>
+                                    <TableCell className="py-1 text-sm">{fmtDept(e.departmentId)}</TableCell>
+                                    <TableCell className="py-1 text-sm">{fmtSector(e.sectorId)}</TableCell>
+                                    <TableCell className="py-1 text-center">
                                         <Badge className={e.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
                                             {e.status === "active" ? "Ativo" : "Inativo"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="p-2 text-center space-x-2">
+                                    <TableCell className="py-1 text-center space-x-2">
                                         <Button className="cursor-pointer" size="sm" variant="ghost" onClick={() => onEdit(e)}>
                                             <Edit className="h-4 w-4" />
                                         </Button>
