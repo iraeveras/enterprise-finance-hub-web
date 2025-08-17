@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function OvertimeAnalysisByCostCenter({ entries, employeeName, costCenterName }: Props) {
-    const sectors = Array.from(new Set(entries.map(e => e.costCenterId))).filter(Boolean);
+    const sectors = Array.from(new Set(entries.map(e => e.costcenterId))).filter(Boolean);
 
     const vClass = (p: number) =>
         p > 15 ? "text-red-600" : p > 5 ? "text-amber-600" : "text-green-600";
@@ -20,7 +20,7 @@ export function OvertimeAnalysisByCostCenter({ entries, employeeName, costCenter
     return (
         <div className="space-y-6">
             {sectors.map((ccId) => {
-                const ccEntries = entries.filter(e => e.costCenterId === ccId);
+                const ccEntries = entries.filter(e => e.costcenterId === ccId);
                 if (ccEntries.length === 0) return null;
 
                 const totalBudgeted = ccEntries.reduce((acc, e) => acc + (e.budgetedAmount ?? 0), 0);

@@ -21,7 +21,7 @@ interface EmployeeFormProps {
     companies: Company[];
     departments: Department[];
     sectors: Sector[];
-    costCenters: CostCenter[];
+    costcenters: CostCenter[];
     teams: Team[];
     onClose: () => void;
     onSave: (data: any) => void;
@@ -32,7 +32,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     companies,
     departments,
     sectors,
-    costCenters,
+    costcenters,
     teams,
     onClose,
     onSave,
@@ -50,7 +50,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         companyId: employee && employee.companyId ? Number(employee?.companyId) : null,
         departmentId: employee && employee?.departmentId ? Number(employee.departmentId) : null,
         sectorId: employee && employee?.sectorId ? Number(employee.sectorId) : null,
-        costCenterId: employee && employee?.costCenterId ? Number(employee.costCenterId) : null,
+        costcenterId: employee && employee?.costcenterId ? Number(employee.costcenterId) : null,
         teams: employee?.teams?.map(Number) || [],
         status: employee?.status || "active",
     });
@@ -75,7 +75,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             companyId: String(formData.companyId) === "null" || formData.companyId === null ? null : Number(formData.companyId),
             departmentId: String(formData.departmentId) === "null" || formData.departmentId === null ? null : Number(formData.departmentId),
             sectorId: String(formData.sectorId) === "null" || formData.sectorId === null ? null : Number(formData.sectorId),
-            costCenterId: String(formData.costCenterId) === "null" || formData.costCenterId === null ? null : Number(formData.costCenterId),
+            costcenterId: String(formData.costcenterId) === "null" || formData.costcenterId === null ? null : Number(formData.costcenterId),
             teams: formData.teams,
             salary: Number(formData.salary),
             monthlyHours:
@@ -323,9 +323,9 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                         <div>
                             <Label htmlFor="costCenterId">Centro de Custo</Label>
                             <Select
-                                value={String(formData.costCenterId)}
+                                value={String(formData.costcenterId)}
                                 onValueChange={(value) =>
-                                    setFormData({ ...formData, costCenterId: Number(value) })
+                                    setFormData({ ...formData, costcenterId: Number(value) })
                                 }
                             >
                                 <SelectTrigger>
@@ -333,7 +333,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="null">— Selecionar c.custo —</SelectItem>
-                                    {costCenters.map((cc) => (
+                                    {costcenters.map((cc) => (
                                         <SelectItem key={cc.id} value={String(cc.id)}>
                                             {cc.code} – {cc.name}
                                         </SelectItem>

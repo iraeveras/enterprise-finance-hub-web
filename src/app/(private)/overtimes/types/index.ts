@@ -6,7 +6,7 @@ export interface Overtime {
     year: number;
     month: number;
     companyId: number;
-    costCenterId: number;
+    costcenterId: number;
     employeeId: number;
     budgetPeriodId: number;
     function: string;

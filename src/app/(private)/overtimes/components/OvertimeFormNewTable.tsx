@@ -73,68 +73,68 @@ export default function OvertimeFormNewTable({
 
                             <TableCell>
                                 <Input
-                                    inputMode="decimal"
+                                    inputMode="numeric"
                                     type="number"
-                                    step="0.01"
+                                    step="1"           // ⬅️ inteiro
                                     min={0}
                                     value={month.he50Qty}
-                                    onChange={(e) => onChange(index, "he50Qty", parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => onChange(index, "he50Qty", parseInt(e.target.value || "0", 10))}
                                     className="w-16 sm:w-20"
                                 />
                                 {showReadonlyTotals && month.he50Value > 0 && (
                                     <div className="text-xs text-green-600 mt-1">
-                                        R$ {month.he50Value.toFixed(2).replace(".", ",")}
+                                    R$ {month.he50Value.toFixed(2).replace(".", ",")}
                                     </div>
                                 )}
                             </TableCell>
 
                             <TableCell>
                                 <Input
-                                    inputMode="decimal"
+                                    inputMode="numeric"
                                     type="number"
-                                    step="0.01"
+                                    step="1"
                                     min={0}
                                     value={month.he100Qty}
-                                    onChange={(e) => onChange(index, "he100Qty", parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => onChange(index, "he100Qty", parseInt(e.target.value || "0", 10))}
                                     className="w-16 sm:w-20"
                                 />
                                 {showReadonlyTotals && month.he100Value > 0 && (
                                     <div className="text-xs text-green-600 mt-1">
-                                        R$ {month.he100Value.toFixed(2).replace(".", ",")}
+                                    R$ {month.he100Value.toFixed(2).replace(".", ",")}
                                     </div>
                                 )}
                             </TableCell>
 
                             <TableCell>
                                 <Input
-                                    inputMode="decimal"
+                                    inputMode="numeric"
                                     type="number"
-                                    step="0.01"
+                                    step="1"
                                     min={0}
                                     value={month.holidayDaysQty}
-                                    onChange={(e) => onChange(index, "holidayDaysQty", parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => onChange(index, "holidayDaysQty", parseInt(e.target.value || "0", 10))}
                                     className="w-16 sm:w-20"
                                 />
                                 {showReadonlyTotals && month.holidayValue > 0 && (
                                     <div className="text-xs text-green-600 mt-1">
-                                        R$ {month.holidayValue.toFixed(2).replace(".", ",")}
+                                    R$ {month.holidayValue.toFixed(2).replace(".", ",")}
                                     </div>
                                 )}
                             </TableCell>
 
                             <TableCell>
                                 <Input
-                                    inputMode="decimal"
+                                    inputMode="numeric"
                                     type="number"
-                                    step="0.01"
+                                    step="1"
                                     min={0}
                                     value={month.nightHoursQty}
-                                    onChange={(e) => onChange(index, "nightHoursQty", parseFloat(e.target.value) || 0)}
+                                    onChange={(e) => onChange(index, "nightHoursQty", parseInt(e.target.value || "0", 10))}
                                     className="w-16 sm:w-20"
                                 />
                                 {showReadonlyTotals && month.nightValue > 0 && (
                                     <div className="text-xs text-green-600 mt-1">
-                                        R$ {month.nightValue.toFixed(2).replace(".", ",")}
+                                    R$ {month.nightValue.toFixed(2).replace(".", ",")}
                                     </div>
                                 )}
                             </TableCell>

@@ -215,7 +215,7 @@ export function OvertimeTableNew({ entries, onEdit, onDelete, employeeName }: Pr
             {selectedEmployee && (
                 <Dialog open onOpenChange={() => setSelectedEmployee(null)}>
                     <DialogContent
-                        className="w-[95vw] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+                        className="w-[calc(100vw-2rem)] max-w-[1000px] sm:max-w-3xl lg:max-w-5xl xl:max-w-6xl max-h-[90vh] overflow-y-auto p-0">
                         <div className="px-4 sm:px-6 py-4">
                             <DialogHeader>
                                 <DialogTitle>Detalhamento Mensal — {employeeName(selectedEmployee)}</DialogTitle>

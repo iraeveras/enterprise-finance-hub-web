@@ -12,7 +12,7 @@ export interface Employee {
     companyId: number;
     departmentId: number;
     sectorId: number;
-    costCenterId: number;
+    costcenterId: number;
     teams: number[];
     status: 'active' | 'inactive' | 'vacation' | 'leave';
 }

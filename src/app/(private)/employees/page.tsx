@@ -171,7 +171,7 @@ export default function EmployeeManager() {
                         companies={companies}
                         departments={departments}
                         sectors={sectors}
-                        costCenters={costCenters}
+                        costcenters={costCenters}
                         teams={teams}
                         onClose={() => setShowForm(false)}
                         onSave={onSave}

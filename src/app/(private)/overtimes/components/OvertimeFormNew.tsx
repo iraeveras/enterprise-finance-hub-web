@@ -14,8 +14,43 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import type { Overtime } from "../types";
 import { useEmployees } from "@/app/(private)/employees/hooks/useEmployees";
 import { useCompanies } from "@/app/(private)/companies/hooks/useCompanies";
-import { useBudgetPeriods } from "../../budgetperiods/hooks/useBudgetPeriods";
 import { useCostCenters } from "../../costcenters/hooks/useCostCenters";
+import { useBudgetPeriods } from "../../budgetperiods/hooks/useBudgetPeriods";
+import { AlertTriangle } from "lucide-react";
+
+function num(v: any): number {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === "number") return v;
+    if (typeof v === "string") return Number(v);
+    if (typeof v === "object") {
+        // tenta extrair um id de objetos comuns
+        return num(v.id ?? v.value ?? v.key ?? v.code);
+    }
+    return 0;
+}
+function getEmpCompanyId(emp: any): number {
+    // cobre os formatos mais comuns do projeto
+    return num(
+        emp?.companyId ??
+            emp?.company_id ??
+            emp?.company?.id ??
+            emp?.company?.companyId ??
+            emp?.empresaId ??
+            emp?.empresa?.id
+    );
+}
+function getEmpCostCenterId(emp: any): number {
+    // no projeto já vi costCenterId, cost_center_id, costCenter.id, departmentId…
+    return num(
+        emp?.costcenterId ??
+            emp?.cost_center_id ??
+            emp?.costcenter?.id ??
+            emp?.departmentId ?? // fallback comum quando CC = departamento
+            emp?.setorId ?? // caso usem "setor"
+            emp?.sectorId ??
+            emp?.teamId // último fallback (quando time mapeia CC)
+    );
+}
 
 interface OvertimeFormNewProps {
     entry?: Overtime | null;
@@ -23,80 +58,132 @@ interface OvertimeFormNewProps {
     onSave: (data: Overtime) => void;
 }
 
+function isOpenStatus(s?: string | null) {
+    if (!s) return false;
+    return String(s).toLowerCase() === "open" || String(s).toLowerCase() === "aberto";
+}
+
 export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps) => {
+    // dados reais
     const compQ = useCompanies();
     const empQ = useEmployees();
-    const bpQ = useBudgetPeriods();
     const ccQ = useCostCenters();
+    const bpQ = useBudgetPeriods();
 
     const companies = compQ.data ?? [];
     const employees = empQ.data ?? [];
-    const budgetPeriods = bpQ.data ?? [];
     const costCenters = ccQ.data ?? [];
+    const budgetPeriods = bpQ.data ?? [];
 
-    const currentYear = new Date().getFullYear();
+    // período orçamentário em exercício (status open)
+    const activeBudget = useMemo(() => {
+        // 1) tenta por status open
+        const byOpen = budgetPeriods.find((bp: any) => isOpenStatus(bp.status));
+        if (byOpen) return byOpen;
+        // 2) tenta pelo ano corrente E open (fallback)
+        const currentYear = new Date().getFullYear();
+        const byYearOpen = budgetPeriods.find((bp: any) => Number(bp.year) === currentYear && isOpenStatus(bp.status));
+        return byYearOpen ?? null;
+    }, [budgetPeriods]);
 
-    const [isCollective, setIsCollective] = useState(false);
+    // se não existir ativo, bloqueia o formulário
+    const noActiveBudget = !activeBudget;
+
+    // form state
+    const [isCollective, setIsCollective] = useState<boolean>(false);
     const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
 
+    // inicializa com entry (editar) OU com defaults do período ativo
     const [formData, setFormData] = useState({
-        year: currentYear,
-        companyId: entry?.companyId ?? (companies[0] ? Number(companies[0].id) : 0),
-        costCenterId: entry?.costCenterId ?? 0,
-        budgetPeriodId: entry?.budgetPeriodId ?? 0,
+        // ano deve vir do orçamento em exercício
+        year: entry?.year ?? (activeBudget ? Number(activeBudget.year) : new Date().getFullYear()),
+        budgetPeriodId: entry?.budgetPeriodId ?? (activeBudget ? Number(activeBudget.id) : 0),
+        companyId: entry?.companyId ?? 0,
+        costcenterId: entry?.costcenterId ?? 0,
         employeeId: entry?.employeeId ?? 0,
-        position: "",
+        position: entry?.function ?? "",
     });
 
-    // Seleciona automaticamente o período pelo ano (ou status=active, ou o primeiro)
-    useEffect(() => {
-        if (!formData.budgetPeriodId && budgetPeriods.length) {
-            const byYear = budgetPeriods.find((bp) => Number(bp.year) === formData.year);
-            const byActive = budgetPeriods.find((bp) => (bp.status ?? "").toLowerCase() === "active");
-            setFormData((prev) => ({
-                ...prev,
-                budgetPeriodId: byYear?.id ?? byActive?.id ?? budgetPeriods[0].id,
-            }));
-        }
-    }, [budgetPeriods]); // eslint-disable-line
+    // employees filtrados (empresa + centro de custo)
+    const employeesFilteredByCompany = useMemo(() => {
+        if (!formData.companyId) return employees;
+        return employees.filter((e: any) => getEmpCompanyId(e) === num(formData.companyId));
+    }, [employees, formData.companyId]);
 
-    // Ao escolher funcionário (modo individual), herdamos empresa/CC/função e desabilitamos os campos
-    useEffect(() => {
-        if (!isCollective && formData.employeeId) {
-            const emp = employees.find((e) => Number(e.id) === Number(formData.employeeId));
-            if (emp) {
-                setFormData((prev) => ({
-                    ...prev,
-                    companyId: Number((emp as any).companyId ?? prev.companyId),
-                    costCenterId: Number((emp as any).costCenterId ?? prev.costCenterId),
-                    position: (emp as any).position ?? prev.position,
-                }));
-            }
-        }
-    }, [formData.employeeId, isCollective, employees]);
+    const employeesFiltered = useMemo(() => {
+        if (!formData.costcenterId) return employeesFilteredByCompany;
+        return employeesFilteredByCompany.filter(
+            (e: any) => getEmpCostCenterId(e) === num(formData.costcenterId)
+    );
+    }, [employeesFilteredByCompany, formData.costcenterId]);
 
-    // Grade mensal
-    const [monthlyData, setMonthlyData] = useState<MonthlyRow[]>(
-        Array.from({ length: 12 }, (_, index) => ({
-            month: index + 1,
-            he50Qty: 0,
-            he100Qty: 0,
-            holidayDaysQty: 0,
-            nightHoursQty: 0,
-            he50Value: 0,
-            he100Value: 0,
-            holidayValue: 0,
-            nightValue: 0,
-            dsrValue: 0,
-            dsrNightValue: 0,
-            totalValue: 0,
-            previousYearTotal: 0,
-            variance: 0,
-        })),
+    // cost centers filtrados por empresa
+    const costCentersFiltered = useMemo(
+        () => costCenters.filter((cc: any) => !formData.companyId || num(cc.companyId ?? cc.company?.id) === num(formData.companyId)),
+        [costCenters, formData.companyId]
     );
 
-    const selectedEmployee = employees.find((e) => Number(e.id) === Number(formData.employeeId));
+    // se selecionar funcionário (individual), herdamos empresa/CC/função e travamos esses campos
+    const selectedEmployee = useMemo(
+        () => employees.find((e: any) => Number(e.id) === Number(formData.employeeId)),
+        [employees, formData.employeeId]
+    );
 
+    useEffect(() => {
+        if (!isCollective && selectedEmployee) {
+            setFormData((prev) => ({
+                ...prev,
+                companyId: Number(selectedEmployee.companyId ?? prev.companyId),
+                costcenterId: Number(selectedEmployee.costcenterId ?? prev.costcenterId),
+                position: selectedEmployee.position ?? prev.position,
+            }));
+        }
+    }, [selectedEmployee, isCollective]);
+
+    // montar a grade (para editar, pré-preenche o mês do entry)
+    const emptyRows: MonthlyRow[] = Array.from({ length: 12 }, (_, index) => ({
+        month: index + 1,
+        he50Qty: 0,
+        he100Qty: 0,
+        holidayDaysQty: 0,
+        nightHoursQty: 0,
+        he50Value: 0,
+        he100Value: 0,
+        holidayValue: 0,
+        nightValue: 0,
+        dsrValue: 0,
+        dsrNightValue: 0,
+        totalValue: 0,
+        previousYearTotal: 0,
+        variance: 0,
+    }));
+
+    const [monthlyData, setMonthlyData] = useState<MonthlyRow[]>(
+        entry
+            ? emptyRows.map((r) =>
+                    r.month === entry.month
+                        ? {
+                            ...r,
+                            he50Qty: entry.he50Qty ?? entry.overtime50 ?? 0,
+                            he100Qty: entry.he100Qty ?? entry.overtime100 ?? 0,
+                            holidayDaysQty: entry.holidayDaysQty ?? (entry.holidayHours ? Math.round(entry.holidayHours / 8) : 0),
+                            nightHoursQty: entry.nightHoursQty ?? entry.nightShiftHours ?? 0,
+                            he50Value: entry.he50Value ?? entry.overtime50Value ?? 0,
+                            he100Value: entry.he100Value ?? entry.overtime100Value ?? 0,
+                            holidayValue: entry.holidayValue ?? 0,
+                            nightValue: entry.nightValue ?? entry.nightShiftValue ?? 0,
+                            dsrValue: entry.dsrValue ?? 0,
+                            dsrNightValue: entry.dsrNightValue ?? 0,
+                            totalValue: entry.totalValue ?? 0,
+                            previousYearTotal: entry.previousYearTotal ?? entry.budgetedAmount ?? 0,
+                            variance: entry.variance ?? 0,
+                        }
+                    : r
+                )
+            : emptyRows
+    );
+
+    // cálculo de valores
     const hourlyRate = (salary: number, dangerPay: boolean, monthlyHours?: number) => {
         const hours = monthlyHours && monthlyHours > 0 ? monthlyHours : 220;
         const base = dangerPay ? salary * 1.3 : salary;
@@ -104,9 +191,9 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
     };
 
     const recalc = useMemo(() => {
-        const emp = selectedEmployee;
+        const emp: any = selectedEmployee;
         if (!emp) return monthlyData;
-        const rate = hourlyRate(Number((emp as any).salary ?? 0), !!(emp as any).dangerPay, (emp as any).monthlyHours);
+        const rate = hourlyRate(Number(emp.salary ?? 0), !!emp.dangerPay, emp.monthlyHours);
 
         return monthlyData.map((m) => {
             const he50Value = m.he50Qty * rate * 1.5;
@@ -116,7 +203,7 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
             const dsrValue = ((m.he50Qty + m.he100Qty + m.holidayDaysQty * 8) / 25) * 5 * rate;
             const dsrNightValue = (m.nightHoursQty / 25) * 5 * rate * 0.2;
             const totalValue = he50Value + he100Value + holidayValue + nightValue + dsrValue + dsrNightValue;
-            const previousYearTotal = 0;
+            const previousYearTotal = m.previousYearTotal ?? 0;
             const variance = totalValue - previousYearTotal;
 
             return {
@@ -142,16 +229,16 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
         new Date(formData.year, m - 1).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
 
     function ensureRequired(): string | null {
+        if (noActiveBudget) return "Não há Período Orçamentário em aberto. Cadastre/abra um período antes de lançar horas.";
         if (!formData.companyId) return "Selecione a empresa.";
-        if (!formData.costCenterId) return "Selecione o Centro de Custo.";
-        if (!formData.budgetPeriodId) return "Selecione o Período Orçamentário.";
+        if (!formData.costcenterId) return "Selecione o centro de custo.";
+        if (!formData.budgetPeriodId) return "Período orçamentário inválido.";
         if (!isCollective && !formData.employeeId) return "Selecione o funcionário.";
         return null;
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         const err = ensureRequired();
         if (err) {
             alert(err);
@@ -164,7 +251,7 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
             year: formData.year,
             month: m.month,
             companyId: Number(formData.companyId),
-            costCenterId: Number(formData.costCenterId),
+            costcenterId: Number(formData.costcenterId),
             employeeId: Number(employeeId),
             budgetPeriodId: Number(formData.budgetPeriodId),
             function: formData.position ?? "",
@@ -193,23 +280,10 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
         }
     };
 
-    // Filtros
-    const filteredCostCenters = costCenters.filter(
-        (cc) => !formData.companyId || Number(cc.companyId ?? formData.companyId) === Number(formData.companyId),
-    );
-
-    const filteredEmployeesByCompany = employees.filter(
-        (e) => !formData.companyId || Number((e as any).companyId ?? formData.companyId) === Number(formData.companyId),
-    );
-
-    const filteredEmployeesByCompanyAndCC = filteredEmployeesByCompany.filter(
-        (e) => !formData.costCenterId || Number((e as any).costCenterId ?? formData.costCenterId) === Number(formData.costCenterId),
-    );
-
-    // Desabilitar campos conforme regra:
-    const disableCompanyAndCC =
-        !isCollective && !!formData.employeeId; // individual: após escolher funcionário, trava empresa/CC
-    const disableBudgetPeriod = true; // sempre desabilitado (preenchido automático)
+    // travas de campos
+    const disableCompanyAndCC = !isCollective && !!formData.employeeId; // individual: após escolher funcionário, trava empresa/CC
+    const disableBudgetPeriod = true; // sempre readonly (vem do orçamento em exercício)
+    const disableCollectiveToggle = !!entry; // editar: não permite alternar para coletivo
 
     return (
         <Dialog open onOpenChange={onClose}>
@@ -219,11 +293,28 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                         <DialogTitle>{entry ? "Editar Lançamento de Horas Extras" : "Novo Lançamento"}</DialogTitle>
                     </DialogHeader>
 
+                    {/* AVISO quando não há orçamento em aberto */}
+                    {noActiveBudget && (
+                        <div className="mb-4 flex items-start gap-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-800">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                            <div className="text-sm">
+                                <strong>Não há período orçamentário em aberto.</strong> Cadastre um período de orçamento com status
+                                <em> open</em> para lançar horas extras.
+                            </div>
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Tipo de lançamento */}
                         <div className="flex items-center space-x-2">
-                            <Switch checked={isCollective} onCheckedChange={setIsCollective} />
-                            <Label>Lançamento Coletivo (por Equipe/Setor)</Label>
+                            <Switch
+                                checked={isCollective}
+                                onCheckedChange={setIsCollective}
+                                disabled={disableCollectiveToggle || noActiveBudget}
+                            />
+                            <Label>
+                                Lançamento Coletivo (por Equipe/Setor){disableCollectiveToggle ? " — indisponível na edição" : ""}
+                            </Label>
                         </div>
 
                         {/* Linha de seleção */}
@@ -233,25 +324,47 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Input id="year" type="number" value={formData.year} disabled className="bg-gray-100 cursor-not-allowed" />
+                                            <Input
+                                                id="year"
+                                                type="number"
+                                                value={formData.year}
+                                                disabled
+                                                className="bg-gray-100 cursor-not-allowed"
+                                            />
                                         </TooltipTrigger>
-                                        <TooltipContent>Ano do período orçamentário</TooltipContent>
+                                        <TooltipContent>Ano do orçamento em exercício (status open)</TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
+                            </div>
+
+                            <div>
+                                <Label>Período Orçamentário</Label>
+                                <Input
+                                    value={activeBudget ? `${activeBudget.year} — ${activeBudget.status ?? "open"}` : "—"}
+                                    disabled
+                                    className="bg-gray-100"
+                                />
                             </div>
 
                             <div>
                                 <Label>Empresa</Label>
                                 <Select
                                     value={String(formData.companyId || "")}
-                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, companyId: Number(v), costCenterId: 0 }))}
-                                    disabled={disableCompanyAndCC}
+                                    onValueChange={(v) =>
+                                        setFormData((prev) => ({
+                                        ...prev,
+                                        companyId: Number(v),
+                                        costcenterId: 0,   // ⬅️ aqui (antes estava costCenterId)
+                                        employeeId: 0,
+                                        }))
+                                    }
+                                    disabled={disableCompanyAndCC || noActiveBudget}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Selecione" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {companies.map((c) => (
+                                        {companies.map((c: any) => (
                                             <SelectItem key={String(c.id)} value={String(c.id)}>
                                                 {c.corporateName}
                                             </SelectItem>
@@ -263,15 +376,15 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                             <div>
                                 <Label>Centro de Custo</Label>
                                 <Select
-                                    value={String(formData.costCenterId || "")}
-                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, costCenterId: Number(v) }))}
-                                    disabled={disableCompanyAndCC || !formData.companyId}
+                                    value={String(formData.costcenterId || "")}
+                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, costcenterId: Number(v), employeeId: 0 }))}
+                                    disabled={disableCompanyAndCC || !formData.companyId || noActiveBudget}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Selecione" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {filteredCostCenters.map((cc) => (
+                                        {costCentersFiltered.map((cc: any) => (
                                             <SelectItem key={String(cc.id)} value={String(cc.id)}>
                                                 {cc.name}
                                             </SelectItem>
@@ -280,28 +393,7 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 </Select>
                             </div>
 
-                            <div>
-                                <Label>Período Orçamentário</Label>
-                                <Select
-                                    value={String(formData.budgetPeriodId || "")}
-                                    onValueChange={(v) => setFormData((prev) => ({ ...prev, budgetPeriodId: Number(v) }))}
-                                    disabled={disableBudgetPeriod}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Selecione" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {budgetPeriods.map((bp) => (
-                                            <SelectItem key={bp.id} value={String(bp.id)}>
-                                                {bp.year}
-                                                {bp.status ? ` — ${bp.status}` : ""}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Individual: campo Funcionário e Função */}
+                            {/* Individual */}
                             {!isCollective && (
                                 <>
                                     <div className="sm:col-span-2 lg:col-span-2">
@@ -309,16 +401,16 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                         <Select
                                             value={String(formData.employeeId || "")}
                                             onValueChange={(v) => setFormData((prev) => ({ ...prev, employeeId: Number(v) }))}
-                                        >
+                                            disabled={!num(formData.companyId) || !num(formData.costcenterId) || noActiveBudget}
+                                            >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Selecione o funcionário" />
+                                                <SelectValue placeholder={employeesFiltered.length ? "Selecione o funcionário" : "Sem funcionários para filtros"} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {/* filtra por empresa e CC SE já selecionados antes do colaborador */}
-                                                {(formData.costCenterId ? filteredEmployeesByCompanyAndCC : filteredEmployeesByCompany).map((e) => (
-                                                    <SelectItem key={String(e.id)} value={String(e.id)}>
-                                                        {e.name}
-                                                    </SelectItem>
+                                                {employeesFiltered.map((e: any) => (
+                                                <SelectItem key={String(e.id)} value={String(e.id)}>
+                                                    {e.name}
+                                                </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -338,8 +430,8 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                 <CardHeader>
                                     <CardTitle>Grade Mensal — {formData.year}</CardTitle>
                                     <p className="text-sm text-muted-foreground">
-                                        Funcionário: {selectedEmployee.name} | Jornada: {(selectedEmployee as any).monthlyHours ?? 220}h |{" "}
-                                        {(selectedEmployee as any).workSchedule ?? "ADM"}
+                                        Funcionário: {selectedEmployee.name} | Jornada: {selectedEmployee.monthlyHours ?? 220}h |{" "}
+                                        {selectedEmployee.workSchedule ?? "ADM"}
                                     </p>
                                 </CardHeader>
                                 <CardContent>
@@ -355,15 +447,14 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                     <CardTitle>Selecionar Funcionários</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
-                                    {/* Só mostra a lista depois de empresa e CC */}
-                                    {!formData.companyId || !formData.costCenterId ? (
+                                    {!formData.companyId || !formData.costcenterId ? (
                                         <div className="text-sm text-muted-foreground">
                                             Selecione <strong>Empresa</strong> e <strong>Centro de Custo</strong> para listar os funcionários.
                                         </div>
                                     ) : (
                                         <>
                                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                                                {filteredEmployeesByCompanyAndCC.map((e) => {
+                                                {employeesFiltered.map((e: any) => {
                                                     const checked = selectedEmployees.includes(Number(e.id));
                                                     return (
                                                         <label key={String(e.id)} className="flex items-center gap-2 text-sm">
@@ -374,7 +465,7 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                                                 onChange={(ev) => {
                                                                     const on = ev.target.checked;
                                                                     setSelectedEmployees((old) =>
-                                                                        on ? [...old, Number(e.id)] : old.filter((id) => id !== Number(e.id)),
+                                                                        on ? [...old, Number(e.id)] : old.filter((id) => id !== Number(e.id))
                                                                     );
                                                                 }}
                                                             />
@@ -413,7 +504,11 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                             <Button
                                 type="submit"
                                 className="w-full sm:w-auto"
-                                disabled={(!isCollective && !formData.employeeId) || (isCollective && selectedEmployees.length === 0)}
+                                disabled={
+                                    noActiveBudget ||
+                                    (!isCollective && !formData.employeeId) ||
+                                    (isCollective && selectedEmployees.length === 0)
+                                }
                             >
                                 {entry ? "Atualizar" : "Salvar"}
                             </Button>

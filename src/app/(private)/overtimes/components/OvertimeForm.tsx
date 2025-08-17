@@ -37,7 +37,7 @@ export function OvertimeForm({ entry, onClose, onSave }: OvertimeFormProps) {
         year: entry?.year ?? new Date().getFullYear(),
         month: entry?.month ?? new Date().getMonth() + 1,
         companyId: entry?.companyId ?? Number(companies[0]?.id ?? 1),
-        costCenterId: entry?.costCenterId ?? Number(costCenters[0]?.id ?? 1),
+        costcenterId: entry?.costcenterId ?? Number(costCenters[0]?.id ?? 1),
         employeeId: entry?.employeeId ?? Number(employees[0]?.id ?? 1),
         budgetPeriodId: entry?.budgetPeriodId ?? Number(periods?.[0]?.id ?? 1),
         function: entry?.function ?? "",
@@ -63,7 +63,7 @@ export function OvertimeForm({ entry, onClose, onSave }: OvertimeFormProps) {
             year: Number(formData.year),
             month: Number(formData.month),
             companyId: Number(formData.companyId),
-            costCenterId: Number(formData.costCenterId),
+            costcenterId: Number(formData.costcenterId),
             employeeId: Number(formData.employeeId),
             budgetPeriodId: Number(formData.budgetPeriodId),
         };
@@ -107,7 +107,7 @@ export function OvertimeForm({ entry, onClose, onSave }: OvertimeFormProps) {
                         </div>
                         <div>
                             <Label>Centro de Custo</Label>
-                            <Select value={String(formData.costCenterId)} onValueChange={(v) => setFormData({ ...formData, costCenterId: Number(v) })}>
+                            <Select value={String(formData.costcenterId)} onValueChange={(v) => setFormData({ ...formData, costcenterId: Number(v) })}>
                                 <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                                 <SelectContent>
                                     {costCenters.map((cc) => <SelectItem key={cc.id} value={String(cc.id)}>{cc.code} - {cc.name}</SelectItem>)}

@@ -18,7 +18,7 @@ export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }:
     const [selectedSector, setSelectedSector] = useState<number | "">("");
 
     const sectorEntries = useMemo(
-        () => entries.filter(e => (selectedSector ? e.costCenterId === selectedSector : false)),
+        () => entries.filter(e => (selectedSector ? e.costcenterId === selectedSector : false)),
         [entries, selectedSector]
     );
 
