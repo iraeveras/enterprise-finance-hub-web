@@ -94,7 +94,7 @@ export default function RoleManager() {
                 </div>
 
                 {/* Filtros e Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1 relative">
@@ -121,7 +121,7 @@ export default function RoleManager() {
                 </Card>
 
                 {/* Lista de Roles */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle className="flex items-center">
                             <Shield className="w-5 h-5 mr-2" />
@@ -146,19 +146,19 @@ export default function RoleManager() {
                                     <tbody>
                                         {filtered.map((role) => (
                                             <tr key={role.id} className="border-b hover:bg-gray-50">
-                                                <td className="p-3 font-medium">{role.name}</td>
-                                                <td className="p-3">
+                                                <td className="px-3 py-1 font-medium">{role.name}</td>
+                                                <td className="px-3 py-1">
                                                     <Badge className={levelClasses[role.level]}>
                                                         {levelLabels[role.level]}
                                                     </Badge>
                                                 </td>
-                                                <td className="p-3 text-sm">{role.description}</td>
-                                                <td className="p-3 text-center">
+                                                <td className="px-3 py-1 text-sm">{role.description}</td>
+                                                <td className="px-3 py-1 text-center">
                                                     <Badge variant="outline">
                                                         {role.permissions.length} módulos
                                                     </Badge>
                                                 </td>
-                                                <td className="p-3 text-center">
+                                                <td className="px-3 py-1 text-center">
                                                     <Button
                                                         className="cursor-pointer"
                                                         variant="ghost"

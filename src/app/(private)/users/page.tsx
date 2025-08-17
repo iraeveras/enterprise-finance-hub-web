@@ -86,7 +86,7 @@ export default function UserManager() {
                 </div>
 
                 {/* Busca */}
-                <Card>
+                <Card className="rounded-none">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
                             <div className="relative flex-1">
@@ -105,7 +105,7 @@ export default function UserManager() {
                 </Card>
 
                 {/* Tabela */}
-                <Card>
+                <Card className="rounded-none">
                     <CardHeader>
                         <CardTitle className="flex items-center">
                             <UserCheck className="w-5 h-5 mr-2"/> Usuários Cadastrados ({filtered.length})
@@ -128,27 +128,27 @@ export default function UserManager() {
                                 <tbody>
                                     {filtered.map((u) => (
                                         <tr key={u.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-3 font-medium">{u.name}</td>
-                                            <td className="p-3">{u.email}</td>
-                                            <td className="p-3">
+                                            <td className="px-3 py-1 font-medium">{u.name}</td>
+                                            <td className="px-3 py-1">{u.email}</td>
+                                            <td className="px-3 py-1">
                                                 <Badge variant="secondary" >{u.role.name}</Badge>
                                             </td>
-                                            <td className="p-3">
+                                            <td className="px-3 py-1">
                                                 {u.companies.map((c) => c.tradeName).join(", ")}
                                             </td>
-                                            <td className="p-3 text-center">
+                                            <td className="px-3 py-1 text-center">
                                                 <Badge 
                                                     className={u.status==="active"?"bg-green-100 text-green-800":"bg-red-100 text-red-800"}
                                                 >
                                                     {u.status==="active"?"Ativo":"Inativo"}
                                                 </Badge>
                                             </td>
-                                            <td className="p-3">
+                                            <td className="px-3 py-1">
                                                 {u.lastLogin
                                                     ? new Date(u.lastLogin).toLocaleDateString("pt-BR")
                                                     : "—"}
                                             </td>
-                                            <td className="p-3 text-center">
+                                            <td className="px-3 py-1 text-center">
                                                 <Button
                                                     className="cursor-pointer"
                                                     size="sm"
