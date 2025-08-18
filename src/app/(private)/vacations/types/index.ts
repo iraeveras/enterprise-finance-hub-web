@@ -37,6 +37,8 @@ export interface Vacation {
   id: string;
   employeeId: number;
   companyId: number;
+  sectorId: number;
+  budgetPeriodId: number;
   acquisitionPeriodStart: string;
   acquisitionPeriodEnd: string;
   month: number;
@@ -55,7 +57,6 @@ export interface Vacation {
   updatedAt: string;
 
   // Sector information
-  sectorId?: number;
   sectorName?: string | null;
 
   // Legacy properties for compatibility
@@ -64,7 +65,7 @@ export interface Vacation {
   days?: number;
   thirteenthSalary?: number;
   abono?: number;
-  
+
   // Campos opcionais úteis em listagens
   employeeName?: string | null;
 }

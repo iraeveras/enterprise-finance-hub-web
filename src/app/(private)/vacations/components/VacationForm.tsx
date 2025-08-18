@@ -97,10 +97,11 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
     });
   }, [selectedEmployee, vacationDays, abonoDays, thirteenthAdvance]);
 
-  // === Ano do orçamento vindo da base (por empresa) ===
+  // === Período orçamentário (id e ano) da empresa do funcionário ===
   const companyId = selectedEmployee ? Number(selectedEmployee.companyId) : undefined;
-  const budgetYearQ = useCurrentBudgetYear(companyId);
-  const year = budgetYearQ.data ?? new Date().getFullYear();
+  const budgetPeriodQ = useCurrentBudgetYear(companyId);
+  const year = budgetPeriodQ.data?.year ?? new Date().getFullYear();
+  const budgetPeriodId = budgetPeriodQ.data?.id ?? null;
 
   const acqQ = useAcquisitionPeriods({
     employeeId: employeeId ? Number(employeeId) : undefined,
@@ -115,14 +116,6 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
 
   // períodos abertos (todos) — para a grade coletiva
   const allOpenAcqQ = useAcquisitionPeriods({ status: "open" });
-
-  // const acqOptionsAll = useMemo(() => {
-  //   const all = allOpenAcqQ.data ?? [];
-  //   return all.map((p: any) => ({
-  //     value: String(p.id),
-  //     label: `${p.year} - ${new Date(p.startDate).toLocaleDateString("pt-BR")} até ${new Date(p.endDate).toLocaleDateString("pt-BR")}`,
-  //   }));
-  // }, [allOpenAcqQ.data]);
 
   // validação simples
   const validDays = vacationDays + abonoDays <= 30;
@@ -174,8 +167,8 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
   // campos da tabela em lote
   const batchFields: BatchTableField[] = useMemo(
     () => [
-      { 
-        key: "acquisitionPeriodId", label: "Período Aquisitivo", type: "select", 
+      {
+        key: "acquisitionPeriodId", label: "Período Aquisitivo", type: "select",
         // options: (allOpenAcqQ.data ?? []).map((p: any) => ({
         //   value: String(p.id),
         //   label: `${p.year} - ${new Date(p.startDate).toLocaleDateString("pt-BR")} até ${new Date(p.endDate).toLocaleDateString("pt-BR")}`,
@@ -216,12 +209,13 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
         abonoDays,
         thirteenthAdvance,
         status,
-  
-        // datas (ISO completas)
+
+        // *** NOVO ***
+        budgetPeriodId: Number(budgetPeriodId ?? 0),
+
         acquisitionPeriodStart: acq?.startDate ?? `${year}-01-01T12:00:00.000Z`,
-        acquisitionPeriodEnd:   acq?.endDate   ?? `${year}-12-31T12:00:00.000Z`,
-  
-        // numéricos (backend pode recalcular)
+        acquisitionPeriodEnd: acq?.endDate ?? `${year}-12-31T12:00:00.000Z`,
+
         baseSalary: computed.baseSalary,
         overtimeAverage: computed.overtimeAverage,
         vacationValue: computed.vacationValue,
@@ -274,8 +268,13 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
         abonoDays: aDays,
         thirteenthAdvance: thirteenth,
         status,
+
+        // *** NOVO ***
+        budgetPeriodId: Number(budgetPeriodId ?? 0),
+
         acquisitionPeriodStart: acq?.startDate ?? toMiddayISO(`${year}-01-01`),
         acquisitionPeriodEnd: acq?.endDate ?? toMiddayISO(`${year}-12-31`),
+
         baseSalary: values.baseSalary,
         overtimeAverage: values.overtimeAverage,
         vacationValue: values.vacationValue,
@@ -306,11 +305,11 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
         <form onSubmit={submit} className="space-y-6">
           {/* Toggle Coletivo */}
           <div className="flex items-center space-x-2">
-            <Switch 
-              checked={isCollective} 
-              onCheckedChange={setIsCollective} 
-              className="cursor-pointer" 
-              disabled={!!vacation} 
+            <Switch
+              checked={isCollective}
+              onCheckedChange={setIsCollective}
+              className="cursor-pointer"
+              disabled={!!vacation}
             />
             <Label>Lançamento Coletivo (por Equipe/Setor)</Label>
           </div>
@@ -411,10 +410,10 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
               </div>
             </div>
           )}
-          
+
           {/* Período / Mês / Config — Individual */}
           {!isCollective && (
-            <>            
+            <>
               {/* Período aquisitivo */}
               <Card>
                 <CardHeader><CardTitle className="text-lg">Período Aquisitivo</CardTitle></CardHeader>
@@ -531,16 +530,16 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
             />
           )}
 
-          
+
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto cursor-pointer">Cancelar</Button>
-            <Button 
-              type="submit" 
-              className="w-full sm:w-auto cursor-pointer" 
+            <Button
+              type="submit"
+              className="w-full sm:w-auto cursor-pointer"
               disabled={
-                !isCollective 
-                  ? (!employeeId || !sectorId || !month || !acqId || !validDays) 
+                !isCollective
+                  ? (!employeeId || !sectorId || !month || !acqId || !validDays)
                   : selectedEmployees.length === 0
               }
             >
