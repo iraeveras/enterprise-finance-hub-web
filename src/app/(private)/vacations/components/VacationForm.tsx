@@ -68,7 +68,6 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
 
   const [employeeId, setEmployeeId] = useState<string>(vacation ? String(vacation.employeeId) : "");
   const [sectorId, setSectorId] = useState<string>(vacation ? String(vacation.sectorId) : "");
-  // const [year, setYear] = useState<number>(vacation?.year ?? new Date().getFullYear());
   const [month, setMonth] = useState<number>(vacation?.month ?? 0);
   const [vacationDays, setVacationDays] = useState<number>(vacation?.vacationDays ?? 30);
   const [abonoDays, setAbonoDays] = useState<number>(vacation?.abonoDays ?? 0);
@@ -169,10 +168,6 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
     () => [
       {
         key: "acquisitionPeriodId", label: "Período Aquisitivo", type: "select",
-        // options: (allOpenAcqQ.data ?? []).map((p: any) => ({
-        //   value: String(p.id),
-        //   label: `${p.year} - ${new Date(p.startDate).toLocaleDateString("pt-BR")} até ${new Date(p.endDate).toLocaleDateString("pt-BR")}`,
-        // })),
       },
       {
         key: "scheduledMonth",
@@ -203,19 +198,15 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
         employeeId: Number(employeeId),
         companyId: Number(selectedEmployee?.companyId ?? 0),
         sectorId: Number(sectorId),
+        budgetPeriodId: Number(budgetPeriodId ?? 0),
         month: Number(month),
         year: Number(year),
         vacationDays,
         abonoDays,
         thirteenthAdvance,
         status,
-
-        // *** NOVO ***
-        budgetPeriodId: Number(budgetPeriodId ?? 0),
-
         acquisitionPeriodStart: acq?.startDate ?? `${year}-01-01T12:00:00.000Z`,
         acquisitionPeriodEnd: acq?.endDate ?? `${year}-12-31T12:00:00.000Z`,
-
         baseSalary: computed.baseSalary,
         overtimeAverage: computed.overtimeAverage,
         vacationValue: computed.vacationValue,
@@ -262,19 +253,15 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
         employeeId: Number(id),
         companyId: Number(row._companyId ?? selectedEmployee?.companyId ?? 0),
         sectorId: Number(row._sectorId ?? sectorId ?? 0),
+        budgetPeriodId: Number(budgetPeriodId ?? 0),
         month: Number(data.scheduledMonth || 1),
         year: Number(year),
         vacationDays: vDays,
         abonoDays: aDays,
         thirteenthAdvance: thirteenth,
         status,
-
-        // *** NOVO ***
-        budgetPeriodId: Number(budgetPeriodId ?? 0),
-
         acquisitionPeriodStart: acq?.startDate ?? toMiddayISO(`${year}-01-01`),
         acquisitionPeriodEnd: acq?.endDate ?? toMiddayISO(`${year}-12-31`),
-
         baseSalary: values.baseSalary,
         overtimeAverage: values.overtimeAverage,
         vacationValue: values.vacationValue,
@@ -289,11 +276,14 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
   };
 
   // sugere setor do funcionário ao selecioná-lo
-  useEffect(() => {
-    if (selectedEmployee && !sectorId && selectedEmployee.sectorId) {
-      setSectorId(String(selectedEmployee.sectorId));
-    }
-  }, [selectedEmployee, sectorId]);
+  // useEffect(() => {
+  //   if (selectedEmployee && !sectorId && selectedEmployee.sectorId) {
+  //     setSectorId(String(selectedEmployee.sectorId));
+  //   }
+  // }, [selectedEmployee, sectorId]);
+
+  // desabilitar selects quando estiver editando
+  const isEditing = !!vacation;
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -320,7 +310,7 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
               {/* Funcionário */}
               <div>
                 <Label>Funcionário</Label>
-                <Select value={employeeId} onValueChange={setEmployeeId}>
+                <Select value={employeeId} onValueChange={setEmployeeId} disabled={isEditing}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione o funcionário" />
                   </SelectTrigger>
@@ -338,7 +328,7 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
               {/* Setor */}
               <div>
                 <Label>Setor</Label>
-                <Select value={sectorId} onValueChange={setSectorId}>
+                <Select value={sectorId} onValueChange={setSectorId} disabled={isEditing}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione o setor" />
                   </SelectTrigger>
@@ -348,26 +338,6 @@ export function VacationForm({ vacation, onClose, onSave }: VacationFormProps) {
                   >
                     {(sectors ?? []).map((s: any) => (
                       <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Setor */}
-              <div>
-                <Label>Setor</Label>
-                <Select value={sectorId} onValueChange={setSectorId}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione o setor" />
-                  </SelectTrigger>
-                  <SelectContent
-                    position="popper"
-                    className="w-[--radix-select-trigger-width] max-w-[95vw] max-h-60 overflow-auto"
-                  >
-                    {(sectors ?? []).map((s: any) => (
-                      <SelectItem key={s.id} value={String(s.id)}>
-                        {s.name}
-                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

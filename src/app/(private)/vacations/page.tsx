@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Calendar, DollarSign, Gift, Users } from "lucide-react";
+import { Plus, Calendar, DollarSign, Gift } from "lucide-react";
 
 import { useVacations } from "./hooks/useVacations";
 import { useVacationCreate } from "./hooks/useVacationCreate";
@@ -21,6 +21,7 @@ import { VacationSectorView } from "./components/VacationSectorView";
 import type { CreateVacationInput, Vacation } from "./types";
 import AcquisitionPeriodManager from "./components/AcquisitionPeriodManager";
 import { employeeName as getEmployeeName } from "@/lib/employees-utils";
+import { useBudgetPeriods } from "../budgetperiods/hooks/useBudgetPeriods";
 
 export function VacationManager() {
   const vacationsQ = useVacations();
@@ -36,6 +37,21 @@ export function VacationManager() {
 
   const vacations = vacationsQ.data ?? [];
 
+  // Período em exercício (status open)
+  const bpQ = useBudgetPeriods();
+  const active = useMemo(() => {
+    const list = (bpQ.data ?? []) as any[];
+    return list.find((b) => String(b.status).toLowerCase() === "open") ?? null;
+  }, [bpQ.data]);
+
+  // Filtra os lançamentos pelo período ativo
+  const periodVacations = useMemo(() => {
+    if (!active) return [] as Vacation[];
+    return vacations.filter((v) => Number(v.budgetPeriodId) === Number(active.id));
+  }, [vacations, active]);
+
+  const periodIsClosed = !active || String(active.status).toLowerCase() !== "open";
+
   const employeeName = (id: number) => getEmployeeName(employeesQ.data ?? [], id);
 
   const sectors = useMemo(
@@ -43,17 +59,19 @@ export function VacationManager() {
     [sectorsQ.data]
   );
 
+  // Cards: calculados APENAS com o período ativo
   const totals = useMemo(() => {
+    const list = periodVacations;
     return {
-      scheduled: vacations.filter((v) => v.status === "scheduled").length,
-      approved: vacations.filter((v) => v.status === "approved").length,
-      thirteenth: vacations.filter((v) => v.thirteenthAdvance).length,
-      totalValue: vacations.reduce(
+      scheduled: list.filter((v) => v.status === "scheduled").length,
+      approved: list.filter((v) => v.status === "approved").length,
+      thirteenth: list.filter((v) => v.thirteenthAdvance).length,
+      totalValue: list.reduce(
         (acc, v) => acc + (v.vacationValue || 0) + (v.onethirdValue || 0) + (v.abonoValue || 0) + (v.abonoOnethirdValue || 0),
         0
       ),
     };
-  }, [vacations]);
+  }, [periodVacations]);
 
   const onSave = (data: CreateVacationInput) => {
     if (editing) {
@@ -80,15 +98,23 @@ export function VacationManager() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lançamento de Férias</h1>
-          <p className="text-gray-600 text-sm md:text-base">Controle e programação de férias dos funcionários</p>
+          <p className="text-gray-600 text-sm md:text-base">
+            {active ? `Período em exercício: ${active.year}` : "Nenhum período em exercício"}
+          </p>
         </div>
-        <Button onClick={() => { setEditing(null); setShowForm(true); }} className="gap-2 w-full md:w-auto cursor-pointer">
+        <Button
+          onClick={() => { setEditing(null); setShowForm(true); }}
+          className="gap-2 w-full md:w-auto cursor-pointer"
+          disabled={periodIsClosed}
+          title={periodIsClosed ? "Período fechado: cadastros desabilitados" : "Novo lançamento"}
+        >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Nova Programação de Férias</span>
           <span className="sm:hidden">Nova Programação</span>
         </Button>
       </div>
 
+      {/* Cards resumidos — sempre do período ativo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <Card className="rounded-none">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
@@ -132,7 +158,7 @@ export function VacationManager() {
             <div className="text-xl md:text-2xl font-bold">
               R$ {totals.totalValue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground">Valor total de pagamentos</p>
+            <p className="text-xs text-muted-foreground">Somente do período em exercício</p>
           </CardContent>
         </Card>
       </div>
@@ -148,15 +174,15 @@ export function VacationManager() {
 
         <TabsContent value="planning" className="rounded-none">
           <VacationPlanningTable
-            vacations={vacations}
+            vacations={periodVacations}
             onEdit={onEdit}
             onDelete={onDelete}
             employeeName={employeeName}
+            periodIsClosed={periodIsClosed}
           />
         </TabsContent>
 
         <TabsContent value="acquisition">
-          {/* Manager dos Períodos Aquisitivos que você já moveu para vacations */}
           <AcquisitionPeriodManager />
         </TabsContent>
 
@@ -170,7 +196,7 @@ export function VacationManager() {
             </CardHeader>
             <CardContent>
               <VacationPaymentTable
-                vacations={vacations.filter((v) => v.thirteenthAdvance)}
+                vacations={periodVacations.filter((v) => v.thirteenthAdvance)}
                 type="thirteenth"
                 employeeName={employeeName}
               />
@@ -188,7 +214,7 @@ export function VacationManager() {
             </CardHeader>
             <CardContent>
               <VacationPaymentTable
-                vacations={vacations.filter((v) => (v.abonoDays || 0) > 0)}
+                vacations={periodVacations.filter((v) => (v.abonoDays || 0) > 0)}
                 type="abono"
                 employeeName={employeeName}
               />
@@ -198,11 +224,12 @@ export function VacationManager() {
 
         <TabsContent value="sectors">
           <VacationSectorView
-            vacations={vacations}
+            vacations={periodVacations}
             onEdit={onEdit}
             onDelete={onDelete}
             employeeName={employeeName}
             sectors={sectors}
+            periodIsClosed={periodIsClosed}
           />
         </TabsContent>
       </Tabs>

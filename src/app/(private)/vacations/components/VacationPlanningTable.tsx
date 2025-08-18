@@ -37,6 +37,7 @@ interface Props {
   onDelete: (id: string) => void;
   employeeName: (employeeId: number) => string;
   sectorName?: string;
+  periodIsClosed?: boolean; // NOVO
 }
 
 export function VacationPlanningTable({
@@ -45,6 +46,7 @@ export function VacationPlanningTable({
   onDelete,
   employeeName,
   sectorName,
+  periodIsClosed = false,
 }: Props) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | VacationStatus>("all");
@@ -116,18 +118,6 @@ export function VacationPlanningTable({
                 </SelectContent>
               </Select>
             </div>
-
-
-            {/* <select
-              value={status}
-              onChange={(e) => { setStatus(e.target.value as any); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Todos os status</option>
-              <option value="scheduled">Programado</option>
-              <option value="approved">Aprovado</option>
-              <option value="taken">Realizado</option>
-            </select> */}
           </div>
 
           <div className="overflow-x-auto">
@@ -167,8 +157,7 @@ export function VacationPlanningTable({
                         {months.map((_, idx) => (
                           <div
                             key={idx}
-                            className={`h-6 w-full rounded text-xs flex items-center justify-center ${v.month === idx + 1 ? "bg-blue-500 text-white font-bold" : "bg-gray-100"
-                              }`}
+                            className={`h-6 w-full rounded text-xs flex items-center justify-center ${v.month === idx + 1 ? "bg-blue-500 text-white font-bold" : "bg-gray-100"}`}
                           >
                             {v.month === idx + 1 ? v.vacationDays : ""}
                           </div>
@@ -178,7 +167,14 @@ export function VacationPlanningTable({
                     <TableCell className="py-1"><StatusBadge status={v.status} /></TableCell>
                     <TableCell className="py-1">
                       <div className="flex gap-1">
-                        <Button variant="outline" size="sm" className="h-6 w-6 p-0 cursor-pointer" onClick={() => onEdit(v)}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-6 w-6 p-0 cursor-pointer"
+                          onClick={() => onEdit(v)}
+                          disabled={periodIsClosed}
+                          title={periodIsClosed ? "Período fechado" : "Editar"}
+                        >
                           <Edit className="w-3 h-3" />
                         </Button>
                         <Button
@@ -186,6 +182,8 @@ export function VacationPlanningTable({
                           size="sm"
                           className="h-6 w-6 p-0 text-red-600 hover:text-red-700 cursor-pointer"
                           onClick={() => onDelete(v.id)}
+                          disabled={periodIsClosed}
+                          title={periodIsClosed ? "Período fechado" : "Excluir"}
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
@@ -217,7 +215,6 @@ export function VacationPlanningTable({
                           className="cursor-pointer"
                           onClick={() => setPage(n)}
                           {...(active && { "aria-current": "page" })}
-
                         >
                           {n}
                         </PaginationLink>

@@ -9,15 +9,13 @@ import { Users } from "lucide-react";
 import { VacationPlanningTable } from "./VacationPlanningTable";
 import type { Vacation } from "../types";
 
-// Se você já tem hook real de setores, use-o aqui:
-import { useSectors } from "../../sectors/hooks/useSectors";
-
 interface Props {
   vacations: Vacation[];
   onEdit: (vacation: Vacation) => void;
   onDelete: (id: string) => void;
   employeeName: (employeeId: number) => string;
-  sectors?: { id: number; name: string }[]; // opcional: pode vir do pai
+  sectors?: { id: number; name: string }[];
+  periodIsClosed?: boolean; // NOVO
 }
 
 export function VacationSectorView({
@@ -26,6 +24,7 @@ export function VacationSectorView({
   onDelete,
   employeeName,
   sectors = [],
+  periodIsClosed = false,
 }: Props) {
   const [selectedSectorId, setSelectedSectorId] = useState<string>("");
 
@@ -73,24 +72,14 @@ export function VacationSectorView({
           )}
 
           {!!selectedSectorId && (
-            <>
-              {/* <div className="mb-4">
-                <h3 className="text-lg font-semibold">
-                  PROGRAMAÇÃO DE FÉRIAS — {selectedName.toUpperCase()}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {sectorVacations.length} funcionário(s) com férias programadas
-                </p>
-              </div> */}
-
-              <VacationPlanningTable
-                vacations={sectorVacations}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                employeeName={employeeName}
-                sectorName={selectedName}
-              />
-            </>
+            <VacationPlanningTable
+              vacations={sectorVacations}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              employeeName={employeeName}
+              sectorName={selectedName}
+              periodIsClosed={periodIsClosed}
+            />
           )}
         </CardContent>
       </Card>
