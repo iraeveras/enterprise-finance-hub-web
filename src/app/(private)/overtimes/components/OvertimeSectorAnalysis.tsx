@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import OvertimeSectorAnalysisTable from "./OvertimeSectorAnalysisTable";
+import { useBudgetPeriods } from "../../budgetperiods/hooks/useBudgetPeriods";
 import type { Overtime } from "../types";
 
 interface Props {
@@ -17,10 +18,10 @@ interface Props {
 export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }: Props) {
     const [selectedSector, setSelectedSector] = useState<number | "">("");
 
-    const sectorEntries = useMemo(
-        () => entries.filter(e => (selectedSector ? e.costcenterId === selectedSector : false)),
-        [entries, selectedSector]
-    );
+    const sectorEntries = useMemo(() => {
+        if (!selectedSector) return [];
+        return entries.filter(e => Number(e.costcenterId) === Number(selectedSector));
+    }, [entries, selectedSector]);
 
     const totals = useMemo(() => {
         const budgeted = sectorEntries.reduce((acc, e) => acc + (e.budgetedAmount ?? 0), 0);
@@ -30,8 +31,10 @@ export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }:
         return { budgeted, actual, variance, vPerc };
     }, [sectorEntries]);
 
-    const rows = sectorEntries.map(e => ({
-        id: e.id!, year: e.year, month: e.month,
+    const rows = sectorEntries.map((e) => ({
+        id: e.id!,
+        year: e.year,
+        month: e.month,
         employeeName: employeeName(e.employeeId),
         employeeCode: String(e.employeeId).padStart(3, "0"),
         func: e.function,
@@ -60,7 +63,7 @@ export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }:
                     <div>
                         <Label>Selecione o Setor</Label>
                         <Select
-                            value={selectedSector === "" ? "" : String(selectedSector)}
+                            value={selectedSector ? String(selectedSector) : ""}
                             onValueChange={(v) => setSelectedSector(v ? Number(v) : "")}
                         >
                             <SelectTrigger className="w-full sm:w-64">
@@ -74,11 +77,11 @@ export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }:
                         </Select>
                     </div>
 
-                    {selectedSector && sectorEntries.length > 0 && (
+                    {selectedSector !== "" && rows.length > 0 && (
                         <>
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold">
-                                    {sectorOptions.find(s => s.id === selectedSector)?.name} ({sectorEntries.length})
+                                    {sectorOptions.find(s => s.id === selectedSector)?.name} ({rows.length})
                                 </h3>
                                 <div className="flex gap-4 text-sm">
                                     <div className="text-center">
@@ -102,13 +105,13 @@ export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }:
                         </>
                     )}
 
-                    {selectedSector && sectorEntries.length === 0 && (
+                    {selectedSector !== "" && rows.length === 0 && (
                         <div className="text-center py-8 text-muted-foreground">
                             Nenhum lançamento encontrado para o setor selecionado.
                         </div>
                     )}
 
-                    {!selectedSector && (
+                    {selectedSector === "" && (
                         <div className="text-center py-8 text-muted-foreground">
                             Selecione um setor para visualizar a análise.
                         </div>

@@ -16,6 +16,7 @@ import { useEmployees } from "@/app/(private)/employees/hooks/useEmployees";
 import { useCompanies } from "@/app/(private)/companies/hooks/useCompanies";
 import { useCostCenters } from "../../costcenters/hooks/useCostCenters";
 import { useBudgetPeriods } from "../../budgetperiods/hooks/useBudgetPeriods";
+import { useOvertimes } from "../hooks/useOvertimes";
 import { AlertTriangle } from "lucide-react";
 
 function num(v: any): number {
@@ -69,21 +70,19 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
     const empQ = useEmployees();
     const ccQ = useCostCenters();
     const bpQ = useBudgetPeriods();
+    const otQ = useOvertimes();
 
     const companies = compQ.data ?? [];
     const employees = empQ.data ?? [];
     const costCenters = ccQ.data ?? [];
     const budgetPeriods = bpQ.data ?? [];
+    const allOvertimes = otQ.data ?? [];
 
-    // período orçamentário em exercício (status open)
+    // período em exercício (status open)
     const activeBudget = useMemo(() => {
-        // 1) tenta por status open
-        const byOpen = budgetPeriods.find((bp: any) => isOpenStatus(bp.status));
-        if (byOpen) return byOpen;
-        // 2) tenta pelo ano corrente E open (fallback)
-        const currentYear = new Date().getFullYear();
-        const byYearOpen = budgetPeriods.find((bp: any) => Number(bp.year) === currentYear && isOpenStatus(bp.status));
-        return byYearOpen ?? null;
+        return budgetPeriods.find((bp: any) =>
+            String(bp.status).toLowerCase() === "open"
+        ) ?? null;
     }, [budgetPeriods]);
 
     // se não existir ativo, bloqueia o formulário
@@ -140,48 +139,88 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
         }
     }, [selectedEmployee, isCollective]);
 
-    // montar a grade (para editar, pré-preenche o mês do entry)
-    const emptyRows: MonthlyRow[] = Array.from({ length: 12 }, (_, index) => ({
-        month: index + 1,
-        he50Qty: 0,
-        he100Qty: 0,
-        holidayDaysQty: 0,
-        nightHoursQty: 0,
-        he50Value: 0,
-        he100Value: 0,
-        holidayValue: 0,
-        nightValue: 0,
-        dsrValue: 0,
-        dsrNightValue: 0,
-        totalValue: 0,
-        previousYearTotal: 0,
-        variance: 0,
-    }));
+    // Base vazia 12 meses
+    const baseRows: MonthlyRow[] = useMemo(() => (
+        Array.from({ length: 12 }, (_, i) => ({
+            month: i + 1,
+            he50Qty: 0, he100Qty: 0, holidayDaysQty: 0, nightHoursQty: 0,
+            he50Value: 0, he100Value: 0, holidayValue: 0, nightValue: 0,
+            dsrValue: 0, dsrNightValue: 0, totalValue: 0,
+            previousYearTotal: 0, variance: 0
+        }))
+    ), []);
 
-    const [monthlyData, setMonthlyData] = useState<MonthlyRow[]>(
-        entry
-            ? emptyRows.map((r) =>
-                    r.month === entry.month
-                        ? {
-                            ...r,
-                            he50Qty: entry.he50Qty ?? entry.overtime50 ?? 0,
-                            he100Qty: entry.he100Qty ?? entry.overtime100 ?? 0,
-                            holidayDaysQty: entry.holidayDaysQty ?? (entry.holidayHours ? Math.round(entry.holidayHours / 8) : 0),
-                            nightHoursQty: entry.nightHoursQty ?? entry.nightShiftHours ?? 0,
-                            he50Value: entry.he50Value ?? entry.overtime50Value ?? 0,
-                            he100Value: entry.he100Value ?? entry.overtime100Value ?? 0,
-                            holidayValue: entry.holidayValue ?? 0,
-                            nightValue: entry.nightValue ?? entry.nightShiftValue ?? 0,
-                            dsrValue: entry.dsrValue ?? 0,
-                            dsrNightValue: entry.dsrNightValue ?? 0,
-                            totalValue: entry.totalValue ?? 0,
-                            previousYearTotal: entry.previousYearTotal ?? entry.budgetedAmount ?? 0,
-                            variance: entry.variance ?? 0,
-                        }
-                    : r
-                )
-            : emptyRows
-    );
+    // <<< NOVO: carrega todos os meses do período atual quando estiver editando
+    const currentPeriodRows = useMemo(() => {
+        if (!entry || !formData.employeeId || !formData.budgetPeriodId) return null;
+        const months = allOvertimes.filter(o =>
+            Number(o.employeeId) === Number(formData.employeeId) &&
+            Number(o.budgetPeriodId) === Number(formData.budgetPeriodId)
+        );
+        if (months.length === 0) return null;
+
+        const filled = baseRows.map(r => {
+            const m = months.find(mm => Number(mm.month) === r.month);
+            if (!m) return r;
+            return {
+                ...r,
+                he50Qty: m.he50Qty ?? m.overtime50 ?? 0,
+                he100Qty: m.he100Qty ?? m.overtime100 ?? 0,
+                holidayDaysQty: m.holidayDaysQty ?? (m.holidayHours ? Math.round(Number(m.holidayHours) / 8) : 0),
+                nightHoursQty: m.nightHoursQty ?? m.nightShiftHours ?? 0,
+                he50Value: m.he50Value ?? m.overtime50Value ?? 0,
+                he100Value: m.he100Value ?? m.overtime100Value ?? 0,
+                holidayValue: m.holidayValue ?? 0,
+                nightValue: m.nightValue ?? m.nightShiftValue ?? 0,
+                dsrValue: m.dsrValue ?? 0,
+                dsrNightValue: m.dsrNightValue ?? 0,
+                totalValue: m.totalValue ?? 0,
+                previousYearTotal: m.previousYearTotal ?? m.budgetedAmount ?? 0,
+                variance: m.variance ?? ((m.totalValue ?? 0) - (m.previousYearTotal ?? m.budgetedAmount ?? 0)),
+            };
+        });
+        return filled;
+    }, [entry, formData.employeeId, formData.budgetPeriodId, allOvertimes, baseRows]);
+
+    // <<< NOVO: “ano anterior” = total por mês do período imediatamente anterior
+    const previousYearByMonth = useMemo(() => {
+        if (!formData.employeeId || !formData.companyId || !formData.costcenterId || !activeBudget) return {};
+        // acha o período anterior pelo ano-1
+        const prev = budgetPeriods.find((bp: any) => Number(bp.year) === Number(activeBudget.year) - 1);
+        if (!prev) return {};
+        const prevEntries = allOvertimes.filter(o =>
+            Number(o.employeeId) === Number(formData.employeeId) &&
+            Number(o.companyId) === Number(formData.companyId) &&
+            Number(o.costcenterId) === Number(formData.costcenterId) &&
+            Number(o.budgetPeriodId) === Number(prev.id)
+        );
+        const map: Record<number, number> = {};
+        for (const m of prevEntries) {
+            map[m.month] = Number(m.totalValue ?? 0);
+        }
+        return map;
+    }, [formData.employeeId, formData.companyId, formData.costcenterId, activeBudget, budgetPeriods, allOvertimes]);
+
+    const [monthlyData, setMonthlyData] = useState<MonthlyRow[]>(baseRows);
+
+    // inicializa linhas: edição => todos os meses do período; senão “base”
+    useEffect(() => {
+        if (currentPeriodRows) {
+            setMonthlyData(currentPeriodRows);
+        } else {
+            setMonthlyData(baseRows);
+        }
+    }, [currentPeriodRows, baseRows]);
+
+    // aplica “ano anterior” quando muda employee/cc/company/active
+    useEffect(() => {
+        if (!previousYearByMonth) return;
+        setMonthlyData(prev => prev.map(r => ({
+            ...r,
+            previousYearTotal: Number(previousYearByMonth[r.month] ?? 0),
+            variance: r.totalValue - Number(previousYearByMonth[r.month] ?? 0),
+        })));
+    }, [previousYearByMonth]);
 
     // cálculo de valores
     const hourlyRate = (salary: number, dangerPay: boolean, monthlyHours?: number) => {
@@ -281,9 +320,10 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
     };
 
     // travas de campos
-    const disableCompanyAndCC = !isCollective && !!formData.employeeId; // individual: após escolher funcionário, trava empresa/CC
-    const disableBudgetPeriod = true; // sempre readonly (vem do orçamento em exercício)
-    const disableCollectiveToggle = !!entry; // editar: não permite alternar para coletivo
+    const disableCompanyAndCC = !!entry || (!isCollective && !!formData.employeeId);
+    const disableBudgetPeriod = true; // readonly (vem do orçamento em exercício)
+    const disableEmployeeSelect = !!entry; // editar: trava funcionário
+    const disableCollectiveToggle = !!entry;
 
     return (
         <Dialog open onOpenChange={onClose}>
@@ -401,16 +441,23 @@ export const OvertimeFormNew = ({ entry, onClose, onSave }: OvertimeFormNewProps
                                         <Select
                                             value={String(formData.employeeId || "")}
                                             onValueChange={(v) => setFormData((prev) => ({ ...prev, employeeId: Number(v) }))}
-                                            disabled={!num(formData.companyId) || !num(formData.costcenterId) || noActiveBudget}
-                                            >
+                                            disabled={
+                                                disableEmployeeSelect ||
+                                                !Number(formData.companyId) ||
+                                                !Number(formData.costcenterId) ||
+                                                noActiveBudget
+                                            }
+                                        >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder={employeesFiltered.length ? "Selecione o funcionário" : "Sem funcionários para filtros"} />
+                                                <SelectValue 
+                                                    placeholder={
+                                                        employeesFiltered.length ? "Selecione o funcionário" : "Sem funcionários para filtros"} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {employeesFiltered.map((e: any) => (
-                                                <SelectItem key={String(e.id)} value={String(e.id)}>
-                                                    {e.name}
-                                                </SelectItem>
+                                                    <SelectItem key={String(e.id)} value={String(e.id)}>
+                                                        {e.name}
+                                                    </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>

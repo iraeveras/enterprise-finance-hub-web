@@ -3,7 +3,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OvertimeAnalysisByCostCenterTable from "./OvertimeAnalysisByCostCenterTable";
+import { useBudgetPeriods } from "../../budgetperiods/hooks/useBudgetPeriods";
 import type { Overtime } from "../types";
+import { useMemo } from "react";
 
 interface Props {
     entries: Overtime[];
@@ -12,7 +14,16 @@ interface Props {
 }
 
 export function OvertimeAnalysisByCostCenter({ entries, employeeName, costCenterName }: Props) {
-    const sectors = Array.from(new Set(entries.map(e => e.costcenterId))).filter(Boolean);
+        
+    const bpQ = useBudgetPeriods();
+    const active = (bpQ.data ?? []).find((b:any)=>String(b.status).toLowerCase()==="open") ?? null;
+
+    const items = useMemo(() => {
+        if (!active) return entries;
+        return entries.filter(e => Number(e.budgetPeriodId) === Number(active.id));
+    }, [entries, active]);
+
+    const sectors = Array.from(new Set(items.map(e => e.costcenterId))).filter(Boolean);
 
     const vClass = (p: number) =>
         p > 15 ? "text-red-600" : p > 5 ? "text-amber-600" : "text-green-600";
@@ -20,15 +31,15 @@ export function OvertimeAnalysisByCostCenter({ entries, employeeName, costCenter
     return (
         <div className="space-y-6">
             {sectors.map((ccId) => {
-                const ccEntries = entries.filter(e => e.costcenterId === ccId);
-                if (ccEntries.length === 0) return null;
+                const ccItems = items.filter(e => e.costcenterId === ccId);
+                if (ccItems.length === 0) return null;
 
-                const totalBudgeted = ccEntries.reduce((acc, e) => acc + (e.budgetedAmount ?? 0), 0);
-                const totalActual = ccEntries.reduce((acc, e) => acc + (e.totalValue ?? 0), 0);
+                const totalBudgeted = ccItems.reduce((acc, e) => acc + (e.budgetedAmount ?? 0), 0);
+                const totalActual = ccItems.reduce((acc, e) => acc + (e.totalValue ?? 0), 0);
                 const totalVariance = totalActual - totalBudgeted;
                 const variancePercentage = totalBudgeted > 0 ? (totalVariance / totalBudgeted) * 100 : 0;
 
-                const rows = ccEntries.map(e => ({
+                const rows = ccItems.map(e => ({
                     id: e.id!,
                     year: e.year,
                     month: e.month,
@@ -51,7 +62,7 @@ export function OvertimeAnalysisByCostCenter({ entries, employeeName, costCenter
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-lg">
-                                    Horas Extras — {costCenterName(ccId)} ({ccEntries.length})
+                                    Horas Extras — {costCenterName(ccId)} ({ccItems.length})
                                 </CardTitle>
                                 <div className="flex gap-4 text-sm">
                                     <div className="text-center">
