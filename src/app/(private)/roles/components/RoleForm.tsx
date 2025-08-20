@@ -29,6 +29,7 @@ const modules: { id: ModuleID; name: string }[] = [
     { id: "sectors", name: "Setores" },
     { id: "teams", name: "Equipes" },
     { id: "costcenters", name: "Centros de Custo" },
+    { id: "costcenterplans", name: "Plano de Centro de Custo" },
     { id: "acquisition-periods", name: "Período aquisitivo de férias" },
     { id: "vacations", name: "Programação de férias" },
     { id: "budget", name: "Orçamento" },

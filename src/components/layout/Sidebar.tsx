@@ -54,8 +54,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
             isActive
                 ? "bg-gray-100 text-gray-900"
                 : "text-gray-700 hover:text-gray-900"
-            )}
-            onClick={onClick}
+        )}
+        onClick={onClick}
     >
         <Icon
             className={cn("h-4 w-4", isActive ? "text-gray-600" : "text-gray-500")}
@@ -71,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
     return (
         <div className="fixed left-0 top-0 z-50 h-screen w-64 flex-col border-r bg-white lg:flex md:w-64 hidden md:flex">
-            <div className="flex-shrink-0 border-b p-4">
+            <div className="flex-shrink-0 shadow-sm border-b p-4">
                 <a href="/" className="flex items-center space-x-2">
                     <BarChart3 className="h-6 w-6 text-primary" />
                     <span className="font-bold text-xl">
@@ -140,6 +140,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     label="Estabelecimentos"
                                     isActive={activeSection === "premises"}
                                     onClick={() => onSectionChange("premises")}
+                                />
+                                <SidebarItem
+                                    icon={FileText}
+                                    label="Plano de Centro de Custo"
+                                    isActive={activeSection === "costcenterplans"}
+                                    onClick={() => onSectionChange("costcenterplans")}
                                 />
                             </div>
                         </AccordionContent>
@@ -215,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </AccordionContent>
                     </AccordionItem>
 
-                {/* Monitoramento */}
+                    {/* Monitoramento */}
                     <AccordionItem value="monitoramento" className="border-0">
                         <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Monitoramento
@@ -238,7 +244,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </AccordionContent>
                     </AccordionItem>
 
-                {/* Relatórios */}
+                    {/* Relatórios */}
                     <AccordionItem value="relatorios" className="border-0">
                         <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                             Relatórios

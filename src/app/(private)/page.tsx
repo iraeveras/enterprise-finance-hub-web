@@ -20,6 +20,7 @@ import BudgetPeriodManager from "./budgetperiods/page";
 import { BudgetManager } from "./budgets/page";
 import { VacationManager } from "./vacations/page";
 import OvertimeManager from "./overtimes/page";
+import CostCenterPlanManager from "./costcenterplans/page";
 
 
 export default function Home() {
@@ -49,6 +50,8 @@ export default function Home() {
         return <CostCenterManager />;
       case "premises":
         return <PremiseManager />;
+      case "costcenterplans":
+        return <CostCenterPlanManager />
       case "badget":
         return <BudgetManager />
       case "budgetperiods":

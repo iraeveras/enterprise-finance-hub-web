@@ -59,8 +59,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         className={cn(
             "group flex w-full items-center space-x-2 rounded-md p-3 text-sm font-medium hover:bg-gray-100",
             isActive
-            ? "bg-gray-100 text-gray-900"
-            : "text-gray-700 hover:text-gray-900"
+                ? "bg-gray-100 text-gray-900"
+                : "text-gray-700 hover:text-gray-900"
         )}
         onClick={onClick}
     >
@@ -157,6 +157,12 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                             isActive={activeSection === "premises"}
                                             onClick={() => handleSectionChange("premises")}
                                         />
+                                        <SidebarItem
+                                            icon={FileText}
+                                            label="Plano de Centro de Custo"
+                                            isActive={activeSection === "costcenterplans"}
+                                            onClick={() => handleSectionChange("costcenterplans")}
+                                        />
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
@@ -194,7 +200,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
-                        {/* Gestão de Pessoas */}
+                            {/* Gestão de Pessoas */}
                             <AccordionItem value="pessoas" className="border-0">
                                 <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                                     Gestão de Pessoas
@@ -250,11 +256,11 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
-                        {/* Relatórios */}
+                            {/* Relatórios */}
                             <AccordionItem value="relatorios" className="border-0">
-                            <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
-                                Relatórios
-                            </AccordionTrigger>
+                                <AccordionTrigger className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
+                                    Relatórios
+                                </AccordionTrigger>
                                 <AccordionContent className="pb-2">
                                     <div className="space-y-1">
                                         <SidebarItem
