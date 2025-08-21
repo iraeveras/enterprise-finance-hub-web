@@ -77,24 +77,27 @@ export default function OvertimeManager() {
     };
 
     const costCenterName = (id: number) =>
-    ccQ.data?.find((c) => Number(c.id) === Number(id))?.name ?? "—";
+        ccQ.data?.find((c) => Number(c.id) === Number(id))?.name ?? "—";
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Gestão de Horas Extras</h1>
-                    <p className="text-muted-foreground">Controle de horas extras e DSR com análise orçamentária</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Gestão de Horas Extras</h1>
+                    <p className="flex flex-col text-gray-600 text-xs">
+                        <span className="tracking-wide">Controle de horas extras e DSR com análise orçamentária</span>
+                        <span className="text-gray-600 text-xs">{active ? `Período em exercício: ${active.year}` : "Nenhum período em exercício"}</span>
+                    </p>
                 </div>
-                <Button onClick={() => setShowForm(true)} className="gap-2" disabled={periodIsClosed}>
+                <Button onClick={() => setShowForm(true)} className="gap-2 w-full md:w-auto cursor-pointer" disabled={periodIsClosed}>
                     <Plus className="h-4 w-4" /> Novo Lançamento
                 </Button>
             </div>
 
             {/* cards resumo */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="rounded-none">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">Lançamentos Abertos</CardTitle>
                         <Clock className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
@@ -104,8 +107,8 @@ export default function OvertimeManager() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="rounded-none">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">Orçado vs Realizado</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
@@ -119,16 +122,15 @@ export default function OvertimeManager() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="rounded-none">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">Variação Orçamentária</CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div
-                            className={`text-2xl font-bold ${
-                                totalVariance >= 0 ? "text-red-600" : "text-green-600"
-                            }`}
+                            className={`text-2xl font-bold ${totalVariance >= 0 ? "text-red-600" : "text-green-600"
+                                }`}
                         >
                             {(totalVariance >= 0 ? "+" : "")}
                             R$ {totalVariance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
@@ -140,8 +142,8 @@ export default function OvertimeManager() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="rounded-none">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">Alertas</CardTitle>
                         <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
@@ -154,13 +156,13 @@ export default function OvertimeManager() {
                 </Card>
             </div>
 
-            <Tabs defaultValue="entries" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="entries">Lançamentos</TabsTrigger>
-                    <TabsTrigger value="analysis">Análise por Centro de Custo</TabsTrigger>
+            <Tabs defaultValue="entries" className="space-y-0">
+                <TabsList className="rounded-none">
+                    <TabsTrigger value="entries" className="text-xs md:text-sm cursor-pointer rounded-none">Lançamentos</TabsTrigger>
+                    <TabsTrigger value="analysis" className="text-xs md:text-sm cursor-pointer rounded-none">Análise por Centro de Custo</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="entries">
+                <TabsContent value="entries" className="rounded-none">
                     <OvertimeTableNew
                         entries={periodEntries}
                         onEdit={(e) => { setEditing(e); setShowForm(true); }}
@@ -170,7 +172,7 @@ export default function OvertimeManager() {
                     />
                 </TabsContent>
 
-                <TabsContent value="analysis">
+                <TabsContent value="analysis" className="rounded-none">
                     <OvertimeSectorAnalysis
                         entries={periodEntries}
                         sectorOptions={costCenters}

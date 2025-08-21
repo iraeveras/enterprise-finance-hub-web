@@ -85,7 +85,7 @@ export function BudgetPeriodTable({ periods, onEdit, onClose, onReopen }: Budget
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => onClose(p.id)}
+                                            onClick={() => onClose(String(p.id))}
                                             className="text-red-600 border-red-200 hover:bg-red-50 cursor-pointer"
                                         >
                                             <Lock className="w-4 h-4 mr-1" /> Fechar
@@ -94,7 +94,7 @@ export function BudgetPeriodTable({ periods, onEdit, onClose, onReopen }: Budget
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => onReopen(p.id)}
+                                            onClick={() => onReopen(String(p.id))}
                                             className="text-green-600 border-green-200 hover:bg-green-50 cursor-pointer"
                                         >
                                             <Unlock className="w-4 h-4 mr-1" /> Reabrir

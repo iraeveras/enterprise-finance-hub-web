@@ -94,12 +94,13 @@ export function VacationManager() {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lançamento de Férias</h1>
-          <p className="text-gray-600 text-sm md:text-base">
-            {active ? `Período em exercício: ${active.year}` : "Nenhum período em exercício"}
+          <p className="flex flex-col text-gray-600 text-xs">
+            <span className="tracking-wide">Controle de lançamento de férias</span>
+            <span className="text-gray-600 text-xs">{active ? `Período em exercício: ${active.year}` : "Nenhum período em exercício"}</span>
           </p>
         </div>
         <Button

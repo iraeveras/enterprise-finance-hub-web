@@ -23,7 +23,7 @@ interface Props {
     periodIsClosed?: boolean;
 }
 
-export function OvertimeTableNew({entries, onEdit, onDelete, employeeName, periodIsClosed = false}: Props) {
+export function OvertimeTableNew({ entries, onEdit, onDelete, employeeName, periodIsClosed = false }: Props) {
 
 
     // 1) Encontrar o período orçamentário em exercício
@@ -41,7 +41,7 @@ export function OvertimeTableNew({entries, onEdit, onDelete, employeeName, perio
     const [selectedEmployee, setSelectedEmployee] = useState<number | null>(null);
     const [monthlyDetails, setMonthlyDetails] = useState<any[]>([]);
     const itemsPerPage = 10;
-    
+
 
     // 3) Filtrar lançamentos do período ativo (se existir)
     // const periodEntries = useMemo(() => {
@@ -49,27 +49,27 @@ export function OvertimeTableNew({entries, onEdit, onDelete, employeeName, perio
     //     return entries.filter(e => Number(e.budgetPeriodId) === Number(active.id));
     // }, [entries, active]);
 
-        const grouped = useMemo(() => {
+    const grouped = useMemo(() => {
         const map = new Map<number, any>();
         for (const e of entries) {
-        const key = e.employeeId;
-        if (!map.has(key)) {
-            map.set(key, {
-                employeeId: key,
-                employeeName: employeeName(key),
-                position: e.function,
-                he50Total: 0,
-                he100Total: 0,
-                holidayTotal: 0,
-                nightTotal: 0,
-                dsrTotal: 0,
-                dsrNightTotal: 0,
-                yearTotal: 0,
-                budgetedTotal: 0,
-                variance: 0,
-                entries: [] as Overtime[],
-            });
-        }
+            const key = e.employeeId;
+            if (!map.has(key)) {
+                map.set(key, {
+                    employeeId: key,
+                    employeeName: employeeName(key),
+                    position: e.function,
+                    he50Total: 0,
+                    he100Total: 0,
+                    holidayTotal: 0,
+                    nightTotal: 0,
+                    dsrTotal: 0,
+                    dsrNightTotal: 0,
+                    yearTotal: 0,
+                    budgetedTotal: 0,
+                    variance: 0,
+                    entries: [] as Overtime[],
+                });
+            }
             const obj = map.get(key)!;
             obj.he50Total += e.he50Value ?? e.overtime50Value ?? 0;
             obj.he100Total += e.he100Value ?? e.overtime100Value ?? 0;
@@ -110,21 +110,21 @@ export function OvertimeTableNew({entries, onEdit, onDelete, employeeName, perio
     const openDetails = (employeeId: number) => {
         const list = entries.filter((e) => e.employeeId === employeeId);
         const rows = Array.from({ length: 12 }, (_, i) => {
-        const month = i + 1;
-        const m = list.find((e) => e.month === month);
-        return {
-            month,
-            monthName: new Date(list[0]?.year ?? new Date().getFullYear(), i).toLocaleDateString("pt-BR", { month: "long" }),
-            he50Value: m?.he50Value ?? m?.overtime50Value ?? 0,
-            he100Value: m?.he100Value ?? m?.overtime100Value ?? 0,
-            holidayValue: m?.holidayValue ?? 0,
-            nightValue: m?.nightValue ?? m?.nightShiftValue ?? 0,
-            dsrValue: m?.dsrValue ?? 0,
-            dsrNightValue: m?.dsrNightValue ?? 0,
-            totalValue: m?.totalValue ?? 0,
-            previousYearTotal: m?.previousYearTotal ?? m?.budgetedAmount ?? 0,
-            variance: (m?.totalValue ?? 0) - (m?.previousYearTotal ?? m?.budgetedAmount ?? 0),
-        };
+            const month = i + 1;
+            const m = list.find((e) => e.month === month);
+            return {
+                month,
+                monthName: new Date(list[0]?.year ?? new Date().getFullYear(), i).toLocaleDateString("pt-BR", { month: "long" }),
+                he50Value: m?.he50Value ?? m?.overtime50Value ?? 0,
+                he100Value: m?.he100Value ?? m?.overtime100Value ?? 0,
+                holidayValue: m?.holidayValue ?? 0,
+                nightValue: m?.nightValue ?? m?.nightShiftValue ?? 0,
+                dsrValue: m?.dsrValue ?? 0,
+                dsrNightValue: m?.dsrNightValue ?? 0,
+                totalValue: m?.totalValue ?? 0,
+                previousYearTotal: m?.previousYearTotal ?? m?.budgetedAmount ?? 0,
+                variance: (m?.totalValue ?? 0) - (m?.previousYearTotal ?? m?.budgetedAmount ?? 0),
+            };
         });
         setMonthlyDetails(rows);
         setSelectedEmployee(employeeId);
@@ -132,7 +132,7 @@ export function OvertimeTableNew({entries, onEdit, onDelete, employeeName, perio
 
     return (
         <>
-            <Card>
+            <Card className="rounded-none">
                 <CardHeader>
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <CardTitle>Lançamentos de Horas Extras</CardTitle>
@@ -215,36 +215,36 @@ export function OvertimeTableNew({entries, onEdit, onDelete, employeeName, perio
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex gap-1">
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="sm" 
-                                                        className="h-8 w-8 p-0 cursor-pointer" 
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 cursor-pointer"
                                                         onClick={() => openDetails(d.employeeId)}
                                                     >
-                                                        <Eye className="h-4 w-4" 
-                                                    />
+                                                        <Eye className="h-4 w-4"
+                                                        />
                                                     </Button>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="sm" 
-                                                        className="h-8 w-8 p-0 cursor-pointer" 
-                                                        onClick={() => { 
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 cursor-pointer"
+                                                        onClick={() => {
                                                             if (periodIsClosed) return;
-                                                            const first = d.entries[0]; 
-                                                            if (first) onEdit(first); 
-                                                        }} 
+                                                            const first = d.entries[0];
+                                                            if (first) onEdit(first);
+                                                        }}
                                                         disabled={periodIsClosed}
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="sm" 
-                                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 cursor-pointer" 
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 cursor-pointer"
                                                         onClick={() => {
                                                             if (periodIsClosed) return;
                                                             d.entries.forEach((e: Overtime) => onDelete(e.id!))
-                                                        }} 
+                                                        }}
                                                         disabled={periodIsClosed}
                                                     >
                                                         <Trash2 className="h-4 w-4" />

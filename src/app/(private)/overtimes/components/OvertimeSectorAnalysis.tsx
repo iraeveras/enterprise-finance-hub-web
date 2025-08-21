@@ -55,7 +55,7 @@ export function OvertimeSectorAnalysis({ entries, sectorOptions, employeeName }:
 
     return (
         <div className="space-y-4">
-            <Card>
+            <Card className="rounded-none">
                 <CardHeader>
                     <CardTitle className="text-lg">Análise de Horas Extras por Setor</CardTitle>
                 </CardHeader>

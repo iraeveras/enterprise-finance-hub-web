@@ -4,7 +4,7 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Calendar } from "lucide-react";
+import { PlusCircle, Calendar, Unlock } from "lucide-react";
 import { BudgetPeriodForm } from "./components/BudgetPeriodForm";
 import { BudgetPeriodTable } from "./components/BudgetPeriodTable";
 import { useBudgetPeriods } from "./hooks/useBudgetPeriods";
@@ -14,6 +14,7 @@ import { useCompanies } from "../companies/hooks/useCompanies";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
 import { useAuth } from "@/context/AuthContext";
 import type { BudgetPeriod, CreateBudgetPeriodInput, UpdateBudgetPeriodInput } from "./types";
+import { Badge } from "@/components/ui/badge";
 
 function hasOpenPeriod(periods: BudgetPeriod[]) {
     return periods.some((p) => p.status === "open");
@@ -89,7 +90,10 @@ export default function BudgetPeriodManager() {
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Períodos Orçamentários</h1>
-                        <p className="text-gray-600">Gestão de períodos para controle orçamentário</p>
+                        <p className="flex flex-col text-gray-600 text-xs">
+                            <span className="tracking-wide">Gestão de períodos para controle orçamentário</span>
+                            <span>{openCurrent ? `Período em exercício: ${openCurrent.year}` : "Nenhum período em exercício"}</span>
+                        </p>
                     </div>
                     <Button onClick={handleNew} className="flex items-center gap-2 cursor-pointer">
                         <PlusCircle className="w-4 h-4" />
@@ -109,23 +113,26 @@ export default function BudgetPeriodManager() {
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <span className="text-sm text-green-600">Período:</span>
-                                    <p className="font-medium">{openCurrent.description}</p>
+                                    <p className="font-normal text-sm">{openCurrent.description}</p>
                                 </div>
                                 <div>
                                     <span className="text-sm text-green-600">Ano:</span>
-                                    <p className="font-medium">{openCurrent.year}</p>
+                                    <p className="font-normal text-sm">{openCurrent.year}</p>
                                 </div>
                                 <div>
                                     <span className="text-sm text-green-600">Vigência:</span>
-                                    <p className="font-medium">
+                                    <p className="font-normal text-sm">
                                         {new Date(openCurrent.startDate).toLocaleDateString("pt-BR")} até{" "}
                                         {new Date(openCurrent.endDate).toLocaleDateString("pt-BR")}
                                     </p>
                                 </div>
-                                <div>
-                                    <span className="text-sm text-green-600">Status:</span>
-                                    <div className="mt-1">
-                                        <span className="inline-block rounded bg-green-100 text-green-800 px-2 py-1 text-xs">Aberto</span>
+                                <div className="w-full">
+                                    <span className="text-sm text-green-600 w-full">Status:</span>
+                                    <div className="mt-1 w-full">
+                                        <Badge className="flex items-center justify-start gap-1 w-full bg-green-200 text-green-800">
+                                            <Unlock className="w-3 h-3" />
+                                            Aberto
+                                        </Badge>
                                     </div>
                                 </div>
                             </div>

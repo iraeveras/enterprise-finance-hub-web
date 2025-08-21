@@ -74,7 +74,7 @@ export function VacationPlanningTable({
       <Card className="rounded-none">
         <CardHeader>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <CardTitle className="text-lg md:text-xl">
+            <CardTitle>
               Programação de Férias{sectorName ? ` — ${sectorName}` : ""} ({total})
             </CardTitle>
             <div className="flex gap-2 w-full md:w-auto">
