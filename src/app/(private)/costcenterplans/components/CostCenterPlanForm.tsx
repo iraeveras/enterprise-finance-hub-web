@@ -8,9 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CostCenterPlan } from "@/app/(private)/costcenterplans/types";
-
-// use o hook real do seu projeto
 import { useCompanies } from "@/app/(private)/companies/hooks/useCompanies";
+import type { Company } from "@/app/(private)/companies/types";
 
 interface CostCenterPlanFormProps {
     plan?: CostCenterPlan | null;
@@ -23,13 +22,11 @@ interface CostCenterPlanFormProps {
     }) => void;
 }
 
-type ApiCompany = { id: number | string; name?: string; razaoSocial?: string };
-
 export const CostCenterPlanForm = ({ plan, onClose, onSave }: CostCenterPlanFormProps) => {
     const [formData, setFormData] = useState<{
         codPlanoCentroCusto: string;
         nomePlanoCentroCusto: string;
-        companyId: number | null; // <— mantém number aqui
+        companyId: number | null;
         status: "active" | "inactive";
     }>({
         codPlanoCentroCusto: plan?.codPlanoCentroCusto ?? "",
@@ -38,14 +35,21 @@ export const CostCenterPlanForm = ({ plan, onClose, onSave }: CostCenterPlanForm
         status: (plan?.status ?? "active") as "active" | "inactive",
     });
 
-    const companiesQ = useCompanies?.();
-    // normaliza id para number, independente do que o hook retorne
-    const companies: { id: number; label: string }[] = ((companiesQ?.data ?? []) as ApiCompany[])
+    const companiesQ = useCompanies();
+    // usa corporateName e normaliza id -> number
+    const companies: { id: number; label: string }[] = ((companiesQ.data ?? []) as Company[])
         .map((c) => ({
-            id: typeof c.id === "string" ? Number(c.id) : c.id,
-            label: c.name ?? c.razaoSocial ?? `Empresa ${c.id}`,
+            id: typeof c.id === "string" ? Number(c.id) : (c.id as unknown as number),
+            label: c.corporateName, // <<< usa corporateName
         }))
         .filter((c) => Number.isFinite(c.id));
+
+    // auto-seleciona se houver exatamente 1 empresa
+    useEffect(() => {
+        if (formData.companyId == null && companies.length === 1) {
+            setFormData((p) => ({ ...p, companyId: companies[0].id }));
+        }
+    }, [companies, formData.companyId]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,17 +57,10 @@ export const CostCenterPlanForm = ({ plan, onClose, onSave }: CostCenterPlanForm
         onSave({
             codPlanoCentroCusto: formData.codPlanoCentroCusto,
             nomePlanoCentroCusto: formData.nomePlanoCentroCusto,
-            companyId: formData.companyId, // já é number
+            companyId: formData.companyId,
             status: formData.status,
         });
     };
-
-    // auto selecionar quando houver exatamente 1 empresa
-    useEffect(() => {
-        if (formData.companyId == null && companies.length === 1) {
-            setFormData((p) => ({ ...p, companyId: companies[0].id }));
-        }
-    }, [companies, formData.companyId]);
 
     return (
         <Dialog open onOpenChange={onClose}>

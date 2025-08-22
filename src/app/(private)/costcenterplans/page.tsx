@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Filter, FileDown, Plus, Edit } from "lucide-react";
+import { Search, Filter, FileDown, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import PlanSection from "./components/PlanSection";
@@ -38,6 +38,9 @@ import { useExpenseSubtypeCreate } from "./hooks/useExpenseSubtypeCreate";
 import { useExpenseSubtypeUpdate } from "./hooks/useExpenseSubtypeUpdate";
 import { useExpenseSubtypeDelete } from "./hooks/useExpenseSubtypeDelete";
 
+import { useCompanies } from "@/app/(private)/companies/hooks/useCompanies";
+import type { Company } from "@/app/(private)/companies/types";
+
 export default function CostCenterPlanManager() {
     const [search, setSearch] = useState("");
 
@@ -64,6 +67,17 @@ export default function CostCenterPlanManager() {
     const createSubtype = useExpenseSubtypeCreate();
     const updateSubtype = useExpenseSubtypeUpdate();
     const deleteSubtype = useExpenseSubtypeDelete();
+
+    // ---- COMPANIES (para exibir corporateName)
+    const companiesQ = useCompanies();
+    const companyNameById = useMemo(() => {
+        const map = new Map<number, string>();
+        (companiesQ.data ?? []).forEach((c: Company) => {
+            const idNum = typeof c.id === "string" ? Number(c.id) : (c.id as unknown as number);
+            map.set(idNum, c.corporateName);
+        });
+        return map;
+    }, [companiesQ.data]);
 
     const [showPlanForm, setShowPlanForm] = useState(false);
     const [showItemForm, setShowItemForm] = useState(false);
@@ -95,20 +109,42 @@ export default function CostCenterPlanManager() {
     }, [plans, search]);
 
     // Helpers to map relations
-    const itemsForPlan = (planId: string | number) => items.filter((i) => Number(i.planoCentroCustoId) === Number(planId));
-    const typesForItem = (itemId: string | number) => types.filter((t) => Number(t.planoCentroCustoItemId) === Number(itemId));
-    const subtypesForType = (typeId: string | number) => subtypes.filter((s) => Number(s.tipoDespesaId) === Number(typeId));
+    const itemsForPlan = (planId: string | number) =>
+        items.filter((i) => Number(i.planoCentroCustoId) === Number(planId));
+    const typesForItem = (itemId: string | number) =>
+        types.filter((t) => Number(t.planoCentroCustoItemId) === Number(itemId));
+    const subtypesForType = (typeId: string | number) =>
+        subtypes.filter((s) => Number(s.tipoDespesaId) === Number(typeId));
 
     // Available options for forms
-    const availablePlans = plans.map((p) => ({ id: p.id, name: p.nomePlanoCentroCusto, code: p.codPlanoCentroCusto }));
-    const availableItems = items.map((i) => ({ id: i.id, name: i.nomePlanoCentroCustoItem, code: i.codPlanoCentroCustoItem }));
-    const availableTypes = types.map((t) => ({ id: t.id, name: t.nomeTipoDespesa, code: t.codTipoDespesa }));
+    const availablePlans = plans.map((p) => ({
+        id: p.id,
+        name: p.nomePlanoCentroCusto,
+        code: p.codPlanoCentroCusto,
+    }));
+    const availableItems = items.map((i) => ({
+        id: i.id,
+        name: i.nomePlanoCentroCustoItem,
+        code: i.codPlanoCentroCustoItem,
+    }));
+    const availableTypes = types.map((t) => ({
+        id: t.id,
+        name: t.nomeTipoDespesa,
+        code: t.codTipoDespesa,
+    }));
 
     // Handlers (CRUD)
-    const handleNewPlan = () => { setSelectedPlan(null); setShowPlanForm(true); };
-    const handleEditPlan = (plan: CostCenterPlan) => { setSelectedPlan(plan); setShowPlanForm(true); };
+    const handleNewPlan = () => {
+        setSelectedPlan(null);
+        setShowPlanForm(true);
+    };
+    const handleEditPlan = (plan: CostCenterPlan) => {
+        setSelectedPlan(plan);
+        setShowPlanForm(true);
+    };
     const handleDeletePlan = (plan: CostCenterPlan) => {
-        if (confirm("Excluir este plano de centro de custo?")) deletePlan.mutate(Number(plan.id));
+        if (confirm("Excluir este plano de centro de custo?"))
+            deletePlan.mutate(Number(plan.id));
     };
 
     const handleSavePlan = (data: any) => {
@@ -124,7 +160,9 @@ export default function CostCenterPlanManager() {
         setShowItemForm(true);
     };
     const handleEditItem = (item: CostCenterPlanItem) => {
-        setSelectedItem(item); setPrefillPlanId(undefined); setShowItemForm(true);
+        setSelectedItem(item);
+        setPrefillPlanId(undefined);
+        setShowItemForm(true);
     };
     const handleDeleteItem = (item: CostCenterPlanItem) => {
         if (confirm("Excluir este item de plano?")) deleteItem.mutate(Number(item.id));
@@ -138,10 +176,14 @@ export default function CostCenterPlanManager() {
     };
 
     const handleNewExpenseType = (itemId?: string | number) => {
-        setSelectedType(null); setPrefillItemId(itemId); setShowTypeForm(true);
+        setSelectedType(null);
+        setPrefillItemId(itemId);
+        setShowTypeForm(true);
     };
     const handleEditExpenseType = (type: ExpenseType) => {
-        setSelectedType(type); setPrefillItemId(undefined); setShowTypeForm(true);
+        setSelectedType(type);
+        setPrefillItemId(undefined);
+        setShowTypeForm(true);
     };
     const handleDeleteExpenseType = (type: ExpenseType) => {
         if (confirm("Excluir este tipo de despesa?")) deleteType.mutate(Number(type.id));
@@ -155,13 +197,18 @@ export default function CostCenterPlanManager() {
     };
 
     const handleNewExpenseSubtype = (typeId?: string | number) => {
-        setSelectedSubtype(null); setPrefillTypeId(typeId); setShowSubtypeForm(true);
+        setSelectedSubtype(null);
+        setPrefillTypeId(typeId);
+        setShowSubtypeForm(true);
     };
     const handleEditExpenseSubtype = (subtype: ExpenseSubtype) => {
-        setSelectedSubtype(subtype); setPrefillTypeId(undefined); setShowSubtypeForm(true);
+        setSelectedSubtype(subtype);
+        setPrefillTypeId(undefined);
+        setShowSubtypeForm(true);
     };
     const handleDeleteExpenseSubtype = (subtype: ExpenseSubtype) => {
-        if (confirm("Excluir este subtipo de despesa?")) deleteSubtype.mutate(Number(subtype.id));
+        if (confirm("Excluir este subtipo de despesa?"))
+            deleteSubtype.mutate(Number(subtype.id));
     };
     const handleSaveExpenseSubtype = (data: any) => {
         if (selectedSubtype) updateSubtype.mutate({ id: Number(selectedSubtype.id), data });
@@ -171,14 +218,21 @@ export default function CostCenterPlanManager() {
         setPrefillTypeId(undefined);
     };
 
-    const loading = plansQ.isLoading || itemsQ.isLoading || typesQ.isLoading || subtypesQ.isLoading;
+    const loading =
+        plansQ.isLoading ||
+        itemsQ.isLoading ||
+        typesQ.isLoading ||
+        subtypesQ.isLoading ||
+        companiesQ.isLoading;
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Plano de Centro de Custo</h1>
-                    <p className="text-muted-foreground">Gerencie planos, itens e (sub)tipos de despesa</p>
+                    <p className="text-muted-foreground">
+                        Gerencie planos, itens e (sub)tipos de despesa
+                    </p>
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={handleNewPlan}>
@@ -208,25 +262,40 @@ export default function CostCenterPlanManager() {
                             />
                         </div>
                         <div className="flex gap-2">
-                            <Button variant="outline" size="sm"><Filter className="h-4 w-4 mr-2" />Filtros</Button>
-                            <Button variant="outline" size="sm"><FileDown className="h-4 w-4 mr-2" />Exportar</Button>
+                            <Button variant="outline" size="sm">
+                                <Filter className="h-4 w-4 mr-2" />
+                                Filtros
+                            </Button>
+                            <Button variant="outline" size="sm">
+                                <FileDown className="h-4 w-4 mr-2" />
+                                Exportar
+                            </Button>
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Abas dinâmicas por plano */}
-            <Tabs defaultValue={filteredPlans[0] ? String(filteredPlans[0].codPlanoCentroCusto) : "all"} className="space-y-4">
-                <TabsList className="flex flex-wrap">
+            {/* Abas por plano */}
+            <Tabs
+                defaultValue={
+                    filteredPlans[0] ? String(filteredPlans[0].codPlanoCentroCusto) : "all"
+                }
+                className="space-y-0 rounded-none"
+            >
+                <TabsList className="flex flex-wrap rounded-none">
                     {filteredPlans.map((p) => (
-                        <TabsTrigger key={String(p.id)} value={String(p.codPlanoCentroCusto)} className="cursor-pointer">
+                        <TabsTrigger
+                            key={String(p.id)}
+                            value={String(p.codPlanoCentroCusto)}
+                            className="cursor-pointer rounded-none"
+                        >
                             {p.codPlanoCentroCusto} - {p.nomePlanoCentroCusto}
                         </TabsTrigger>
                     ))}
                 </TabsList>
 
                 {filteredPlans.map((plan) => (
-                    <TabsContent key={String(plan.id)} value={String(plan.codPlanoCentroCusto)}>
+                    <TabsContent key={String(plan.id)} value={String(plan.codPlanoCentroCusto)} className="rounded-none">
                         <PlanSection
                             plan={plan}
                             planItems={itemsForPlan(plan.id)}
@@ -246,15 +315,16 @@ export default function CostCenterPlanManager() {
                 ))}
             </Tabs>
 
-            {/* Lista plana (exemplo com tabela componentizada) */}
-            <Card>
+            {/* Lista plana (tabela) */}
+            {/* <Card>
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
                             Todos os Planos <Badge variant="secondary">{plans.length}</Badge>
                         </CardTitle>
                         <Button variant="outline" size="sm" onClick={handleNewPlan}>
-                            <Plus className="h-4 w-4 mr-2" />Novo
+                            <Plus className="h-4 w-4 mr-2" />
+                            Novo
                         </Button>
                     </div>
                 </CardHeader>
@@ -264,7 +334,17 @@ export default function CostCenterPlanManager() {
                         columns={[
                             { header: "Código", render: (r) => r.codPlanoCentroCusto, className: "w-28" },
                             { header: "Nome", render: (r) => r.nomePlanoCentroCusto },
-                            { header: "Empresa", render: (r) => String(r.companyId), className: "w-28" },
+                            {
+                                header: "Empresa",
+                                className: "w-64",
+                                render: (r) => {
+                                    const idNum =
+                                        typeof (r as any).companyId === "string"
+                                            ? Number((r as any).companyId)
+                                            : ((r as any).companyId as number);
+                                    return companyNameById.get(idNum) ?? String(idNum ?? "");
+                                },
+                            },
                             {
                                 header: "Status",
                                 render: (r) => (
@@ -279,13 +359,16 @@ export default function CostCenterPlanManager() {
                         onDelete={(r) => handleDeletePlan(r)}
                     />
                 </CardContent>
-            </Card>
+            </Card> */}
 
             {/* Forms */}
             {showPlanForm && (
                 <CostCenterPlanForm
                     plan={selectedPlan}
-                    onClose={() => { setShowPlanForm(false); setSelectedPlan(null); }}
+                    onClose={() => {
+                        setShowPlanForm(false);
+                        setSelectedPlan(null);
+                    }}
                     onSave={handleSavePlan}
                 />
             )}
@@ -295,7 +378,11 @@ export default function CostCenterPlanManager() {
                     item={selectedItem}
                     planoCentroCustoId={prefillPlanId}
                     availablePlans={availablePlans}
-                    onClose={() => { setShowItemForm(false); setSelectedItem(null); setPrefillPlanId(undefined); }}
+                    onClose={() => {
+                        setShowItemForm(false);
+                        setSelectedItem(null);
+                        setPrefillPlanId(undefined);
+                    }}
                     onSave={handleSaveItem}
                 />
             )}
@@ -305,7 +392,11 @@ export default function CostCenterPlanManager() {
                     expenseType={selectedType}
                     planoCentroCustoItemId={prefillItemId}
                     availableItems={availableItems}
-                    onClose={() => { setShowTypeForm(false); setSelectedType(null); setPrefillItemId(undefined); }}
+                    onClose={() => {
+                        setShowTypeForm(false);
+                        setSelectedType(null);
+                        setPrefillItemId(undefined);
+                    }}
                     onSave={handleSaveExpenseType}
                 />
             )}
@@ -315,7 +406,11 @@ export default function CostCenterPlanManager() {
                     expenseSubtype={selectedSubtype}
                     tipoDespesaId={prefillTypeId}
                     availableTypes={availableTypes}
-                    onClose={() => { setShowSubtypeForm(false); setSelectedSubtype(null); setPrefillTypeId(undefined); }}
+                    onClose={() => {
+                        setShowSubtypeForm(false);
+                        setSelectedSubtype(null);
+                        setPrefillTypeId(undefined);
+                    }}
                     onSave={handleSaveExpenseSubtype}
                 />
             )}
