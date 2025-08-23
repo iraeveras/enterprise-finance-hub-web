@@ -44,7 +44,7 @@ export default function PlanSection({
     getSubtypesForType,
 }: PlanSectionProps) {
     return (
-        <Card className="rounded-none">
+        <Card className="rounded-none gap-2">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
@@ -55,10 +55,10 @@ export default function PlanSection({
                     </CardTitle>
 
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => onNewItem(String(plan.id))}>
+                        <Button variant="outline" className="cursor-pointer" size="sm" onClick={() => onNewItem(String(plan.id))}>
                             <Plus className="h-4 w-4 mr-2" /> Adicionar Item
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => onEditPlan(plan)}>
+                        <Button variant="outline" className="cursor-pointer" size="sm" onClick={() => onEditPlan(plan)}>
                             <Edit className="h-4 w-4" />
                         </Button>
                     </div>
@@ -71,26 +71,26 @@ export default function PlanSection({
                         Nenhum item cadastrado para este plano
                     </p>
                 ) : (
-                    <AccordionPrimitive.Root type="multiple" className="space-y-2">
+                    <AccordionPrimitive.Root type="multiple" className="space-y-1">
                         {planItems.map((item) => (
                             <AccordionPrimitive.Item
                                 key={item.id}
                                 value={String(item.id)}
-                                className="rounded-lg border"
+                                className="rounded-none border ml-4"
                             >
-                                <AccordionPrimitive.Header className="flex items-center justify-between px-4 py-3">
+                                <AccordionPrimitive.Header className="flex items-center justify-between px-4 py-2">
                                     {/* Trigger como DIV (evita button dentro de button) */}
                                     <AccordionPrimitive.Trigger asChild>
-                                        <div className="group/item flex cursor-pointer items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                                        <div className="group/item text-base flex cursor-pointer items-center gap-3 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                                             <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]/item:rotate-90" />
                                             <span className="font-medium">{item.codPlanoCentroCustoItem}</span>
                                             <span>{item.nomePlanoCentroCustoItem}</span>
-                                            <Badge
+                                            {/* <Badge
                                                 variant={item.status === "active" ? "default" : "secondary"}
                                                 className="text-xs"
                                             >
                                                 {item.status === "active" ? "Ativo" : "Inativo"}
-                                            </Badge>
+                                            </Badge> */}
                                         </div>
                                     </AccordionPrimitive.Trigger>
 
@@ -98,6 +98,7 @@ export default function PlanSection({
                                     <div className="flex gap-2">
                                         <Button
                                             variant="outline"
+                                            className="cursor-pointer"
                                             size="sm"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -109,6 +110,7 @@ export default function PlanSection({
                                         </Button>
                                         <Button
                                             variant="outline"
+                                            className="cursor-pointer"
                                             size="sm"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -132,26 +134,27 @@ export default function PlanSection({
                                                     <AccordionPrimitive.Item
                                                         key={type.id}
                                                         value={String(type.id)}
-                                                        className="rounded-md border bg-muted/30"
+                                                        className="rounded-none border bg-muted/30"
                                                     >
                                                         <AccordionPrimitive.Header className="flex items-center justify-between px-3 py-2">
                                                             <AccordionPrimitive.Trigger asChild>
                                                                 <div className="group/type flex cursor-pointer items-center gap-2 text-sm">
-                                                                    <ChevronRight className="h-3 w-3 transition-transform group-data-[state=open]/type:rotate-90" />
+                                                                    <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]/type:rotate-90" />
                                                                     <span className="font-medium">{type.codTipoDespesa}</span>
                                                                     <span>{type.nomeTipoDespesa}</span>
-                                                                    <Badge
+                                                                    {/* <Badge
                                                                         variant={type.status === "active" ? "default" : "secondary"}
                                                                         className="text-xs"
                                                                     >
                                                                         {type.status === "active" ? "Ativo" : "Inativo"}
-                                                                    </Badge>
+                                                                    </Badge> */}
                                                                 </div>
                                                             </AccordionPrimitive.Trigger>
 
                                                             <div className="flex gap-2">
                                                                 <Button
                                                                     variant="outline"
+                                                                    className="cursor-pointer"
                                                                     size="sm"
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
@@ -163,6 +166,7 @@ export default function PlanSection({
                                                                 </Button>
                                                                 <Button
                                                                     variant="outline"
+                                                                    className="cursor-pointer"
                                                                     size="sm"
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
@@ -186,7 +190,7 @@ export default function PlanSection({
                                                                         {getSubtypesForType(String(type.id)).map((subtype) => (
                                                                             <div
                                                                                 key={subtype.id}
-                                                                                className="ml-8 flex items-center justify-between rounded border bg-background p-2"
+                                                                                className="ml-8 flex items-center justify-between rounded-none border bg-background px-2 py-0.5"
                                                                             >
                                                                                 <div className="flex items-center gap-2">
                                                                                     <span className="text-sm font-medium">
@@ -195,7 +199,7 @@ export default function PlanSection({
                                                                                     <span className="text-sm">
                                                                                         {subtype.nomeSubtipoDespesa}
                                                                                     </span>
-                                                                                    <Badge
+                                                                                    {/* <Badge
                                                                                         variant={
                                                                                             subtype.status === "active"
                                                                                                 ? "default"
@@ -204,14 +208,15 @@ export default function PlanSection({
                                                                                         className="text-xs"
                                                                                     >
                                                                                         {subtype.status === "active" ? "Ativo" : "Inativo"}
-                                                                                    </Badge>
+                                                                                    </Badge> */}
                                                                                 </div>
                                                                                 <Button
-                                                                                    variant="outline"
+                                                                                    variant="ghost"
                                                                                     size="sm"
                                                                                     onClick={() => onEditExpenseSubtype(subtype)}
+                                                                                    className="cursor-pointer"
                                                                                 >
-                                                                                    <Edit className="h-4 w-4" />
+                                                                                    <Edit className="h-3 w-3" />
                                                                                 </Button>
                                                                             </div>
                                                                         ))}
