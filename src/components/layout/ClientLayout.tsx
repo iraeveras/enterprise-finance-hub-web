@@ -4,22 +4,25 @@ import { ReactNode } from "react";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CompanyProvider } from "@/context/CompanyContext";
 
 const queryClient = new QueryClient();
 
-export default function ClientLayout({ 
-    children 
-}: { 
-    children: ReactNode 
+export default function ClientLayout({
+    children
+}: {
+    children: ReactNode
 }) {
     return (
         <AuthProvider>
             <QueryClientProvider client={queryClient}>
-                <TooltipProvider>
-                    <Sonner richColors/>
-                    {children}
-                </TooltipProvider>
+                <CompanyProvider>
+                    <TooltipProvider>
+                        <Sonner richColors />
+                        {children}
+                    </TooltipProvider>
+                </CompanyProvider>
             </QueryClientProvider>
         </AuthProvider>
     );

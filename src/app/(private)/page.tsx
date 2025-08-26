@@ -1,10 +1,10 @@
-// FILE: src/app/page.tsx
+// FILE: src/app/(private)/page.tsx
 "use client"
 import { Header } from "@/components/layout/Header";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DashboardContent } from "./dashboard/page";
 import CompanyManager from "./companies/page";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
@@ -21,6 +21,8 @@ import { BudgetManager } from "./budgets/page";
 import { VacationManager } from "./vacations/page";
 import OvertimeManager from "./overtimes/page";
 import CostCenterPlanManager from "./costcenterplans/page";
+import { useCompany } from "@/context/CompanyContext";
+import CompanySelector from "./companies/components/CompanySelector";
 
 
 export default function Home() {
@@ -31,6 +33,13 @@ export default function Home() {
     role: "admin",
     email: "admin@empresa.com",
   });
+
+  const { isCompanySelected, companies } = useCompany();
+  const [showInitialSelector, setShowInitialSelector] = useState(true);
+
+  useEffect(() => {
+    if (isCompanySelected) setShowInitialSelector(false);
+  }, [isCompanySelected]);
 
   const renderContent = () => {
     switch (activeSection) {
@@ -67,6 +76,22 @@ export default function Home() {
       default:
         return <DashboardContent />
     }
+  };
+
+  // Bloqueia a tela até escolher uma empresa (se existirem empresas)
+  if (!isCompanySelected && companies.length > 0) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <CompanySelector
+          isOpen={showInitialSelector}
+          onClose={() => {
+            if (isCompanySelected) setShowInitialSelector(false);
+          }}
+          title="Bem-vindo ao Sistema"
+          description="Selecione a empresa para começar a trabalhar"
+        />
+      </div>
+    );
   }
 
   return (
