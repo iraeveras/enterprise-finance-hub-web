@@ -262,7 +262,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </AccordionItem>
 
                     {/* Administração */}
-                    {userRole === "admin" && (
+                    {userRole === "Administrador" && (
                         <AccordionItem value="admin" className="border-0">
                             <AccordionTrigger className="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:no-underline">
                                 Administração

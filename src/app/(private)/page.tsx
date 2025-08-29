@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DashboardContent } from "./dashboard/page";
 import CompanyManager from "./companies/page";
 import { ProtectedPage } from "@/components/layout/ProtectedPage";
@@ -23,16 +23,27 @@ import OvertimeManager from "./overtimes/page";
 import CostCenterPlanManager from "./costcenterplans/page";
 import { useCompany } from "@/context/CompanyContext";
 import CompanySelector from "./companies/components/CompanySelector";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user] = useState({
-    name: "Administrador",
-    role: "admin",
-    email: "admin@empresa.com",
-  });
+
+  // >>> pega usuário real do AuthContext
+  const { user: authUser } = useAuth();
+
+  // >>> garanta que role seja string
+  const roleName =
+    typeof authUser?.role === "string"
+      ? authUser.role
+      : (authUser?.role as any)?.name ?? "user";
+
+  const headerUser = {
+    name: authUser?.name ?? "—",
+    role: roleName,          // <- string garantida
+    email: authUser?.email ?? "",
+  };
 
   const { isCompanySelected, companies } = useCompany();
   const [showInitialSelector, setShowInitialSelector] = useState(true);
@@ -101,19 +112,19 @@ export default function Home() {
         <Sidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection}
-          userRole={user.role}
+          userRole={roleName}
         />
 
         {/* Mobile Sidebar */}
         <MobileSidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection}
-          userRole={user.role}
+          userRole={roleName}
           isOpen={mobileMenuOpen}
           onOpenChange={setMobileMenuOpen}
         />
         <div className="flex-1 flex flex-col md:ml-64 overflow-hidden">
-          <Header user={user} onMobileMenuToggle={() => setMobileMenuOpen(true)} />
+          <Header user={headerUser} onMobileMenuToggle={() => setMobileMenuOpen(true)} />
           <main className="flex-1 p-4 md:p-6 overflow-y-auto">{renderContent()}</main>
         </div>
       </div>
