@@ -64,13 +64,13 @@ export const Header = ({ user: propUser, onMobileMenuToggle }: HeaderProps) => {
 
                         {/* Pílula com a empresa atual + trocar */}
                         {selectedCompany && (
-                            <div className="flex items-center space-x-2 bg-primary/5 px-3 py-2 rounded-lg">
+                            <div className="flex items-center space-x-2 px-3 py-1 rounded-lg">
                                 <Building className="w-4 h-4 text-primary" />
                                 <span className="text-sm font-medium text-primary">{selectedCompany.tradeName}</span>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 w-6 p-0 text-primary hover:bg-primary/10"
+                                    className="h-6 w-6 p-0 text-primary hover:bg-primary/10 cursor-pointer"
                                     onClick={() => setShowSelector(true)}
                                     title="Trocar empresa"
                                 >
