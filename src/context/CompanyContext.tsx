@@ -19,17 +19,37 @@ const CompanyContext = createContext<CompanyCtx | undefined>(undefined);
 
 const STORAGE_KEY = "selectedCompanyId";
 
+function getCookie(name: string): string | null {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith(name + "="));
+    return match ? decodeURIComponent(match.split("=")[1]) : null;
+}
+
+function setCookie(name: string, value: string, days = 30) {
+    if (typeof document === "undefined") return;
+    const maxAge = days * 24 * 60 * 60;
+    document.cookie = `${name}=${encodeURIComponent(
+        value
+    )}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+}
+
+function deleteCookie(name: string) {
+    if (typeof document === "undefined") return;
+    document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+}
+
 export function CompanyProvider({ children }: { children: React.ReactNode }) {
     const companiesQ = useCompanies(); // dados reais
     const companies = (companiesQ.data ?? []).filter((c) => c.status === "active");
+
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
 
     // carrega id salvo
     useEffect(() => {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) setSelectedCompanyId(raw);
-        } catch { }
+        const saved = getCookie(STORAGE_KEY);
+        if (saved) setSelectedCompanyId(saved);
     }, []);
 
     // se a empresa salva não existe mais, limpa
@@ -39,9 +59,7 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
         const exists = companies.some((c) => String(c.id) === String(selectedCompanyId));
         if (!exists) {
             setSelectedCompanyId(null);
-            try {
-                localStorage.removeItem(STORAGE_KEY);
-            } catch { }
+            deleteCookie(STORAGE_KEY);
         }
     }, [companiesQ.isLoading, companies, selectedCompanyId]);
 
@@ -53,19 +71,17 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
     const setSelectedCompany = (c: Company | null) => {
         if (!c) {
             setSelectedCompanyId(null);
-            try {
-                localStorage.removeItem(STORAGE_KEY);
-            } catch { }
+            deleteCookie(STORAGE_KEY);
             return;
         }
         const idStr = String(c.id);
         setSelectedCompanyId(idStr);
-        try {
-            localStorage.setItem(STORAGE_KEY, idStr);
-        } catch { }
+        setCookie(STORAGE_KEY, idStr); // segue o padrão de cookies da app
     };
 
-    const clearCompany = () => setSelectedCompany(null);
+    const clearCompany = () => {
+        setSelectedCompany(null);
+    };
 
     const value: CompanyCtx = {
         companies,
