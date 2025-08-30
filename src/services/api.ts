@@ -9,6 +9,28 @@ const api = axios.create({
     timeout: 10000,
 });
 
+/** Util: lê cookie de forma segura (evita erro em SSR) */
+function readCookie(name: string): string | null {
+    if (typeof document === "undefined") return null;
+    const row = document.cookie.split("; ").find((r) => r.startsWith(`${name}=`));
+    return row ? decodeURIComponent(row.split("=")[1]) : null;
+}
+
+/** REQUEST INTERCEPTOR
+ * Injeta X-Company-Id nas requisições sempre que existir o cookie "activeCompanyId".
+ * Não sobrescreve se o header já tiver sido definido manualmente.
+ */
+api.interceptors.request.use((config) => {
+    const cid = readCookie("activeCompanyId");
+    if (cid) {
+        config.headers = config.headers ?? {};
+        if (!config.headers["X-Company-Id"]) {
+            (config.headers as any)["X-Company-Id"] = String(cid);
+        }
+    }
+    return config;
+});
+
 // Força refresh de token se receber 401
 let isRefreshing = false;
 let failedQueue: {

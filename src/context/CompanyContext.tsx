@@ -2,96 +2,66 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useCompanies } from "@/app/(private)/companies/hooks/useCompanies";
 import type { Company } from "@/app/(private)/companies/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { getPersistedCompanyId, persistCompanyId } from "@/lib/company-storage";
+import { useCompanies } from "@/app/(private)/companies/hooks/useCompanies";
 
-type CompanyCtx = {
+type CompanyContextType = {
     companies: Company[];
-    isLoading: boolean;
     selectedCompany: Company | null;
-    selectedCompanyId: string | null;
-    setSelectedCompany: (company: Company | null) => void;
-    clearCompany: () => void;
     isCompanySelected: boolean;
+    setSelectedCompany: (c: Company | null) => void;
 };
 
-const CompanyContext = createContext<CompanyCtx | undefined>(undefined);
-
-const STORAGE_KEY = "selectedCompanyId";
-
-function getCookie(name: string): string | null {
-    if (typeof document === "undefined") return null;
-    const match = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith(name + "="));
-    return match ? decodeURIComponent(match.split("=")[1]) : null;
-}
-
-function setCookie(name: string, value: string, days = 30) {
-    if (typeof document === "undefined") return;
-    const maxAge = days * 24 * 60 * 60;
-    document.cookie = `${name}=${encodeURIComponent(
-        value
-    )}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
-}
-
-function deleteCookie(name: string) {
-    if (typeof document === "undefined") return;
-    document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
-}
+const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
 
 export function CompanyProvider({ children }: { children: React.ReactNode }) {
-    const companiesQ = useCompanies(); // dados reais
-    const companies = (companiesQ.data ?? []).filter((c) => c.status === "active");
+    const queryClient = useQueryClient();
+    const companiesQ = useCompanies();
+    const companies = companiesQ.data ?? [];
 
-    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+    const [selectedCompany, setSelectedCompanyState] = useState<Company | null>(null);
 
-    // carrega id salvo
+    // boot inicial pelo cookie/localStorage
     useEffect(() => {
-        const saved = getCookie(STORAGE_KEY);
-        if (saved) setSelectedCompanyId(saved);
-    }, []);
-
-    // se a empresa salva não existe mais, limpa
-    useEffect(() => {
-        if (companiesQ.isLoading) return;
-        if (!selectedCompanyId) return;
-        const exists = companies.some((c) => String(c.id) === String(selectedCompanyId));
-        if (!exists) {
-            setSelectedCompanyId(null);
-            deleteCookie(STORAGE_KEY);
-        }
-    }, [companiesQ.isLoading, companies, selectedCompanyId]);
-
-    const selectedCompany = useMemo(
-        () => companies.find((c) => String(c.id) === String(selectedCompanyId)) ?? null,
-        [companies, selectedCompanyId]
-    );
+        if (!companies.length) return;
+        const persisted = getPersistedCompanyId();
+        const match = companies.find((c) => Number(c.id) === persisted);
+        if (match) setSelectedCompanyState(match);
+    }, [companies.length]);
 
     const setSelectedCompany = (c: Company | null) => {
-        if (!c) {
-            setSelectedCompanyId(null);
-            deleteCookie(STORAGE_KEY);
-            return;
-        }
-        const idStr = String(c.id);
-        setSelectedCompanyId(idStr);
-        setCookie(STORAGE_KEY, idStr); // segue o padrão de cookies da app
+        setSelectedCompanyState(c);
+        persistCompanyId(c ? Number(c.id) : null);
+
+        // Estratégia de cache: como a queryKey é escopada por companyId (ver hooks),
+        // mudar a empresa dispara novas queries automaticamente. Opcionalmente,
+        // pode-se limpar caches antigos para liberar memória:
+        queryClient.removeQueries({ predicate: () => true });
     };
 
-    const clearCompany = () => {
-        setSelectedCompany(null);
-    };
+    const value = useMemo<CompanyContextType>(
+        () => ({
+            companies,
+            selectedCompany,
+            isCompanySelected: !!selectedCompany,
+            setSelectedCompany,
+        }),
+        [companies, selectedCompany],
+    );
 
-    const value: CompanyCtx = {
-        companies,
-        isLoading: companiesQ.isLoading,
-        selectedCompany,
-        selectedCompanyId,
-        setSelectedCompany,
-        clearCompany,
-        isCompanySelected: !!selectedCompany,
-    };
+    // escuta alterações de outras abas
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const detail = (e as CustomEvent).detail as { companyId: number | null };
+            if (!companies.length) return;
+            const match = companies.find((c) => Number(c.id) === (detail?.companyId ?? -1)) || null;
+            setSelectedCompanyState(match);
+        };
+        window.addEventListener("company-changed", handler as any);
+        return () => window.removeEventListener("company-changed", handler as any);
+    }, [companies]);
 
     return <CompanyContext.Provider value={value}>{children}</CompanyContext.Provider>;
 }

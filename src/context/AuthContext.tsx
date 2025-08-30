@@ -11,6 +11,7 @@ import {
 import api from "@/services/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { clearPersistedCompany } from "@/lib/company-storage";
 
 interface User {
     id: number;
@@ -90,9 +91,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = async () => {
-        await api.post("/users/logout");
-        setUser(null);
-        router.replace("/login");
+        try {
+            await api.post("/users/logout");            
+        } catch {
+            
+        } finally {
+            clearPersistedCompany();
+            setUser(null);
+            router.replace("/login");
+        }
     };
 
     return (

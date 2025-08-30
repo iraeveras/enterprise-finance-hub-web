@@ -1,17 +1,11 @@
 // FILE: src/app/(private)/employees/hooks/useEmployeeDelete.ts
 "use client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/services/api";
+
+import { useScopedCompanyMutation, delByCompany } from "@/hooks/scopedCompany";
 
 export function useEmployeeDelete() {
-    const queryclient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            await api.delete(`/employees/${id}`);
-            return id;
-        },
-        onSuccess: () => {
-            queryclient.invalidateQueries({ queryKey: ["employees"] });
-        },
-    });
+    return useScopedCompanyMutation<unknown, number>(
+        () => ["employees"],
+        (id, cid) => delByCompany(`/employees/${id}`, cid),
+    );
 }
