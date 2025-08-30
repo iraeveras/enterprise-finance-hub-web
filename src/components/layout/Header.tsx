@@ -88,11 +88,20 @@ export const Header = ({ user: propUser, onMobileMenuToggle }: HeaderProps) => {
                             <Menu className="w-5 h-5" />
                         </Button>
 
+                        
+
+                        <div className="relative max-w-md w-full hidden sm:block">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Input type="text" placeholder="Buscar funcionários, relatórios..." className="pl-10 pr-4 py-2 w-full" />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center space-x-4">
                         {/* Pílula com a empresa atual + trocar */}
                         {selectedCompany && (
                             <div className="flex items-center space-x-2 px-3 py-1 rounded-lg">
                                 <Building className="w-4 h-4 text-primary" />
-                                <span className="text-sm font-medium text-primary">{selectedCompany.tradeName}</span>
+                                <span className="text-sm font-medium text-primary truncate">{selectedCompany.tradeName}</span>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -104,14 +113,6 @@ export const Header = ({ user: propUser, onMobileMenuToggle }: HeaderProps) => {
                                 </Button>
                             </div>
                         )}
-
-                        <div className="relative max-w-md w-full hidden sm:block">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <Input type="text" placeholder="Buscar funcionários, relatórios..." className="pl-10 pr-4 py-2 w-full" />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
                         <Button variant="ghost" size="sm" className="relative cursor-pointer">
                             <Bell className="w-5 h-5" />
                             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
