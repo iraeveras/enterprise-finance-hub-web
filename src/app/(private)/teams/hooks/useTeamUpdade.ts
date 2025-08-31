@@ -2,19 +2,13 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useScopedCompanyMutation, putByCompany } from "@/hooks/scopedCompany";
 import api from "@/services/api"
 import type { Team } from "../types"
 
 export function useTeamUpdate() {
-    const queryclient = useQueryClient()
-    return useMutation({
-        mutationFn: async (team: Team) => {
-            const { id, ...data } = team
-            const res = await api.put<{ data: Team }>(`/teams/${id}`, data)
-            return res.data.data
-        },
-        onSuccess: () => {
-            queryclient.invalidateQueries({ queryKey: ["teams"] })
-        },
-    })
+    return useScopedCompanyMutation<Team, { id: number; data: Partial<Team>}>(
+        () => ["teams"],
+        (vars, cid) => putByCompany<Team>(`/teams/${vars.id}`, vars.data, cid)
+    )
 }

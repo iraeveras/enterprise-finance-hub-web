@@ -1,17 +1,14 @@
 // src/app/(private)/departments/hooks/useDepartments.ts
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import api from "@/services/api";
+import { useScopedCompanyQuery, getByCompany } from "@/hooks/scopedCompany";
 import type { Department } from "../types";
 
-export function useDepartments() {
-    return useQuery<Department[], Error>({
-        queryKey: ["departments"],
-        queryFn: async () => {
-            const res = await api.get<{ data: Department[] }>("/departments");
-            return res.data.data;
-        },
-        refetchOnWindowFocus: false,
-    });
+export function useDepartments(search = "") {
+    return useScopedCompanyQuery<Department[]>(
+        (cid) => ["departments", { search }],
+        (cid) => getByCompany<Department[]>("/departments", cid, { search}),
+        true,
+        (rows, cid) => rows.filter((e: any) => Number(e.companyId) === Number(cid))
+    );
 }

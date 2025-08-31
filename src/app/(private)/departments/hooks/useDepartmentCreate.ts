@@ -1,19 +1,12 @@
 // src/app/(private)/departments/hooks/useDepartmentCreate.ts
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/services/api";
+import { useScopedCompanyMutation, postByCompany } from "@/hooks/scopedCompany";
 import type { Department, CreateDepartmentInput } from "../types";
 
 export function useDepartmentCreate() {
-    const queryclient = useQueryClient();
-    return useMutation<Department, Error, CreateDepartmentInput>({
-        mutationFn: async (newDept) => {
-            const res = await api.post<{ data: Department }>("/departments", newDept);
-            return res.data.data;
-        },
-        onSuccess: () => {
-            queryclient.invalidateQueries({ queryKey: ["departments"] });
-        },
-    });
+    return useScopedCompanyMutation<Department, Partial<Department>>(
+        () => ["departments"],
+        (vars, cid) => postByCompany<Department>("/departments", vars, cid),
+    );
 }

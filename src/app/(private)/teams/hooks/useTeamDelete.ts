@@ -2,17 +2,12 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useScopedCompanyMutation, delByCompany } from "@/hooks/scopedCompany";
 import api from "@/services/api"
 
 export function useTeamDelete() {
-    const queryclient = useQueryClient()
-    return useMutation({
-        mutationFn: async (id: string) => {
-            await api.delete(`/teams/${id}`)
-            return id
-        },
-        onSuccess: () => {
-            queryclient.invalidateQueries({ queryKey: ["teams"] })
-        },
-    })
+    return useScopedCompanyMutation<unknown, number>(
+        () => ["teams"],
+        (id, cid) => delByCompany(`/teams/${id}`, cid),
+    );
 }
