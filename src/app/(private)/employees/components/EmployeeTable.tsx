@@ -114,9 +114,9 @@ export default function EmployeeTable({
                                             <span className="text-gray-400">-</span>
                                         )}
                                     </TableCell>
-                                    <TableCell className="py-1 text-right text-sm font-medium">{fmtMoney(totalSalary)}</TableCell>
-                                    <TableCell className="py-1 text-sm">{fmtDept(e.departmentId)}</TableCell>
-                                    <TableCell className="py-1 text-sm">{fmtSector(e.sectorId)}</TableCell>
+                                    <TableCell className="py-1 text-right text-xs font-medium">{fmtMoney(totalSalary)}</TableCell>
+                                    <TableCell className="py-1 text-xs">{fmtDept(e.departmentId)}</TableCell>
+                                    <TableCell className="py-1 text-xs">{fmtSector(e.sectorId)}</TableCell>
                                     <TableCell className="py-1 text-center">
                                         <Badge className={e.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
                                             {e.status === "active" ? "Ativo" : "Inativo"}
