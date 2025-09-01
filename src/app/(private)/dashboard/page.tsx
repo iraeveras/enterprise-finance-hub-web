@@ -47,7 +47,7 @@ export const DashboardContent = () => {
                             <FileText className="w-4 h-4 mr-2" />
                             Exportar Relatório
                         </Button>
-                        <Button onClick={() => setIsPeriodSelectorOpen(true)}>
+                        <Button onClick={() => setIsPeriodSelectorOpen(true)} variant="custom">
                             <Calendar className="w-4 h-4 mr-2" />
                             Período
                         </Button>

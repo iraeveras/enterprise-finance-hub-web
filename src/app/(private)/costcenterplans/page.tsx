@@ -235,11 +235,11 @@ export default function CostCenterPlanManager() {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button onClick={handleNewPlan} className="bg-gradient-to-br from-primary to-primary/60 cursor-pointer">
+                    <Button onClick={handleNewPlan} variant="custom">
                         <Plus className="h-4 w-4 mr-2" />
                         Novo Plano
                     </Button>
-                    <Button onClick={() => handleNewItem()} className="bg-gradient-to-br from-primary to-primary/60 cursor-pointer">
+                    <Button onClick={() => handleNewItem()} variant="custom">
                         <Plus className="h-4 w-4 mr-2" />
                         Novo Item
                     </Button>

@@ -75,7 +75,7 @@ export default function CompanyManager() {
                         <h1 className="text-3xl font-bold text-gray-900">Gestão de Empresas</h1>
                         <p className="text-gray-600">Cadastro e controle de empresas do sistema</p>
                     </div>
-                    <Button className="cursor-pointer" onClick={openNew} disabled={createMutation.status === "pending"}>
+                    <Button variant="custom" onClick={openNew} disabled={createMutation.status === "pending"}>
                         <Plus className="w-4 h-4 mr-2" />
                         Nova Empresa
                     </Button>
