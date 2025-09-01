@@ -80,8 +80,8 @@ export default function CompanySelector({
                                         <CardContent className="p-0">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-4">
-                                                    <div className="flex h-12 w-12 items-center justify-center rounded-none bg-primary/10">
-                                                        <Building className="h-6 w-6 text-primary" />
+                                                    <div className="flex h-12 w-12 items-center justify-center rounded-none bg-gradient-to-br from-primary to-primary/60">
+                                                        <Building className="h-6 w-6 text-secondary" />
                                                     </div>
                                                     <div>
                                                         <h3 className="text-sm font-semibold">{company.tradeName}</h3>
@@ -90,7 +90,7 @@ export default function CompanySelector({
                                                     </div>
                                                 </div>
                                                 {selected && (
-                                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ring">
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60">
                                                         <Check className="h-5 w-5 text-white" />
                                                     </div>
                                                 )}

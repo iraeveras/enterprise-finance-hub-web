@@ -47,7 +47,7 @@ export default function PlanSection({
         <Card className="rounded-none gap-2">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 font-mono">
                         {plan.codPlanoCentroCusto} - {plan.nomePlanoCentroCusto}
                         <Badge variant={plan.status === "active" ? "default" : "secondary"}>
                             {plan.status === "active" ? "Ativo" : "Inativo"}
@@ -81,9 +81,9 @@ export default function PlanSection({
                                 <AccordionPrimitive.Header className="flex items-center justify-between px-4 py-2">
                                     {/* Trigger como DIV (evita button dentro de button) */}
                                     <AccordionPrimitive.Trigger asChild>
-                                        <div className="group/item text-base flex cursor-pointer items-center gap-3 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                                        <div className="group/item font-mono text-sm flex cursor-pointer items-center gap-3 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring tracking-wider">
                                             <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]/item:rotate-90" />
-                                            <span className="font-medium">{item.codPlanoCentroCustoItem}</span>
+                                            <span>{item.codPlanoCentroCustoItem}</span>
                                             <span>{item.nomePlanoCentroCustoItem}</span>
                                             {/* <Badge
                                                 variant={item.status === "active" ? "default" : "secondary"}
@@ -138,9 +138,9 @@ export default function PlanSection({
                                                     >
                                                         <AccordionPrimitive.Header className="flex items-center justify-between px-3 py-2">
                                                             <AccordionPrimitive.Trigger asChild>
-                                                                <div className="group/type flex cursor-pointer items-center gap-2 text-sm">
+                                                                <div className="group/type flex cursor-pointer items-center gap-2 font-mono text-xs tracking-widest">
                                                                     <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]/type:rotate-90" />
-                                                                    <span className="font-medium">{type.codTipoDespesa}</span>
+                                                                    <span>{type.codTipoDespesa}</span>
                                                                     <span>{type.nomeTipoDespesa}</span>
                                                                     {/* <Badge
                                                                         variant={type.status === "active" ? "default" : "secondary"}
@@ -192,13 +192,9 @@ export default function PlanSection({
                                                                                 key={subtype.id}
                                                                                 className="ml-8 flex items-center justify-between rounded-none border bg-background px-2 py-0.5"
                                                                             >
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span className="text-sm font-medium">
-                                                                                        {subtype.codSubtipoDespesa}
-                                                                                    </span>
-                                                                                    <span className="text-sm">
-                                                                                        {subtype.nomeSubtipoDespesa}
-                                                                                    </span>
+                                                                                <div className="flex items-center gap-2 font-mono text-xs tracking-wide">
+                                                                                    <span>{subtype.codSubtipoDespesa}</span>
+                                                                                    <span>{subtype.nomeSubtipoDespesa}</span>
                                                                                     {/* <Badge
                                                                                         variant={
                                                                                             subtype.status === "active"

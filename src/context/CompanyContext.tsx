@@ -11,6 +11,7 @@ type CompanyContextType = {
     companies: Company[];
     selectedCompany: Company | null;
     isCompanySelected: boolean;
+    isLoading?: boolean;
     setSelectedCompany: (c: Company | null) => void;
 };
 

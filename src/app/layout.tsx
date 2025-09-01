@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const inter = Inter({variable: "--font-inter", subsets: ["latin"]});
-const interTight = Inter_Tight({variable: "--font-inter-tight", subsets: ["latin"]})
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const interTight = Inter_Tight({ variable: "--font-inter-tight", subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Sistema de Planejamento Orçamentário",
@@ -28,8 +28,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.className} ${interTight.className} antialiased`} >
-        {children}                        
+      <body className={`${geistSans.variable} ${geistMono.variable} } antialiased`} >
+        {children}
       </body>
     </html>
   );
