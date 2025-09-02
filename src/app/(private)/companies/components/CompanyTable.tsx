@@ -70,9 +70,9 @@ export function CompanyTable({
                                 <TableCell className="py-1">
                                     <span
                                         className={
-                                        company.status === "active"
-                                            ? "bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs"
-                                            : "bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs"
+                                            company.status === "active"
+                                                ? "bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs"
+                                                : "bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs"
                                         }
                                     >
                                         {company.status === "active" ? "Ativo" : "Inativo"}
@@ -126,7 +126,7 @@ export function CompanyTable({
                                     onClick={() => onPageChange(pageNumber)}
                                     // para acessibilidade, informe qual é a página atual
                                     {...(isCurrent && { "aria-current": "page" })}
-                                    >
+                                >
                                     {pageNumber}
                                 </PaginationLink>
                             </PaginationItem>
