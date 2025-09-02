@@ -18,7 +18,8 @@ export interface AcquisitionPeriod {
   createdAt: string;  // ISO
   updatedAt: string;  // ISO
   // opcionais que o backend pode devolver
-  employee?: { id: string; name: string } | null;
+  companyId?: number;
+  employee?: { id: string; name: string; companyId?: number } | null;
   vacationsCount?: number; // nº de férias que usam este período (se o backend retornar)
 }
 

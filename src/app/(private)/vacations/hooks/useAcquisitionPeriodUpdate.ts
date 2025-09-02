@@ -1,19 +1,18 @@
 // FILE: src/app/(private)/vacations/hooks/useAcquisitionPeriodUpdate.ts
 "use client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/services/api";
+
+import { useScopedCompanyMutation, putByCompany } from "@/hooks/scopedCompany";
 import type { AcquisitionPeriod, UpdateAcquisitionPeriodInput } from "../types";
 
+/**
+ * Aceita o próprio UpdateAcquisitionPeriodInput (que já contém id).
+ */
 export function useAcquisitionPeriodUpdate() {
-  const queryclient = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: UpdateAcquisitionPeriodInput) => {
+  return useScopedCompanyMutation<AcquisitionPeriod, UpdateAcquisitionPeriodInput>(
+    () => ["acquisition-periods"],
+    (payload, cid) => {
       const { id, ...data } = payload;
-      const res = await api.put<{ data: AcquisitionPeriod }>(`/acquisition-periods/${id}`, data);
-      return res.data.data as AcquisitionPeriod;
-    },
-    onSuccess: () => {
-      queryclient.invalidateQueries({ queryKey: ["acquisition-periods"] });
-    },
-  });
+      return putByCompany<AcquisitionPeriod>(`/acquisition-periods/${id}`, data, cid);
+    }
+  );
 }
