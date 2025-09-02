@@ -125,7 +125,7 @@ export default function Home() {
         />
         <div className="flex-1 flex flex-col md:ml-64 overflow-hidden">
           <Header user={headerUser} onMobileMenuToggle={() => setMobileMenuOpen(true)} />
-          <main className="flex-1 p-4 md:p-6 overflow-y-auto">{renderContent()}</main>
+          <main className="flex-1 p-4 md:p-6 overflow-y-auto scrollbar-custom">{renderContent()}</main>
         </div>
       </div>
     </ProtectedPage>

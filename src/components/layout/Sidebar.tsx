@@ -80,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </a>
             </div>
 
-            <nav className="flex-1 p-4 overflow-y-auto">
+            <nav className="flex-1 p-4 overflow-y-auto scrollbar-custom">
                 {/* Dashboard */}
                 <div className="mb-4">
                     <SidebarItem
