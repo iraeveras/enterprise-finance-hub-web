@@ -21,13 +21,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const months = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
 
-function StatusBadge({ status }: { status: VacationStatus }) {
+function StatusBadge({ status }: { status?: VacationStatus | null }) {
+  const safe: VacationStatus = (status === "scheduled" || status === "approved" || status === "taken")
+    ? status : "scheduled";
   const map: Record<VacationStatus, { label: string; variant: "default" | "outline" | "secondary" }> = {
     scheduled: { label: "Programado", variant: "outline" },
     approved: { label: "Aprovado", variant: "default" },
     taken: { label: "Realizado", variant: "secondary" },
   };
-  const s = map[status];
+  const s = map[safe];
   return <Badge variant={s.variant} className="text-xs">{s.label}</Badge>;
 }
 
@@ -51,7 +53,7 @@ export function VacationPlanningTable({
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | VacationStatus>("all");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
 
   const employeesQ = useEmployees();
   const employees = employeesQ.data ?? [];

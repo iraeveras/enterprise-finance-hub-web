@@ -13,17 +13,19 @@ import { useEmployees } from "../../employees/hooks/useEmployees";
 import { employeeMat } from "@/lib/employees-utils";
 
 const months = [
-  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-function StatusBadge({ status }: { status: VacationStatus }) {
-  const map: Record<VacationStatus, { label: string; variant: "default"|"outline"|"secondary" }> = {
+function StatusBadge({ status }: { status?: VacationStatus | null }) {
+  const safe: VacationStatus = (status === "scheduled" || status === "approved" || status === "taken")
+    ? status : "scheduled";
+  const map: Record<VacationStatus, { label: string; variant: "default" | "outline" | "secondary" }> = {
     scheduled: { label: "Programado", variant: "outline" },
-    approved:  { label: "Aprovado",   variant: "default" },
-    taken:     { label: "Realizado",  variant: "secondary" },
+    approved: { label: "Aprovado", variant: "default" },
+    taken: { label: "Realizado", variant: "secondary" },
   };
-  const s = map[status];
+  const s = map[safe];
   return <Badge variant={s.variant} className="text-xs">{s.label}</Badge>;
 }
 
@@ -166,8 +168,8 @@ export function VacationPaymentTable({ vacations, type = "thirteenth", employeeN
           {items.map((v) => {
             const c = computeForDisplay(v);
             const totalFerias = c.vacationValue + c.onethirdValue;
-            const totalAbono  = c.abonoValue + c.abonoOnethirdValue;
-            const totalGeral  = totalFerias + totalAbono;
+            const totalAbono = c.abonoValue + c.abonoOnethirdValue;
+            const totalGeral = totalFerias + totalAbono;
 
             return (
               <TableRow key={v.id} className="hover:bg-gray-50">

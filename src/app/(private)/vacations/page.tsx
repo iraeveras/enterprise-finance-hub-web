@@ -75,7 +75,8 @@ export function VacationManager() {
 
   const onSave = (data: CreateVacationInput) => {
     if (editing) {
-      updateM.mutate({ id: editing.id, ...data });
+      // update espera { id: string; data: Partial<Vacation> }
+      updateM.mutate({ id: editing.id, data });
     } else {
       createM.mutate(data);
     }
@@ -90,7 +91,7 @@ export function VacationManager() {
 
   const onDelete = (id: string) => {
     if (!confirm("Excluir esta programação de férias?")) return;
-    deleteM.mutate(id);
+    deleteM.mutate(id); // agora o hook aceita string
   };
 
   return (
