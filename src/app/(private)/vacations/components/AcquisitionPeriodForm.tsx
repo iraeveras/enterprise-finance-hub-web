@@ -99,7 +99,7 @@ export function AcquisitionPeriodForm({ period, employees, onClose, onSave }: Ac
               <SelectContent>
                 {employees.map((e) => (
                   <SelectItem key={e.id} value={String(e.id)}>
-                    {e.name}{e.admission ? ` — Admissão: ${e.admission}` : ""}
+                    {e.name}
                   </SelectItem>
                 ))}
               </SelectContent>

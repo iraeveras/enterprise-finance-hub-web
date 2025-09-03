@@ -34,7 +34,7 @@ export default function AcquisitionPeriodManager() {
 
   // paginação
   const [page, setPage] = useState(1);
-  const pageSize = 3;
+  const pageSize = 7;
 
   const periods = periodsQ.data ?? [];
   const total = periods.length;
