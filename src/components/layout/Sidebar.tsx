@@ -106,10 +106,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     onClick={() => onSectionChange("companies")}
                                 />
                                 <SidebarItem
-                                    icon={Users}
-                                    label="Funcionários"
-                                    isActive={activeSection === "employees"}
-                                    onClick={() => onSectionChange("employees")}
+                                    icon={FileText}
+                                    label="Plano de Centro de Custo"
+                                    isActive={activeSection === "costcenterplans"}
+                                    onClick={() => onSectionChange("costcenterplans")}
+                                />
+                                <SidebarItem
+                                    icon={Target}
+                                    label="Centros de Custo"
+                                    isActive={activeSection === "costcenters"}
+                                    onClick={() => onSectionChange("costcenters")}
                                 />
                                 <SidebarItem
                                     icon={Building2}
@@ -124,28 +130,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     onClick={() => onSectionChange("sectors")}
                                 />
                                 <SidebarItem
+                                    icon={Users}
+                                    label="Funcionários"
+                                    isActive={activeSection === "employees"}
+                                    onClick={() => onSectionChange("employees")}
+                                />
+                                <SidebarItem
                                     icon={Group}
                                     label="Equipes"
                                     isActive={activeSection === "teams"}
                                     onClick={() => onSectionChange("teams")}
                                 />
                                 <SidebarItem
-                                    icon={Target}
-                                    label="Centros de Custo"
-                                    isActive={activeSection === "costcenters"}
-                                    onClick={() => onSectionChange("costcenters")}
-                                />
-                                <SidebarItem
                                     icon={MapPin}
                                     label="Estabelecimentos"
                                     isActive={activeSection === "premises"}
                                     onClick={() => onSectionChange("premises")}
-                                />
-                                <SidebarItem
-                                    icon={FileText}
-                                    label="Plano de Centro de Custo"
-                                    isActive={activeSection === "costcenterplans"}
-                                    onClick={() => onSectionChange("costcenterplans")}
                                 />
                             </div>
                         </AccordionContent>
